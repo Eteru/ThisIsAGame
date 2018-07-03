@@ -13,7 +13,9 @@ SceneObject::SceneObject(glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, bool dep
 	m_model(nullptr), m_shader(nullptr)//, m_trajectory(nullptr)
 {
 	if (true == depth_test)
+	{
 		glEnable(GL_DEPTH_TEST);
+	}
 
 	m_up = glm::vec3(0.f, 1.f, 0.f);
 	m_target = glm::vec3(0.f, 0.f, -1.f);
@@ -94,31 +96,30 @@ void SceneObject::Draw(DrawType type)
 	//	s = m_shader;
 	//}
 
-	glUseProgram(s->GetProgramID());
-
-	glBindBuffer(GL_ARRAY_BUFFER, m_model->GetVBO());
-
-	if (type == DEBUG)
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_model->GetIBO(true));
-	else
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_model->GetIBO(false));
-
-	//glActiveTexture(GL_TEXTURE0);
-
-	// Send skybox tex
-	Texture *sb = nullptr;// ResourceManager::GetInstance()->GetTexture("15");
-	if (nullptr != sb) {
-		int tex_loc = static_cast<int>(m_textures.size());
-		glActiveTexture(GL_TEXTURE0 + tex_loc);
-		glBindTexture(sb->GetTextureType(), sb->GetID());
-
-		s->SendUniform(ShaderStrings::TEXTURE_CUBE_UNIFORM, tex_loc);
-	}
+	// bind the program
+	glUseProgram(m_shader->GetProgramID());
+	// bind the VAO
+	glBindVertexArray(m_model->GetVAO());
+	
+	//Texture *sb = nullptr;// ResourceManager::GetInstance()->GetTexture("15");
+	//if (nullptr != sb) {
+	//	int tex_loc = static_cast<int>(m_textures.size());
+	//	glActiveTexture(GL_TEXTURE0 + tex_loc);
+	//	glBindTexture(sb->GetTextureType(), sb->GetID());
+	//
+	//	s->SendUniform(ShaderStrings::TEXTURE_CUBE_UNIFORM, tex_loc);
+	//}
 
 	SharedDrawElements(type);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	
+	// draw the VAO
+	//glDrawElements(GL_TRIANGLES, model.GetIndincesCount(), GL_UNSIGNED_INT, 0);
+	
+	// unbind the VAO
+	glBindVertexArray(0);
+	
+	// unbind the program
+	glUseProgram(0);
 }
 
 bool SceneObject::Collides(SceneObject * obj)
@@ -155,13 +156,13 @@ void SceneObject::SharedDrawElements(DrawType type)
 	//glBindTexture(GL_TEXTURE_2D, SceneManager::GetInstance()->GetShadowMap()->GetTexture());
 	//s->SendUniform(ShaderStrings::TEXTURE_SHADOW_MAP_UNIFORM, static_cast<int>(m_textures.size() + 1));
 
-	s->SendAttribute(ShaderStrings::POSITION_ATTRIBUTE, 3, sizeof(Vertex), 0);
-	s->SendAttribute(ShaderStrings::COLOR_ATTRIBUTE, 3, sizeof(Vertex), sizeof(glm::vec3));
-	s->SendAttribute(ShaderStrings::NORMAL_ATTRIBUTE, 3, sizeof(Vertex), sizeof(glm::vec3) * 2);
-	s->SendAttribute(ShaderStrings::BINORM_ATTRIBUTE, 3, sizeof(Vertex), sizeof(glm::vec3) * 3);
-	s->SendAttribute(ShaderStrings::TANGENT_ATTRIBUTE, 3, sizeof(Vertex), sizeof(glm::vec3) * 4);
-	s->SendAttribute(ShaderStrings::UV_ATTRIBUTE, 2, sizeof(Vertex), sizeof(glm::vec3) * 5);
-	s->SendAttribute(ShaderStrings::UV_BLEND_ATTRIBUTE, 2, sizeof(Vertex), sizeof(glm::vec3) * 5 + sizeof(glm::vec2));
+	//s->SendAttribute(ShaderStrings::POSITION_ATTRIBUTE, 3, sizeof(Vertex), 0);
+	//s->SendAttribute(ShaderStrings::COLOR_ATTRIBUTE, 3, sizeof(Vertex), sizeof(glm::vec3));
+	//s->SendAttribute(ShaderStrings::NORMAL_ATTRIBUTE, 3, sizeof(Vertex), sizeof(glm::vec3) * 2);
+	//s->SendAttribute(ShaderStrings::BINORM_ATTRIBUTE, 3, sizeof(Vertex), sizeof(glm::vec3) * 3);
+	//s->SendAttribute(ShaderStrings::TANGENT_ATTRIBUTE, 3, sizeof(Vertex), sizeof(glm::vec3) * 4);
+	//s->SendAttribute(ShaderStrings::UV_ATTRIBUTE, 2, sizeof(Vertex), sizeof(glm::vec3) * 5);
+	//s->SendAttribute(ShaderStrings::UV_BLEND_ATTRIBUTE, 2, sizeof(Vertex), sizeof(glm::vec3) * 5 + sizeof(glm::vec2));
 	
 	s->SendUniform(ShaderStrings::MODEL_UNIFORM, m_M);
 	//s->SendUniform(ShaderStrings::NORMAL_MODEL_UNIFORM, static_cast<glm::mat4>(glm::inverseTranspose(m_M)));
@@ -254,18 +255,19 @@ void SceneObject::SharedDrawElements(DrawType type)
 	//	glDrawElements(GL_TRIANGLES, m_model->GetIBOCount(false), GL_UNSIGNED_INT, (void*)0);
 	//
 	//}
-	glDrawElements(GL_TRIANGLES, m_model->GetIBOCount(false), GL_UNSIGNED_INT, (void*)0);
+	//glDrawElements(GL_TRIANGLES, m_model->GetIndincesCount(false), GL_UNSIGNED_INT, (void*)0);
+	glDrawElements(GL_TRIANGLES, m_model->GetIndincesCount(), GL_UNSIGNED_INT, 0);
 	
 }
 
 void SceneObject::GeneralUpdate()
 {
 	m_M = glm::mat4(1.f);
-	m_M = glm::scale(m_M, m_scale);
-	m_M = glm::rotate(m_M, m_rotation.x, glm::vec3(1.f, 0.f, 0.f));
-	m_M = glm::rotate(m_M, m_rotation.y, glm::vec3(0.f, 1.f, 0.f));
-	m_M = glm::rotate(m_M, m_rotation.z, glm::vec3(0.f, 0.f, 1.f));
-	m_M = glm::translate(m_M, m_position);
+	//m_M = glm::scale(m_M, m_scale);
+	//m_M = glm::rotate(m_M, m_rotation.x, glm::vec3(1.f, 0.f, 0.f));
+	//m_M = glm::rotate(m_M, m_rotation.y, glm::vec3(0.f, 1.f, 0.f));
+	//m_M = glm::rotate(m_M, m_rotation.z, glm::vec3(0.f, 0.f, 1.f));
+	//m_M = glm::translate(m_M, m_position);
 	
 	/*m_M = glm::mat4().SetScale(m_scale) *
 		(glm::mat4().SetRotationX(m_rotation.x) *

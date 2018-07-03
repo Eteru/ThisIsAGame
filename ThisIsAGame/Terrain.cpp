@@ -19,7 +19,7 @@ Terrain::~Terrain()
 void Terrain::Init()
 {
 	m_model = new Model();
-	m_vertices = m_model->GenerateFlatModel(m_block_size, m_cell_size, m_offsetY);
+	//m_vertices = m_model->GenerateFlatModel(m_block_size, m_cell_size, m_offsetY);
 	m_half_size = static_cast<uint32_t>(m_block_size * m_cell_size * 0.5f);
 
 	// Center terrain to camera position
@@ -81,10 +81,10 @@ void Terrain::Draw(DrawType type)
 
 	glBindBuffer(GL_ARRAY_BUFFER, m_model->GetVBO());
 
-	if (type == DEBUG)
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_model->GetIBO(true));
-	else
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_model->GetIBO(false));
+	//if (type == DEBUG)
+	//	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_model->GetIBO(true));
+	//else
+	//	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_model->GetIBO(false));
 	
 	s->SendUniform(ShaderStrings::HEIGHT_MAP_UNIFORM, m_heights);
 	
