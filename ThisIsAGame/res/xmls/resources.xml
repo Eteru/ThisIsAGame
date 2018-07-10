@@ -2,154 +2,145 @@
 <resourceManager>
 	<models>
 		<model id="1">
-			<path>../Resources/Models/croco.nfg</path>
-		</model>
-		<model id="2">
-			<path>../Resources/Models/SkyBox.nfg</path>
-		</model>
-    <model id="3">
-      <path>../Resources/Models/bila.nfg</path>
-    </model>
-		<model id="4">
-			<path>../Resources/Models/fire.nfg</path>
+			<path>./res/models/sphere.obj</path>
 		</model>
 		<!-- si aici se adauga toate modelele -->
 	</models>
 	<shaders>
 	<shader id="1">
-			<vs>../Resources/Shaders/terrainShader.vs</vs>
-			<fs>../Resources/Shaders/terrainShader.fs</fs>
+			<vs>./res/shaders/terrainShader.vert</vs>
+			<fs>./res/shaders/terrainShader.frag</fs>
 	</shader>
 	<shader id="2">
-		<vs>../Resources/Shaders/SkyBoxShader.vs</vs>
-		<fs>../Resources/Shaders/SkyBoxShader.fs</fs>
-	</shader>
-	<shader id="10">
-		<vs>../Resources/Shaders/vertexShader.vs</vs>
-		<fs>../Resources/Shaders/fragmentShader.fs</fs>
+		<vs>./res/shaders/SkyBoxShader.vert</vs>
+		<fs>./res/shaders/SkyBoxShader.frag</fs>
 	</shader>
 	<shader id="3">
-		<vs>../Resources/Shaders/ObjShaderVS.vs</vs>
-		<fs>../Resources/Shaders/ObjShaderFS.fs</fs>
+		<vs>./res/shaders/ObjShaderVS.vert</vs>
+		<fs>./res/shaders/ObjShaderFS.frag</fs>
 	</shader>
   <shader id="4">
-    <vs>../Resources/Shaders/fireShaderVS.vs</vs>
-    <fs>../Resources/Shaders/fireShaderFS.fs</fs>
+    <vs>./res/shaders/fireShaderVS.vert</vs>
+    <fs>./res/shaders/fireShaderFS.frag</fs>
   </shader>
   <shader id="5">
-    <vs>../Resources/Shaders/DebugShader.vs</vs>
-    <fs>../Resources/Shaders/DebugShader.fs</fs>
+    <vs>./res/shaders/DebugShader.vert</vs>
+    <fs>./res/shaders/DebugShader.frag</fs>
   </shader>
   <shader id="6">
-    <vs>../Resources/Shaders/DebugShaderAxis.vs</vs>
-    <fs>../Resources/Shaders/DebugShaderAxis.fs</fs>
+    <vs>./res/shaders/DebugShaderAxis.vert</vs>
+    <fs>./res/shaders/DebugShaderAxis.frag</fs>
   </shader>
   <shader id="7">
-    <vs>../Resources/Shaders/DefaultPostShader.vs</vs>
-    <fs>../Resources/Shaders/BlurShader.fs</fs>
+    <vs>./res/shaders/DefaultPostShader.vert</vs>
+    <fs>./res/shaders/BlurShader.frag</fs>
   </shader>
   <shader id="8">
-    <vs>../Resources/Shaders/DefaultPostShader.vs</vs>
-    <fs>../Resources/Shaders/SharpenShader.fs</fs>
+    <vs>./res/shaders/DefaultPostShader.vert</vs>
+    <fs>./res/shaders/SharpenShader.frag</fs>
   </shader>
   <shader id="9">
-    <vs>../Resources/Shaders/DefaultPostShader.vs</vs>
-    <fs>../Resources/Shaders/GrayscaleShader.fs</fs>
+    <vs>./res/shaders/DefaultPostShader.vert</vs>
+    <fs>./res/shaders/GrayscaleShader.frag</fs>
   </shader>
   <shader id="10">
-    <vs>../Resources/Shaders/DefaultPostShader.vs</vs>
-    <fs>../Resources/Shaders/ThresholdShader.fs</fs>
+    <vs>./res/shaders/DefaultPostShader.vert</vs>
+    <fs>./res/shaders/ThresholdShader.frag</fs>
   </shader>
   <shader id="11">
-    <vs>../Resources/Shaders/DefaultPostShader.vs</vs>
-    <fs>../Resources/Shaders/CombineTexturesShader.fs</fs>
+    <vs>./res/shaders/DefaultPostShader.vert</vs>
+    <fs>./res/shaders/CombinetexturesShader.frag</fs>
   </shader>
   <shader id="12">
-    <vs>../Resources/Shaders/ShadowDepthShader.vs</vs>
-    <fs>../Resources/Shaders/ShadowDepthShader.fs</fs>
+    <vs>./res/shaders/ShadowDepthShader.vert</vs>
+    <fs>./res/shaders/ShadowDepthShader.frag</fs>
+  </shader>
+  <shader id="13">
+    <vs>./res/shaders/default.vert</vs>
+    <fs>./res/shaders/default.frag</fs>
   </shader>
 	<!-- si aici se adauga toate shaderele -->
 	</shaders>
 	<textures>
 		<texture id="1" type="2d">
-			<path>../Resources/Textures/Rock.tga</path>
+			<path>./res/textures/Bus.tga</path>
 			<min_filter>LINEAR</min_filter>
 			<mag_filter>LINEAR</mag_filter>
 			<wrap_s>REPEAT</wrap_s>
 			<wrap_t>REPEAT</wrap_t>
 		</texture>
 		<texture id="2" type="2d">
-			<path>../Resources/Textures/Dirt.tga</path>
+			<path>./res/textures/Dirt.tga</path>
 			<min_filter>LINEAR</min_filter>
 			<mag_filter>LINEAR</mag_filter>
 			<wrap_s>REPEAT</wrap_s>
 			<wrap_t>REPEAT</wrap_t>
 		</texture>
 		<texture id="3" type="2d">
-			<path>../Resources/Textures/Grass.tga</path>
+			<path>./res/textures/Grass.tga</path>
 			<min_filter>LINEAR</min_filter>
 			<mag_filter>LINEAR</mag_filter>
 			<wrap_s>REPEAT</wrap_s>
 			<wrap_t>REPEAT</wrap_t>
 		</texture>
 		<texture id="4" type="2d">
-			<path>../Resources/Textures/croco.tga</path>			
+			<path>./res/textures/croco.tga</path>			
 			<min_filter>LINEAR</min_filter>
 			<mag_filter>LINEAR</mag_filter>
 			<wrap_s>CLAMP_TO_EDGE</wrap_s>
 			<wrap_t>CLAMP_TO_EDGE</wrap_t>
 		</texture>
 		<texture id="5" type="2d">
-			<path>../Resources/Textures/Terrain_blend_map.tga</path>
+			<path>./res/textures/Terrain_blend_map.tga</path>
 			<min_filter>LINEAR</min_filter>
 			<mag_filter>LINEAR</mag_filter>
 			<wrap_s>REPEAT</wrap_s>
 			<wrap_t>REPEAT</wrap_t>
 		</texture>
 		<texture id="6" type="2d">
-			<path>../Resources/Textures/bus.tga</path>
+			<path>./res/textures/bus.tga</path>
 			<min_filter>LINEAR</min_filter>
 			<mag_filter>LINEAR</mag_filter>
 			<wrap_s>CLAMP_TO_EDGE</wrap_s>
 			<wrap_t>CLAMP_TO_EDGE</wrap_t>
 		</texture>
     <texture id="7" type="2d">
-      <path>../Resources/Textures/fire3.tga</path>
+      <path>./res/textures/fire3.tga</path>
       <min_filter>LINEAR</min_filter>
       <mag_filter>LINEAR</mag_filter>
       <wrap_s>CLAMP_TO_EDGE</wrap_s>
       <wrap_t>CLAMP_TO_EDGE</wrap_t>
     </texture>
     <texture id="8" type="2d">
-      <path>../Resources/Textures/fire_mask.tga</path>
+      <path>./res/textures/fire_mask.tga</path>
       <min_filter>LINEAR</min_filter>
       <mag_filter>LINEAR</mag_filter>
       <wrap_s>CLAMP_TO_EDGE</wrap_s>
       <wrap_t>CLAMP_TO_EDGE</wrap_t>
     </texture>
     <texture id="9" type="2d">
-      <path>../Resources/Textures/DisplacementMap.tga</path>
+      <path>./res/textures/DisplacementMap.tga</path>
       <min_filter>LINEAR</min_filter>
       <mag_filter>LINEAR</mag_filter>
       <wrap_s>CLAMP_TO_EDGE</wrap_s>
       <wrap_t>CLAMP_TO_EDGE</wrap_t>
     </texture>
     <texture id="10" type="2d">
-      <path>../Resources/Textures/NormalMap.tga</path>
+      <path>./res/textures/NormalMap.tga</path>
       <min_filter>LINEAR</min_filter>
       <mag_filter>LINEAR</mag_filter>
       <wrap_s>CLAMP_TO_EDGE</wrap_s>
       <wrap_t>CLAMP_TO_EDGE</wrap_t>
     </texture>
 		<texture id="14" type="2d">
-			<path>../Resources/Textures/croco2.tga</path>			
+			<path>./res/textures/croco2.tga</path>			
 			<min_filter>LINEAR</min_filter>
 			<mag_filter>LINEAR</mag_filter>
 			<wrap_s>CLAMP_TO_EDGE</wrap_s>
 			<wrap_t>CLAMP_TO_EDGE</wrap_t>
 		</texture>
 		<texture id="15" type="cube">
-			<path>../Resources/Textures/envMap.tga</path>			
+			<path>./res/textures/envMap.tga</path>			
 			<min_filter>LINEAR</min_filter>
 			<mag_filter>LINEAR</mag_filter>
 			<wrap_s>CLAMP_TO_EDGE</wrap_s>
@@ -159,10 +150,10 @@
 	</textures>
   <sounds>
     <sound id="1">
-      <path>../Resources/Sounds/footstep.wav</path>
+      <path>./res/sounds/footstep.wav</path>
     </sound>
     <sound id="2">
-      <path>../Resources/Sounds/ambient.wav</path>
+      <path>./res/sounds/ambient.wav</path>
     </sound>
     <!-- si aici se adauga toate modelele -->
   </sounds>

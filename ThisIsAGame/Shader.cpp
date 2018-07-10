@@ -6,6 +6,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "Shader.h"
+#include "Strings.h"
 
 
 Shader::Shader() : m_sr(nullptr), m_loaded(false)
@@ -44,18 +45,18 @@ void Shader::Load()
 	m_loaded = true;
 }
 
-bool Shader::SendAttribute(const std::string & name, uint32_t size, uint32_t stride, uint32_t offset)
+void Shader::SendAttribute(const std::string & name, uint32_t size, uint32_t stride, uint32_t offset)
 {
 	if (m_map[name] == -1)
 	{
-		throw std::runtime_error(std::string("Program uniform not found: ") + name);
+		throw std::runtime_error(std::string("Program attribute not found: ") + name);
 	}
 
 	glEnableVertexAttribArray(m_map[name]);
 	glVertexAttribPointer(m_map[name], size, GL_FLOAT, GL_FALSE, stride, (GLvoid *)(offset));
 }
 
-bool Shader::SendUniform(const std::string & name, int n)
+void Shader::SendUniform(const std::string & name, int n)
 {
 	if (m_map[name] == -1)
 	{
@@ -65,7 +66,7 @@ bool Shader::SendUniform(const std::string & name, int n)
 	glUniform1i(m_map[name], n);
 }
 
-bool Shader::SendUniform(const std::string & name, float f)
+void Shader::SendUniform(const std::string & name, float f)
 {
 	if (m_map[name] == -1)
 	{
@@ -75,7 +76,7 @@ bool Shader::SendUniform(const std::string & name, float f)
 	glUniform1f(m_map[name], f);
 }
 
-bool Shader::SendUniform(const std::string & name, glm::vec2 & vec)
+void Shader::SendUniform(const std::string & name, glm::vec2 & vec)
 {
 	if (m_map[name] == -1)
 	{
@@ -85,7 +86,7 @@ bool Shader::SendUniform(const std::string & name, glm::vec2 & vec)
 	glUniform2fv(m_map[name], 1, glm::value_ptr(vec));
 }
 
-bool Shader::SendUniform(const std::string & name, glm::vec3 & vec)
+void Shader::SendUniform(const std::string & name, glm::vec3 & vec)
 {
 	if (m_map[name] == -1)
 	{
@@ -95,7 +96,7 @@ bool Shader::SendUniform(const std::string & name, glm::vec3 & vec)
 	glUniform3fv(m_map[name], 1, glm::value_ptr(vec));
 }
 
-bool Shader::SendUniform(const std::string & name, glm::mat4 & mat)
+void Shader::SendUniform(const std::string & name, glm::mat4 & mat)
 {
 	if (m_map[name] == -1)
 	{
@@ -116,6 +117,65 @@ int Shader::Init(const std::string & fileVS, const std::string & fileFS)
 		m_vs = LoadShaderFile(fileVS, GL_VERTEX_SHADER);
 		m_fs = LoadShaderFile(fileFS, GL_FRAGMENT_SHADER);
 		m_program = LoadProgram({ m_vs, m_fs });
+
+		//finding location of uniforms / attributes
+		m_map[ShaderStrings::POSITION_ATTRIBUTE] = glGetAttribLocation(m_program, ShaderStrings::POSITION_ATTRIBUTE.c_str());
+		m_map[ShaderStrings::COLOR_ATTRIBUTE] = glGetAttribLocation(m_program, ShaderStrings::COLOR_ATTRIBUTE.c_str());
+		m_map[ShaderStrings::NORMAL_ATTRIBUTE] = glGetAttribLocation(m_program, ShaderStrings::NORMAL_ATTRIBUTE.c_str());
+		m_map[ShaderStrings::BINORM_ATTRIBUTE] = glGetAttribLocation(m_program, ShaderStrings::BINORM_ATTRIBUTE.c_str());
+		m_map[ShaderStrings::TANGENT_ATTRIBUTE] = glGetAttribLocation(m_program, ShaderStrings::TANGENT_ATTRIBUTE.c_str());
+		m_map[ShaderStrings::UV_ATTRIBUTE] = glGetAttribLocation(m_program, ShaderStrings::UV_ATTRIBUTE.c_str());
+
+		m_map[ShaderStrings::UV_BLEND_ATTRIBUTE] = glGetAttribLocation(m_program, ShaderStrings::UV_BLEND_ATTRIBUTE.c_str());
+		m_map[ShaderStrings::HEIGHT_MAP_UNIFORM] = glGetUniformLocation(m_program, ShaderStrings::HEIGHT_MAP_UNIFORM.c_str());
+		m_map[ShaderStrings::MODEL_UNIFORM] = glGetUniformLocation(m_program, ShaderStrings::MODEL_UNIFORM.c_str());
+		m_map[ShaderStrings::VIEW_MODEL_UNIFORM] = glGetUniformLocation(m_program, ShaderStrings::VIEW_MODEL_UNIFORM.c_str());
+		m_map[ShaderStrings::NORMAL_MODEL_UNIFORM] = glGetUniformLocation(m_program, ShaderStrings::NORMAL_MODEL_UNIFORM.c_str());
+		m_map[ShaderStrings::COLOR_UNIFORM] = glGetUniformLocation(m_program, ShaderStrings::COLOR_UNIFORM.c_str());
+		m_map[ShaderStrings::MVP_UNIFORM] = glGetUniformLocation(m_program, ShaderStrings::MVP_UNIFORM.c_str());
+		m_map[ShaderStrings::TEXTURE_0_UNIFORM] = glGetUniformLocation(m_program, ShaderStrings::TEXTURE_0_UNIFORM.c_str());
+		m_map[ShaderStrings::TEXTURE_1_UNIFORM] = glGetUniformLocation(m_program, ShaderStrings::TEXTURE_1_UNIFORM.c_str());
+		m_map[ShaderStrings::TEXTURE_2_UNIFORM] = glGetUniformLocation(m_program, ShaderStrings::TEXTURE_2_UNIFORM.c_str());
+		m_map[ShaderStrings::TEXTURE_3_UNIFORM] = glGetUniformLocation(m_program, ShaderStrings::TEXTURE_3_UNIFORM.c_str());
+		m_map[ShaderStrings::TEXTURE_CUBE_UNIFORM] = glGetUniformLocation(m_program, ShaderStrings::TEXTURE_CUBE_UNIFORM.c_str());
+		m_map[ShaderStrings::TIME_UNIFORM] = glGetUniformLocation(m_program, ShaderStrings::TIME_UNIFORM.c_str());
+		m_map[ShaderStrings::DISPLACEMENT_MAP_UNIFORM] = glGetUniformLocation(m_program, ShaderStrings::DISPLACEMENT_MAP_UNIFORM.c_str());
+		m_map[ShaderStrings::FOG_ALPHA_UNIFORM] = glGetUniformLocation(m_program, ShaderStrings::FOG_ALPHA_UNIFORM.c_str());
+		m_map[ShaderStrings::FOG_COLOR_UNIFORM] = glGetUniformLocation(m_program, ShaderStrings::FOG_COLOR_UNIFORM.c_str());
+		m_map[ShaderStrings::LIGHT_AMBIENTAL_COLOR_UNIFORM] = glGetUniformLocation(m_program, ShaderStrings::LIGHT_AMBIENTAL_COLOR_UNIFORM.c_str());
+		m_map[ShaderStrings::LIGHT_AMBIENTAL_RATIO_UNIFORM] = glGetUniformLocation(m_program, ShaderStrings::LIGHT_AMBIENTAL_RATIO_UNIFORM.c_str());
+		m_map[ShaderStrings::LIGHT_COUNT_UNIFORM] = glGetUniformLocation(m_program, ShaderStrings::LIGHT_COUNT_UNIFORM.c_str());
+		m_map[ShaderStrings::FRAGMENT_OFFSET_X_UNIFORM] = glGetUniformLocation(m_program, ShaderStrings::FRAGMENT_OFFSET_X_UNIFORM.c_str());
+		m_map[ShaderStrings::FRAGMENT_OFFSET_Y_UNIFORM] = glGetUniformLocation(m_program, ShaderStrings::FRAGMENT_OFFSET_Y_UNIFORM.c_str());
+
+		m_map[ShaderStrings::LIGHT_SPACE_UNIFORM] = glGetUniformLocation(m_program, ShaderStrings::LIGHT_SPACE_UNIFORM.c_str());
+		m_map[ShaderStrings::CAMERA_POSITION_UNIFORM] = glGetUniformLocation(m_program, ShaderStrings::CAMERA_POSITION_UNIFORM.c_str());
+		m_map[ShaderStrings::TEXTURE_SHADOW_MAP_UNIFORM] = glGetUniformLocation(m_program, ShaderStrings::TEXTURE_SHADOW_MAP_UNIFORM.c_str());
+
+
+		//for (int i = 0; i < MAX_LIGHTS; ++i) {
+		//	std::string light_type = ArrayStructUniform(ShaderStrings::LIGHT_STRUCT_NAME_UNIFORM, ShaderStrings::LIGHT_STRUCT_TYPE_UNIFORM, i);
+		//	std::string light_pos = ArrayStructUniform(ShaderStrings::LIGHT_STRUCT_NAME_UNIFORM, ShaderStrings::LIGHT_STRUCT_POSITION_UNIFORM, i);
+		//	std::string light_attenuation = ArrayStructUniform(ShaderStrings::LIGHT_STRUCT_NAME_UNIFORM, ShaderStrings::LIGHT_STRUCT_ATTENUATION_UNIFORM, i);
+		//	std::string light_dir = ArrayStructUniform(ShaderStrings::LIGHT_STRUCT_NAME_UNIFORM, ShaderStrings::LIGHT_STRUCT_DIRECTION_UNIFORM, i);
+		//	std::string light_dif = ArrayStructUniform(ShaderStrings::LIGHT_STRUCT_NAME_UNIFORM, ShaderStrings::LIGHT_STRUCT_DIFFUSE_UNIFORM, i);
+		//	std::string light_dif_ratio = ArrayStructUniform(ShaderStrings::LIGHT_STRUCT_NAME_UNIFORM, ShaderStrings::LIGHT_STRUCT_DIFFUSE_RATIO_UNIFORM, i);
+		//	std::string light_spec = ArrayStructUniform(ShaderStrings::LIGHT_STRUCT_NAME_UNIFORM, ShaderStrings::LIGHT_STRUCT_SPECULAR_UNIFORM, i);
+		//	std::string light_spec_ratio = ArrayStructUniform(ShaderStrings::LIGHT_STRUCT_NAME_UNIFORM, ShaderStrings::LIGHT_STRUCT_SPECULAR_RATIO_UNIFORM, i);
+		//	std::string light_shininess = ArrayStructUniform(ShaderStrings::LIGHT_STRUCT_NAME_UNIFORM, ShaderStrings::LIGHT_STRUCT_SHININESS_UNIFORM, i);
+		//	std::string light_spot_angle = ArrayStructUniform(ShaderStrings::LIGHT_STRUCT_NAME_UNIFORM, ShaderStrings::LIGHT_STRUCT_CONE_ANGLE_UNIFORM, i);
+		//
+		//	m_map[light_type] = glGetUniformLocation(m_program, light_type.c_str());
+		//	m_map[light_pos] = glGetUniformLocation(m_program, light_pos.c_str());
+		//	m_map[light_attenuation] = glGetUniformLocation(m_program, light_attenuation.c_str());
+		//	m_map[light_dir] = glGetUniformLocation(m_program, light_dir.c_str());
+		//	m_map[light_dif] = glGetUniformLocation(m_program, light_dif.c_str());
+		//	m_map[light_dif_ratio] = glGetUniformLocation(m_program, light_dif_ratio.c_str());
+		//	m_map[light_spec] = glGetUniformLocation(m_program, light_spec.c_str());
+		//	m_map[light_spec_ratio] = glGetUniformLocation(m_program, light_spec_ratio.c_str());
+		//	m_map[light_shininess] = glGetUniformLocation(m_program, light_shininess.c_str());
+		//	m_map[light_spot_angle] = glGetUniformLocation(m_program, light_spot_angle.c_str());
+		//}
 	}
 	catch (const std::exception& e) {
 		std::cerr << "ERROR: " << e.what() << std::endl;

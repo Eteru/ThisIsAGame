@@ -3,9 +3,10 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "Vertex.h"
-//#include "SceneManager.h"
+#include "SceneManager.h"
 #include "SceneObject.h"
 #include "Strings.h"
+#include "Camera.h"
 
 
 SceneObject::SceneObject(glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, bool depth_test, std::string id)
@@ -73,6 +74,41 @@ void SceneObject::AddLightID(std::string id)
 
 void SceneObject::Init()
 {
+	if (nullptr == m_model)
+	{
+		throw std::runtime_error(std::string("Model is nullptr: ") + m_id);
+	}
+
+	if (nullptr == m_shader)
+	{
+		throw std::runtime_error(std::string("Shader is nullptr: ") + m_id);
+	}
+
+	m_model->Load();
+	m_shader->Load();
+
+	for (Texture * tex : m_textures)
+	{
+		if (nullptr == tex)
+		{
+			throw std::runtime_error(std::string("Texture is nullptr: ") + m_id);
+		}
+
+		tex->Load();
+	}
+
+	glBindVertexArray(m_model->GetVAO());
+
+	glBindBuffer(GL_ARRAY_BUFFER, m_model->GetVBO(Model::POSITION_VB));
+	m_shader->SendAttribute(ShaderStrings::POSITION_ATTRIBUTE, 3, 0, 0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, m_model->GetVBO(Model::UV_VB));
+	m_shader->SendAttribute(ShaderStrings::UV_ATTRIBUTE, 3, 0, 0);
+
+	//glBindBuffer(GL_ARRAY_BUFFER, m_model->GetVBO(Model::NORMAL_VB));
+	//m_shader->SendAttribute(ShaderStrings::NORMAL_ATTRIBUTE, 3, 0, 0);
+
+	glBindVertexArray(0);
 }
 
 void SceneObject::Update()
@@ -142,7 +178,7 @@ void SceneObject::SharedDrawElements(DrawType type)
 	//	s = m_shader;
 	//}
 
-	//Camera *cam = SceneManager::GetInstance()->GetActiveCamera();
+	Camera *cam = SceneManager::GetInstance()->GetActiveCamera();
 
 	for (size_t i = 0; i < m_textures.size(); ++i) {
 		glActiveTexture(GL_TEXTURE0 + i);
@@ -150,6 +186,7 @@ void SceneObject::SharedDrawElements(DrawType type)
 	
 		s->SendUniform(ShaderStrings::TEXTURE_UNIFORMS[i], static_cast<int>(i));
 	}
+
 
 	// shadowmap
 	//glActiveTexture(GL_TEXTURE0 + m_textures.size() + 1);
@@ -163,13 +200,21 @@ void SceneObject::SharedDrawElements(DrawType type)
 	//s->SendAttribute(ShaderStrings::TANGENT_ATTRIBUTE, 3, sizeof(Vertex), sizeof(glm::vec3) * 4);
 	//s->SendAttribute(ShaderStrings::UV_ATTRIBUTE, 2, sizeof(Vertex), sizeof(glm::vec3) * 5);
 	//s->SendAttribute(ShaderStrings::UV_BLEND_ATTRIBUTE, 2, sizeof(Vertex), sizeof(glm::vec3) * 5 + sizeof(glm::vec2));
-	
-	s->SendUniform(ShaderStrings::MODEL_UNIFORM, m_M);
-	//s->SendUniform(ShaderStrings::NORMAL_MODEL_UNIFORM, static_cast<glm::mat4>(glm::inverseTranspose(m_M)));
-	//s->SendUniform(ShaderStrings::VIEW_MODEL_UNIFORM, m_M * cam->GetView());
-	//s->SendUniform(ShaderStrings::MVP_UNIFORM, m_M * cam->GetView() * cam->GetProjection());
+
+	//s->SendUniform(ShaderStrings::MODEL_UNIFORM, m_M);
+
+	//glm::mat4 NM = glm::inverseTranspose(m_M);
+	//s->SendUniform(ShaderStrings::NORMAL_MODEL_UNIFORM, NM);
+
+	//glm::mat4 MV = cam->GetView() * m_M;
+	//s->SendUniform(ShaderStrings::VIEW_MODEL_UNIFORM, MV);
+
+	glm::mat4 MVP = cam->GetProjection() * cam->GetView() * m_M;
+	s->SendUniform(ShaderStrings::MVP_UNIFORM, MVP);
+
 	//s->SendUniform(ShaderStrings::LIGHT_SPACE_UNIFORM, SceneManager::GetInstance()->GetShadowMap()->GetLightSpaceglm::mat4());
-	//s->SendUniform(ShaderStrings::CAMERA_POSITION_UNIFORM, cam->GetPosition());
+	//glm::vec3 pos = cam->GetPosition();
+	//s->SendUniform(ShaderStrings::CAMERA_POSITION_UNIFORM, pos);
 
 	//{ // Fog
 	//	const Fog fog = SceneManager::GetInstance()->GetFog();
@@ -263,11 +308,11 @@ void SceneObject::SharedDrawElements(DrawType type)
 void SceneObject::GeneralUpdate()
 {
 	m_M = glm::mat4(1.f);
-	//m_M = glm::scale(m_M, m_scale);
-	//m_M = glm::rotate(m_M, m_rotation.x, glm::vec3(1.f, 0.f, 0.f));
-	//m_M = glm::rotate(m_M, m_rotation.y, glm::vec3(0.f, 1.f, 0.f));
-	//m_M = glm::rotate(m_M, m_rotation.z, glm::vec3(0.f, 0.f, 1.f));
-	//m_M = glm::translate(m_M, m_position);
+	m_M = glm::scale(m_M, m_scale);
+	m_M = glm::translate(m_M, m_position);
+	m_M = glm::rotate(m_M, m_rotation.x, glm::vec3(1.f, 0.f, 0.f));
+	m_M = glm::rotate(m_M, m_rotation.y, glm::vec3(0.f, 1.f, 0.f));
+	m_M = glm::rotate(m_M, m_rotation.z, glm::vec3(0.f, 0.f, 1.f));
 	
 	/*m_M = glm::mat4().SetScale(m_scale) *
 		(glm::mat4().SetRotationX(m_rotation.x) *

@@ -13,15 +13,15 @@ class IndexedModel;
 class Model
 {
 public:
-	enum BUFFER_TYPE { POSITION_VB = 0, TEXCOORD_VB, NORMAL_VB, INDEX_VB, NUM_BUFFERS };
+	enum BUFFER_TYPE { POSITION_VB = 0, UV_VB, NORMAL_VB, INDEX_VB, UV_BLEND_VB, NUM_BUFFERS };
 
 	Model();
 	Model(ModelResource *mr);
-	Model(std::vector<glm::vec3> & verts, std::vector<glm::vec3> & colors);
 
 	~Model();
 
 	void Load();
+	void InitMesh(const IndexedModel & model);
 
 	inline bool IsLoaded()
 	{
@@ -73,7 +73,6 @@ private:
 
 	std::vector<Vertex> m_vertices;
 
-	void InitMesh(const IndexedModel & model);
 	std::vector<glm::vec3> GenerateGridSquare(int col, int row, uint32_t cell_size, float offset_y);
 	void StoreDefaultVertex(glm::vec3 pos, glm::vec3 normal, glm::vec2 uv, size_t index, uint32_t verts_per_line);
 };

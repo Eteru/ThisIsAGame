@@ -22,6 +22,8 @@ public:
 	std::vector<glm::vec3> normals;
 	std::vector<unsigned int> indices;
 
+	IndexedModel() {};
+
 	void CalcNormals();
 };
 

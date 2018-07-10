@@ -17,7 +17,8 @@ float HeightsGenerator::GenerateHeight(int x, int z)
 	float total = 0.f;
 	float d = std::pow(2.f, OCTAVES - 1);
 
-	for (int i = 0; i < OCTAVES; ++i) {
+	for (int i = 0; i < OCTAVES; ++i)
+	{
 		float freq = std::pow(2.f, i) / d;
 		float amp = std::pow(ROUGHNESS, i) * AMPLITUDE;
 
@@ -26,15 +27,15 @@ float HeightsGenerator::GenerateHeight(int x, int z)
 
 	return total;
 }
-//#include <iostream>
+
 float HeightsGenerator::GetNoise(int x, int z)
 {
 	std::pair<int, int> p = std::make_pair(x, z);
-	if (m_noise_map.find(p) == m_noise_map.end()) {
+	if (m_noise_map.find(p) == m_noise_map.end())
+	{
 		m_noise_map[p] = GenerateRandomFloat();
 	}
 
-	//std::cout << m_noise_map[p] << std::endl;
 	return m_noise_map[p];
 }
 

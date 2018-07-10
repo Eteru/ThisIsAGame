@@ -24,8 +24,8 @@ void main()
 {
 	vec4 posL = u_matrix * vec4(in_posL, 1.0);
 	
-	//mat3 nm3 = mat3(u_nm);
-	//v_normal = normalize(nm3 * in_normal);
+	mat3 nm3 = mat3(u_nm);
+	v_normal = normalize(nm3 * in_normal);
 	//v_binorm = normalize(nm3 * in_binorm);
 	//v_tangent = normalize(nm3 * in_tangent);
 

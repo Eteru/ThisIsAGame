@@ -41,8 +41,6 @@ void Model::Load()
 	IndexedModel model = OBJModel(m_mr->model_path).ToIndexedModel();
 
 	InitMesh(model);
-
-	m_loaded = true;
 }
 
 void Model::InitMesh(const IndexedModel & model)
@@ -56,18 +54,12 @@ void Model::InitMesh(const IndexedModel & model)
 
 	glBindBuffer(GL_ARRAY_BUFFER, m_vbo[POSITION_VB]);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(model.positions[0]) * model.positions.size(), &model.positions[0], GL_STATIC_DRAW);
-	glEnableVertexAttribArray(POSITION_VB);
-	glVertexAttribPointer(POSITION_VB, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
-	glBindBuffer(GL_ARRAY_BUFFER, m_vbo[TEXCOORD_VB]);
+	glBindBuffer(GL_ARRAY_BUFFER, m_vbo[UV_VB]);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(model.texCoords[0]) * model.texCoords.size(), &model.texCoords[0], GL_STATIC_DRAW);
-	glEnableVertexAttribArray(TEXCOORD_VB);
-	glVertexAttribPointer(TEXCOORD_VB, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
 	glBindBuffer(GL_ARRAY_BUFFER, m_vbo[NORMAL_VB]);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(model.normals[0]) * model.normals.size(), &model.normals[0], GL_STATIC_DRAW);
-	glEnableVertexAttribArray(NORMAL_VB);
-	glVertexAttribPointer(NORMAL_VB, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_vbo[INDEX_VB]);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(model.indices[0]) * model.indices.size(), &model.indices[0], GL_STATIC_DRAW);
@@ -87,6 +79,8 @@ void Model::InitMesh(const IndexedModel & model)
 		m_bb.bb_max.y = std::max(m_bb.bb_max.y, vertex.y);
 		m_bb.bb_max.z = std::max(m_bb.bb_max.z, vertex.z);
 	}
+
+	m_loaded = true;
 }
 
 std::vector<glm::vec3> Model::GenerateGridSquare(int col, int row, uint32_t cell_size, float offset_y)

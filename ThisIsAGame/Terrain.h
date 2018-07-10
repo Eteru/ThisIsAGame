@@ -2,6 +2,9 @@
 
 #include "Vertex.h"
 #include "SceneObject.h"
+#include "HeightsGenerator.h"
+
+class IndexedModel;
 
 class Terrain :
 	public SceneObject
@@ -36,6 +39,12 @@ protected:
 	uint32_t m_block_size;
 
 	glm::vec3 m_heights;
-	std::vector<Vertex> m_vertices;
+	std::vector<glm::vec2> m_uv_blend;
+
+	HeightsGenerator m_hg;
+
+	std::vector<glm::vec3> GenerateGridSquare(int col, int row, uint32_t cell_size, float offset_y);
+	void GenerateFlatModel(uint32_t blockSize, uint32_t cellSize, float offsetY);
+	void StoreDefaultVertex(IndexedModel & im, glm::vec3 pos, glm::vec3 normal, glm::vec2 uv, size_t index, uint32_t verts_per_line);
 };
 

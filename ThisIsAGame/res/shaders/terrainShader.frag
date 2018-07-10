@@ -1,4 +1,3 @@
-precision mediump float;
 
 varying vec3 v_normal;
 varying vec3 v_pos;
@@ -24,7 +23,7 @@ uniform struct Fog
 
 // lights count
 #define MAX_LIGHTS 20
-uniform highp int u_lights_count;
+uniform int u_lights_count;
 
 // ambiental light
 uniform struct AmbientLight
@@ -35,7 +34,7 @@ uniform struct AmbientLight
 
 uniform struct Light
 {
-	highp vec3 type;
+	vec3 type;
 	float attenuation;
 
 	vec3 pos;
@@ -129,17 +128,17 @@ void main()
 	vec4 c_final = c_A.r * c_1 + c_A.g * c_2 + c_A.b * c_3;
 	c_final.a = 1.0;
 
-	vec3 e = normalize(u_camera_pos - v_pos);
-	vec3 n = normalize(v_normal);
-	
-	vec3 light_col = vec3(0.0);
-	light_col += ApplyLight(u_lights[0], c_final.rgb, n, e);
-	light_col += ApplyLight(u_lights[1], c_final.rgb, n, e);
-	light_col += ApplyLight(u_lights[2], c_final.rgb, n, e);
+	//vec3 e = normalize(u_camera_pos - v_pos);
+	//vec3 n = normalize(v_normal);
+	//
+	//vec3 light_col = vec3(0.0);
+	//light_col += ApplyLight(u_lights[0], c_final.rgb, n, e);
+	//light_col += ApplyLight(u_lights[1], c_final.rgb, n, e);
+	//light_col += ApplyLight(u_lights[2], c_final.rgb, n, e);
+	//
+	////final color (after gamma correction)
+    //vec3 gamma = vec3(1.0 / 2.2);
+	//light_col = pow(light_col, gamma);
 
-	//final color (after gamma correction)
-    vec3 gamma = vec3(1.0 / 2.2);
-	light_col = pow(light_col, gamma);
-
-	gl_FragColor = vec4(ApplyFog(light_col), c_final.a);
+	gl_FragColor = c_final;
 }
