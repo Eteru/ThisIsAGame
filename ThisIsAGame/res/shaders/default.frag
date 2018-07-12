@@ -16,7 +16,7 @@ struct AmbientLight
 
 struct Light
 {
-	highp vec3 type;
+	vec3 type;
 	float attenuation;
 
 	vec3 pos;
@@ -46,7 +46,7 @@ in vec3 in_camera_pos;
 
 // lights count
 #define MAX_LIGHTS 20
-in highp int in_lights_count;
+uniform int u_lights_count;
 
 uniform sampler2D u_texture_0;
 uniform sampler2D u_texture_1;
@@ -141,21 +141,20 @@ void main()
 		discard;
 	}
 
-	out_frag_color = tex;
-
-	//vec3 e = normalize(in_camera_pos - v_pos);
-	//vec3 n = normalize(v_normal + ApplyNormalMap());
-	//
+	vec3 e = normalize(in_camera_pos - v_pos);
+	vec3 n = normalize(v_normal + ApplyNormalMap());
+	
 	//tex = ApplySkyboxReflection(tex, n, e);
-	//
-	//vec3 light_col = vec3(0.0);
-	//
-	//light_col += ApplyLight(u_lights[0], tex.rgb, n, e);
-	//light_col += ApplyLight(u_lights[1], tex.rgb, n, e);
-	//
-	////final color (after gamma correction)
-    //vec3 gamma = vec3(1.0 / 2.2);
-	//light_col = pow(light_col, gamma);
-	//
+	
+	vec3 light_col = vec3(0.0);
+	
+	light_col += ApplyLight(u_lights[0], tex.rgb, n, e);
+	light_col += ApplyLight(u_lights[1], tex.rgb, n, e);
+	
+	//final color (after gamma correction)
+    vec3 gamma = vec3(1.0 / 2.2);
+	light_col = pow(light_col, gamma);
+	
+	out_frag_color = vec4(light_col, 1.0);
 	//out_frag_color = vec4(ApplyFog(light_col), 1.0);
 }

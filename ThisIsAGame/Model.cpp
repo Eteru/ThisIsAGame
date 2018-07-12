@@ -82,24 +82,3 @@ void Model::InitMesh(const IndexedModel & model)
 
 	m_loaded = true;
 }
-
-std::vector<glm::vec3> Model::GenerateGridSquare(int col, int row, uint32_t cell_size, float offset_y)
-{
-	std::vector<glm::vec3> verts(4);
-
-	verts[0] = glm::vec3(col, offset_y + m_hg.GenerateHeight(col, row), row);
-	verts[1] = glm::vec3(col, offset_y + m_hg.GenerateHeight(col, row + 1), row + 1);
-	verts[2] = glm::vec3(col + 1, offset_y + m_hg.GenerateHeight(col + 1, row), row);
-	verts[3] = glm::vec3(col + 1, offset_y + m_hg.GenerateHeight(col + 1, row + 1), row + 1);
-
-	return verts;
-}
-
-void Model::StoreDefaultVertex(glm::vec3 pos, glm::vec3 normal, glm::vec2 uv, size_t index, uint32_t verts_per_line)
-{
-	m_vertices[index].pos = pos;
-	m_vertices[index].normal = normal;
-	m_vertices[index].color = glm::vec3(1, 1, 1);
-	m_vertices[index].uv = uv;
-	m_vertices[index].uv_blend = glm::vec2(static_cast<float>(uv.x) / verts_per_line, static_cast<float>(uv.y) / verts_per_line);
-}

@@ -4,8 +4,6 @@
 #include <string>
 #include <vector>
 
-#include "Vertex.h"
-#include "HeightsGenerator.h"
 #include "Structs.h"
 
 class IndexedModel;
@@ -53,10 +51,10 @@ public:
 		return m_bb;
 	}
 
-	inline const std::vector<Vertex> & GetVertices() const
-	{
-		return m_vertices;
-	}
+	//inline const std::vector<Vertex> & GetVertices() const
+	//{
+	//	return m_vertices;
+	//}
 
 private:
 
@@ -69,10 +67,6 @@ private:
 
 	BoundingBox m_bb;
 	ModelResource *m_mr;
-	HeightsGenerator m_hg;
 
-	std::vector<Vertex> m_vertices;
-
-	std::vector<glm::vec3> GenerateGridSquare(int col, int row, uint32_t cell_size, float offset_y);
-	void StoreDefaultVertex(glm::vec3 pos, glm::vec3 normal, glm::vec2 uv, size_t index, uint32_t verts_per_line);
+	//std::vector<Vertex> m_vertices;
 };

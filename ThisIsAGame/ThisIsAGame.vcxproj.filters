@@ -63,6 +63,15 @@
     <ClCompile Include="ResourceManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="AmbientalLight.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LightSource.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SkyBox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Strings.h">
@@ -116,9 +125,21 @@
     <ClInclude Include="ResourceManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="AmbientalLight.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LightSource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SkyBox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Object Include="res\models\sphere.obj">
+      <Filter>Resource Files</Filter>
+    </Object>
+    <Object Include="res\models\cube.obj">
       <Filter>Resource Files</Filter>
     </Object>
   </ItemGroup>
@@ -137,10 +158,16 @@
     <None Include="res\shaders\default.vert">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="res\shaders\terrainShader.frag">
+    <None Include="res\shaders\terrain.frag">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="res\shaders\terrainShader.vert">
+    <None Include="res\shaders\terrain.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="res\shaders\skybox.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="res\shaders\skybox.vert">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

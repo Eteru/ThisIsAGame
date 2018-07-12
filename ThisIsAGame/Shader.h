@@ -28,13 +28,13 @@ public:
 	GLint Attrib(const GLchar* attribName) const;
 	GLint Uniform(const GLchar* uniformName) const;
 
-	void SendAttribute(const std::string & name, uint32_t size, uint32_t stride, uint32_t offset);
+	bool SendAttribute(const std::string & name, uint32_t size, uint32_t stride, uint32_t offset);
 
-	void SendUniform(const std::string & name, int n);
-	void SendUniform(const std::string & name, float f);
-	void SendUniform(const std::string & name, glm::vec2 & vec);
-	void SendUniform(const std::string & name, glm::vec3 & vec);
-	void SendUniform(const std::string & name, glm::mat4 & mat);
+	bool SendUniform(const std::string & name, int n);
+	bool SendUniform(const std::string & name, float f);
+	bool SendUniform(const std::string & name, glm::vec2 & vec);
+	bool SendUniform(const std::string & name, glm::vec3 & vec);
+	bool SendUniform(const std::string & name, glm::mat4 & mat);
 
 	std::string CreateStructArrayName(const std::string & str_name, const std::string & member_name, size_t index) const;
 

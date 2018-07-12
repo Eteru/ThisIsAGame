@@ -1,69 +1,73 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resourceManager>
+  
 	<models>
 		<model id="1">
 			<path>./res/models/sphere.obj</path>
 		</model>
-		<!-- si aici se adauga toate modelele -->
+    <model id="2">
+      <path>./res/models/cube.obj</path>
+    </model>
 	</models>
+  
 	<shaders>
-	<shader id="1">
-			<vs>./res/shaders/terrainShader.vert</vs>
-			<fs>./res/shaders/terrainShader.frag</fs>
-	</shader>
-	<shader id="2">
-		<vs>./res/shaders/SkyBoxShader.vert</vs>
-		<fs>./res/shaders/SkyBoxShader.frag</fs>
-	</shader>
-	<shader id="3">
-		<vs>./res/shaders/ObjShaderVS.vert</vs>
-		<fs>./res/shaders/ObjShaderFS.frag</fs>
-	</shader>
-  <shader id="4">
-    <vs>./res/shaders/fireShaderVS.vert</vs>
-    <fs>./res/shaders/fireShaderFS.frag</fs>
-  </shader>
-  <shader id="5">
-    <vs>./res/shaders/DebugShader.vert</vs>
-    <fs>./res/shaders/DebugShader.frag</fs>
-  </shader>
-  <shader id="6">
-    <vs>./res/shaders/DebugShaderAxis.vert</vs>
-    <fs>./res/shaders/DebugShaderAxis.frag</fs>
-  </shader>
-  <shader id="7">
-    <vs>./res/shaders/DefaultPostShader.vert</vs>
-    <fs>./res/shaders/BlurShader.frag</fs>
-  </shader>
-  <shader id="8">
-    <vs>./res/shaders/DefaultPostShader.vert</vs>
-    <fs>./res/shaders/SharpenShader.frag</fs>
-  </shader>
-  <shader id="9">
-    <vs>./res/shaders/DefaultPostShader.vert</vs>
-    <fs>./res/shaders/GrayscaleShader.frag</fs>
-  </shader>
-  <shader id="10">
-    <vs>./res/shaders/DefaultPostShader.vert</vs>
-    <fs>./res/shaders/ThresholdShader.frag</fs>
-  </shader>
-  <shader id="11">
-    <vs>./res/shaders/DefaultPostShader.vert</vs>
-    <fs>./res/shaders/CombinetexturesShader.frag</fs>
-  </shader>
-  <shader id="12">
-    <vs>./res/shaders/ShadowDepthShader.vert</vs>
-    <fs>./res/shaders/ShadowDepthShader.frag</fs>
-  </shader>
-  <shader id="13">
-    <vs>./res/shaders/default.vert</vs>
-    <fs>./res/shaders/default.frag</fs>
-  </shader>
-	<!-- si aici se adauga toate shaderele -->
+	  <shader id="1">
+			  <vs>./res/shaders/terrain.vert</vs>
+			  <fs>./res/shaders/terrain.frag</fs>
+	  </shader>
+	  <shader id="2">
+		  <vs>./res/shaders/skybox.vert</vs>
+		  <fs>./res/shaders/skybox.frag</fs>
+	  </shader>
+	  <shader id="3">
+		  <vs>./res/shaders/ObjShaderVS.vert</vs>
+		  <fs>./res/shaders/ObjShaderFS.frag</fs>
+	  </shader>
+    <shader id="4">
+      <vs>./res/shaders/fireShaderVS.vert</vs>
+      <fs>./res/shaders/fireShaderFS.frag</fs>
+    </shader>
+    <shader id="5">
+      <vs>./res/shaders/DebugShader.vert</vs>
+      <fs>./res/shaders/DebugShader.frag</fs>
+    </shader>
+    <shader id="6">
+      <vs>./res/shaders/DebugShaderAxis.vert</vs>
+      <fs>./res/shaders/DebugShaderAxis.frag</fs>
+    </shader>
+    <shader id="7">
+      <vs>./res/shaders/DefaultPostShader.vert</vs>
+      <fs>./res/shaders/BlurShader.frag</fs>
+    </shader>
+    <shader id="8">
+      <vs>./res/shaders/DefaultPostShader.vert</vs>
+      <fs>./res/shaders/SharpenShader.frag</fs>
+    </shader>
+    <shader id="9">
+      <vs>./res/shaders/DefaultPostShader.vert</vs>
+      <fs>./res/shaders/GrayscaleShader.frag</fs>
+    </shader>
+    <shader id="10">
+      <vs>./res/shaders/DefaultPostShader.vert</vs>
+      <fs>./res/shaders/ThresholdShader.frag</fs>
+    </shader>
+    <shader id="11">
+      <vs>./res/shaders/DefaultPostShader.vert</vs>
+      <fs>./res/shaders/CombinetexturesShader.frag</fs>
+    </shader>
+    <shader id="12">
+      <vs>./res/shaders/ShadowDepthShader.vert</vs>
+      <fs>./res/shaders/ShadowDepthShader.frag</fs>
+    </shader>
+    <shader id="13">
+      <vs>./res/shaders/default.vert</vs>
+      <fs>./res/shaders/default.frag</fs>
+    </shader>
 	</shaders>
+  
 	<textures>
 		<texture id="1" type="2d">
-			<path>./res/textures/Bus.tga</path>
+			<path>./res/textures/Rock.tga</path>
 			<min_filter>LINEAR</min_filter>
 			<mag_filter>LINEAR</mag_filter>
 			<wrap_s>REPEAT</wrap_s>
@@ -146,8 +150,8 @@
 			<wrap_s>CLAMP_TO_EDGE</wrap_s>
 			<wrap_t>CLAMP_TO_EDGE</wrap_t>
 		</texture>
-		<!-- si aici se adauga toate texturile -->
 	</textures>
+  
   <sounds>
     <sound id="1">
       <path>./res/sounds/footstep.wav</path>
@@ -155,6 +159,6 @@
     <sound id="2">
       <path>./res/sounds/ambient.wav</path>
     </sound>
-    <!-- si aici se adauga toate modelele -->
   </sounds>
+  
 </resourceManager>

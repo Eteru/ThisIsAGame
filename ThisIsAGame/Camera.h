@@ -27,6 +27,11 @@ public:
 		return m_position;
 	}
 
+	inline glm::vec3 GetFront() const
+	{
+		return m_front;
+	}
+
 	void Move(CameraMovement movement, float dt);
 	void MouseMove(float xoffset, float yoffset, GLboolean constrainPitch = true);
 

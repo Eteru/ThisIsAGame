@@ -1,7 +1,7 @@
 
 #include "SkyBox.h"
 #include "SceneManager.h"
-
+#include "Strings.h"
 
 SkyBox::SkyBox(glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, std::string id,
 	float offset, float size)
@@ -15,6 +15,29 @@ SkyBox::~SkyBox()
 
 void SkyBox::Init()
 {
+	if (nullptr == m_model)
+	{
+		throw std::runtime_error(std::string("Model is nullptr: ") + m_id);
+	}
+
+	if (nullptr == m_shader)
+	{
+		throw std::runtime_error(std::string("Shader is nullptr: ") + m_id);
+	}
+
+	m_model->Load();
+	m_shader->Load();
+
+	for (Texture * tex : m_textures)
+	{
+		if (nullptr == tex)
+		{
+			throw std::runtime_error(std::string("Texture is nullptr: ") + m_id);
+		}
+
+		tex->Load();
+	}
+
 	m_scale = glm::vec3(m_size, m_size, m_size);
 	// Center skybox to camera position
 	Camera *cam = SceneManager::GetInstance()->GetActiveCamera();
@@ -22,6 +45,19 @@ void SkyBox::Init()
 	m_position.x = camera_pos.x - m_half_size;
 	m_position.y = camera_pos.y - m_half_size + m_offsetY;
 	m_position.z = camera_pos.z - m_half_size;
+
+	glBindVertexArray(m_model->GetVAO());
+
+	glBindBuffer(GL_ARRAY_BUFFER, m_model->GetVBO(Model::POSITION_VB));
+	m_shader->SendAttribute(ShaderStrings::POSITION_ATTRIBUTE, 3, 0, 0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, m_model->GetVBO(Model::UV_VB));
+	m_shader->SendAttribute(ShaderStrings::UV_ATTRIBUTE, 3, 0, 0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, m_model->GetVBO(Model::NORMAL_VB));
+	m_shader->SendAttribute(ShaderStrings::NORMAL_ATTRIBUTE, 3, 0, 0);
+
+	glBindVertexArray(0);
 }
 
 void SkyBox::Update()
@@ -37,19 +73,24 @@ void SkyBox::Update()
 
 void SkyBox::Draw(DrawType type)
 {
+	// bind the program
 	glUseProgram(m_shader->GetProgramID());
+	// bind the VAO
+	glBindVertexArray(m_model->GetVAO());
 
-	glBindBuffer(GL_ARRAY_BUFFER, m_model->GetVBO());
+	int tex_loc = m_textures.size();
+	glActiveTexture(GL_TEXTURE0 + tex_loc);
+	glBindTexture(m_textures[0]->GetTextureType(), m_textures[0]->GetID());
 
-	if (type == DEBUG)
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_model->GetIBO(true));
-	else
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_model->GetIBO(false));
+	m_shader->SendUniform(ShaderStrings::TEXTURE_CUBE_UNIFORM, tex_loc);
 	
 	SharedDrawElements(type);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	// unbind the VAO
+	glBindVertexArray(0);
+
+	// unbind the program
+	glUseProgram(0);
 }
 
 bool SkyBox::Collides(SceneObject * obj)

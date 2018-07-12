@@ -8,8 +8,8 @@
 #include "SceneObject.h"
 #include "Camera.h"
 //#include "Fog.h"
-//#include "AmbientalLight.h"
-//#include "LightSource.h"
+#include "AmbientalLight.h"
+#include "LightSource.h"
 //#include "ShadowMap.h"
 //#include "TargetSpawner.h"
 
@@ -32,24 +32,24 @@ public:
 	//	return m_fog;
 	//}
 
-	//inline const AmbientalLight & GetAmbientalLight() const
-	//{
-	//	return m_ambiental_light;
-	//}
-	//
-	//inline const std::map<std::string, LightSource *> & GetLights() const
-	//{
-	//	return m_lights;
-	//}
-	//
-	//inline LightSource *GetLightSource(std::string id)
-	//{
-	//	if (m_lights.find(id) == m_lights.end()) {
-	//		return nullptr;
-	//	}
-	//
-	//	return m_lights[id];
-	//}
+	inline const AmbientalLight & GetAmbientalLight()
+	{
+		return m_ambiental_light;
+	}
+	
+	inline const std::map<std::string, LightSource *> & GetLights() const
+	{
+		return m_lights;
+	}
+	
+	inline LightSource *GetLightSource(std::string id)
+	{
+		if (m_lights.find(id) == m_lights.end()) {
+			return nullptr;
+		}
+	
+		return m_lights[id];
+	}
 
 	inline Camera *GetActiveCamera()
 	{
@@ -89,12 +89,12 @@ private:
 	glm::vec3 m_background_color;
 	std::map<std::string, Camera *> m_cameras;
 	std::map<std::string, SceneObject *> m_objects;
-	//std::map<std::string, LightSource *> m_lights;
+	std::map<std::string, LightSource *> m_lights;
 	//std::map<std::string, Sound *> m_sounds;
 	std::string m_active_camera;
 
 	//Fog m_fog;
-	//AmbientalLight m_ambiental_light;
+	AmbientalLight m_ambiental_light;
 	//DebugSettings m_debug_settings;
 	//ShadowMap *m_shadow_map;
 	//TargetSpawner *m_target_spawner;

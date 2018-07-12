@@ -105,8 +105,8 @@ void SceneObject::Init()
 	glBindBuffer(GL_ARRAY_BUFFER, m_model->GetVBO(Model::UV_VB));
 	m_shader->SendAttribute(ShaderStrings::UV_ATTRIBUTE, 3, 0, 0);
 
-	//glBindBuffer(GL_ARRAY_BUFFER, m_model->GetVBO(Model::NORMAL_VB));
-	//m_shader->SendAttribute(ShaderStrings::NORMAL_ATTRIBUTE, 3, 0, 0);
+	glBindBuffer(GL_ARRAY_BUFFER, m_model->GetVBO(Model::NORMAL_VB));
+	m_shader->SendAttribute(ShaderStrings::NORMAL_ATTRIBUTE, 3, 0, 0);
 
 	glBindVertexArray(0);
 }
@@ -193,28 +193,20 @@ void SceneObject::SharedDrawElements(DrawType type)
 	//glBindTexture(GL_TEXTURE_2D, SceneManager::GetInstance()->GetShadowMap()->GetTexture());
 	//s->SendUniform(ShaderStrings::TEXTURE_SHADOW_MAP_UNIFORM, static_cast<int>(m_textures.size() + 1));
 
-	//s->SendAttribute(ShaderStrings::POSITION_ATTRIBUTE, 3, sizeof(Vertex), 0);
-	//s->SendAttribute(ShaderStrings::COLOR_ATTRIBUTE, 3, sizeof(Vertex), sizeof(glm::vec3));
-	//s->SendAttribute(ShaderStrings::NORMAL_ATTRIBUTE, 3, sizeof(Vertex), sizeof(glm::vec3) * 2);
-	//s->SendAttribute(ShaderStrings::BINORM_ATTRIBUTE, 3, sizeof(Vertex), sizeof(glm::vec3) * 3);
-	//s->SendAttribute(ShaderStrings::TANGENT_ATTRIBUTE, 3, sizeof(Vertex), sizeof(glm::vec3) * 4);
-	//s->SendAttribute(ShaderStrings::UV_ATTRIBUTE, 2, sizeof(Vertex), sizeof(glm::vec3) * 5);
-	//s->SendAttribute(ShaderStrings::UV_BLEND_ATTRIBUTE, 2, sizeof(Vertex), sizeof(glm::vec3) * 5 + sizeof(glm::vec2));
+	s->SendUniform(ShaderStrings::MODEL_UNIFORM, m_M);
 
-	//s->SendUniform(ShaderStrings::MODEL_UNIFORM, m_M);
+	glm::mat4 NM = glm::inverseTranspose(m_M);
+	s->SendUniform(ShaderStrings::NORMAL_MODEL_UNIFORM, NM);
 
-	//glm::mat4 NM = glm::inverseTranspose(m_M);
-	//s->SendUniform(ShaderStrings::NORMAL_MODEL_UNIFORM, NM);
-
-	//glm::mat4 MV = cam->GetView() * m_M;
-	//s->SendUniform(ShaderStrings::VIEW_MODEL_UNIFORM, MV);
+	glm::mat4 MV = cam->GetView() * m_M;
+	s->SendUniform(ShaderStrings::VIEW_MODEL_UNIFORM, MV);
 
 	glm::mat4 MVP = cam->GetProjection() * cam->GetView() * m_M;
 	s->SendUniform(ShaderStrings::MVP_UNIFORM, MVP);
 
 	//s->SendUniform(ShaderStrings::LIGHT_SPACE_UNIFORM, SceneManager::GetInstance()->GetShadowMap()->GetLightSpaceglm::mat4());
-	//glm::vec3 pos = cam->GetPosition();
-	//s->SendUniform(ShaderStrings::CAMERA_POSITION_UNIFORM, pos);
+	glm::vec3 pos = cam->GetPosition();
+	s->SendUniform(ShaderStrings::CAMERA_POSITION_UNIFORM, pos);
 
 	//{ // Fog
 	//	const Fog fog = SceneManager::GetInstance()->GetFog();
@@ -224,74 +216,77 @@ void SceneObject::SharedDrawElements(DrawType type)
 	//	s->SendUniform(ShaderStrings::FOG_COLOR_UNIFORM, fog.GetColor());
 	//}
 	//
-	//{ // Lights
-	//	const std::map<std::string, LightSource *> lights = SceneManager::GetInstance()->GetLights();
-	//	const AmbientalLight amb_light = SceneManager::GetInstance()->GetAmbientalLight();
-	//
-	//	s->SendUniform(ShaderStrings::LIGHT_AMBIENTAL_COLOR_UNIFORM, amb_light.GetColor());
-	//	s->SendUniform(ShaderStrings::LIGHT_AMBIENTAL_RATIO_UNIFORM, amb_light.GetRatio());
-	//
-	//	s->SendUniform(ShaderStrings::LIGHT_COUNT_UNIFORM, static_cast<int>(lights.size()));
-	//
-	//	uint16_t count = 0;
-	//	for (auto & ls : lights) {
-	//		if (nullptr != ls.second) {
-	//			LightSource::LightType type = ls.second->GetType();
-	//			glm::vec3 vec_l_type;
-	//
-	//			switch (type)
-	//			{
-	//			case LightSource::POINT_LIGHT:
-	//				vec_l_type = glm::vec3(1, 0, 0);
-	//				break;
-	//			case LightSource::DIRECTIONAL_LIGHT:
-	//				vec_l_type = glm::vec3(0, 1, 0);
-	//				break;
-	//			case LightSource::SPOT_LIGHT:
-	//				vec_l_type = glm::vec3(0, 0, 1);
-	//				break;
-	//			default:
-	//				vec_l_type = glm::vec3(1, 0, 0);
-	//				break;
-	//			}
-	//
-	//			s->SendUniform(s->CreateStructArrayName(ShaderStrings::LIGHT_STRUCT_NAME_UNIFORM, ShaderStrings::LIGHT_STRUCT_TYPE_UNIFORM, count),
-	//				vec_l_type);
-	//
-	//			glm::vec3 pos = (LightSource::SPOT_LIGHT == type) ? cam->GetPosition() : ls.second->GetPosition();
-	//			s->SendUniform(s->CreateStructArrayName(ShaderStrings::LIGHT_STRUCT_NAME_UNIFORM, ShaderStrings::LIGHT_STRUCT_POSITION_UNIFORM, count),
-	//				pos);
-	//			
-	//			s->SendUniform(s->CreateStructArrayName(ShaderStrings::LIGHT_STRUCT_NAME_UNIFORM, ShaderStrings::LIGHT_STRUCT_ATTENUATION_UNIFORM, count),
-	//				0.f);
-	//
-	//			glm::vec3 dir = (LightSource::SPOT_LIGHT == type) ? (cam->GetTarget() - cam->GetPosition()) : ls.second->GetDirection();
-	//			
-	//			s->SendUniform(s->CreateStructArrayName(ShaderStrings::LIGHT_STRUCT_NAME_UNIFORM, ShaderStrings::LIGHT_STRUCT_DIRECTION_UNIFORM, count),
-	//				dir);
-	//
-	//			s->SendUniform(s->CreateStructArrayName(ShaderStrings::LIGHT_STRUCT_NAME_UNIFORM, ShaderStrings::LIGHT_STRUCT_SPECULAR_UNIFORM, count),
-	//				ls.second->GetSpecularLight());
-	//
-	//			s->SendUniform(s->CreateStructArrayName(ShaderStrings::LIGHT_STRUCT_NAME_UNIFORM, ShaderStrings::LIGHT_STRUCT_SPECULAR_RATIO_UNIFORM, count),
-	//				ls.second->GetSpecularCoefficient());
-	//
-	//			s->SendUniform(s->CreateStructArrayName(ShaderStrings::LIGHT_STRUCT_NAME_UNIFORM, ShaderStrings::LIGHT_STRUCT_SHININESS_UNIFORM, count),
-	//				ls.second->GetShininess());
-	//
-	//			s->SendUniform(s->CreateStructArrayName(ShaderStrings::LIGHT_STRUCT_NAME_UNIFORM, ShaderStrings::LIGHT_STRUCT_DIFFUSE_UNIFORM, count),
-	//				ls.second->GetDiffuseLight());
-	//
-	//			s->SendUniform(s->CreateStructArrayName(ShaderStrings::LIGHT_STRUCT_NAME_UNIFORM, ShaderStrings::LIGHT_STRUCT_DIFFUSE_RATIO_UNIFORM, count),
-	//				ls.second->GetDiffuseCoefficient());
-	//
-	//			s->SendUniform(s->CreateStructArrayName(ShaderStrings::LIGHT_STRUCT_NAME_UNIFORM, ShaderStrings::LIGHT_STRUCT_CONE_ANGLE_UNIFORM, count),
-	//				ls.second->GetSpotAngle());
-	//		}
-	//
-	//		++count;
-	//	}
-	//}
+	{ // Lights
+		const std::map<std::string, LightSource *> lights = SceneManager::GetInstance()->GetLights();
+		AmbientalLight amb_light = SceneManager::GetInstance()->GetAmbientalLight();
+		glm::vec3 amb_light_color = amb_light.GetColor();
+	
+		s->SendUniform(ShaderStrings::LIGHT_AMBIENTAL_COLOR_UNIFORM, amb_light_color);
+		s->SendUniform(ShaderStrings::LIGHT_AMBIENTAL_RATIO_UNIFORM, amb_light.GetRatio());
+	
+		s->SendUniform(ShaderStrings::LIGHT_COUNT_UNIFORM, static_cast<int>(lights.size()));
+	
+		uint16_t count = 0;
+		for (auto & ls : lights) {
+			if (nullptr != ls.second) {
+				LightSource::LightType type = ls.second->GetType();
+				glm::vec3 vec_l_type;
+	
+				switch (type)
+				{
+				case LightSource::POINT_LIGHT:
+					vec_l_type = glm::vec3(1, 0, 0);
+					break;
+				case LightSource::DIRECTIONAL_LIGHT:
+					vec_l_type = glm::vec3(0, 1, 0);
+					break;
+				case LightSource::SPOT_LIGHT:
+					vec_l_type = glm::vec3(0, 0, 1);
+					break;
+				default:
+					vec_l_type = glm::vec3(1, 0, 0);
+					break;
+				}
+	
+				s->SendUniform(s->CreateStructArrayName(ShaderStrings::LIGHT_STRUCT_NAME_UNIFORM, ShaderStrings::LIGHT_STRUCT_TYPE_UNIFORM, count),
+					vec_l_type);
+
+				glm::vec3 pos = (LightSource::SPOT_LIGHT == type) ? cam->GetPosition() : ls.second->GetPosition();
+				s->SendUniform(s->CreateStructArrayName(ShaderStrings::LIGHT_STRUCT_NAME_UNIFORM, ShaderStrings::LIGHT_STRUCT_POSITION_UNIFORM, count),
+					pos);
+
+				s->SendUniform(s->CreateStructArrayName(ShaderStrings::LIGHT_STRUCT_NAME_UNIFORM, ShaderStrings::LIGHT_STRUCT_ATTENUATION_UNIFORM, count),
+					0.f);
+
+				glm::vec3 dir = (LightSource::SPOT_LIGHT == type) ? (cam->GetFront() - cam->GetPosition()) : ls.second->GetDirection();
+				
+				s->SendUniform(s->CreateStructArrayName(ShaderStrings::LIGHT_STRUCT_NAME_UNIFORM, ShaderStrings::LIGHT_STRUCT_DIRECTION_UNIFORM, count),
+					dir);
+
+				glm::vec3 spec_light = ls.second->GetSpecularLight();
+				s->SendUniform(s->CreateStructArrayName(ShaderStrings::LIGHT_STRUCT_NAME_UNIFORM, ShaderStrings::LIGHT_STRUCT_SPECULAR_UNIFORM, count),
+					spec_light);
+
+				s->SendUniform(s->CreateStructArrayName(ShaderStrings::LIGHT_STRUCT_NAME_UNIFORM, ShaderStrings::LIGHT_STRUCT_SPECULAR_RATIO_UNIFORM, count),
+					ls.second->GetSpecularCoefficient());
+
+				s->SendUniform(s->CreateStructArrayName(ShaderStrings::LIGHT_STRUCT_NAME_UNIFORM, ShaderStrings::LIGHT_STRUCT_SHININESS_UNIFORM, count),
+					ls.second->GetShininess());
+
+				glm::vec3 diff_light = ls.second->GetDiffuseLight();
+				s->SendUniform(s->CreateStructArrayName(ShaderStrings::LIGHT_STRUCT_NAME_UNIFORM, ShaderStrings::LIGHT_STRUCT_DIFFUSE_UNIFORM, count),
+					diff_light);
+
+				s->SendUniform(s->CreateStructArrayName(ShaderStrings::LIGHT_STRUCT_NAME_UNIFORM, ShaderStrings::LIGHT_STRUCT_DIFFUSE_RATIO_UNIFORM, count),
+					ls.second->GetDiffuseCoefficient());
+
+				s->SendUniform(s->CreateStructArrayName(ShaderStrings::LIGHT_STRUCT_NAME_UNIFORM, ShaderStrings::LIGHT_STRUCT_CONE_ANGLE_UNIFORM, count),
+					ls.second->GetSpotAngle());
+			}
+			++count;
+		}
+	}
+
 	//
 	//if (type == DEBUG) {
 	//	glDrawElements(GL_LINES, m_model->GetIBOCount(true), GL_UNSIGNED_INT, (void*)0);
@@ -309,7 +304,7 @@ void SceneObject::GeneralUpdate()
 {
 	m_M = glm::mat4(1.f);
 	m_M = glm::scale(m_M, m_scale);
-	m_M = glm::translate(m_M, m_position);
+	//m_M = glm::translate(m_M, m_position);
 	m_M = glm::rotate(m_M, m_rotation.x, glm::vec3(1.f, 0.f, 0.f));
 	m_M = glm::rotate(m_M, m_rotation.y, glm::vec3(0.f, 1.f, 0.f));
 	m_M = glm::rotate(m_M, m_rotation.z, glm::vec3(0.f, 0.f, 1.f));

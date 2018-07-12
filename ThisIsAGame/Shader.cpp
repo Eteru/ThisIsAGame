@@ -45,65 +45,81 @@ void Shader::Load()
 	m_loaded = true;
 }
 
-void Shader::SendAttribute(const std::string & name, uint32_t size, uint32_t stride, uint32_t offset)
+bool Shader::SendAttribute(const std::string & name, uint32_t size, uint32_t stride, uint32_t offset)
 {
 	if (m_map[name] == -1)
 	{
-		throw std::runtime_error(std::string("Program attribute not found: ") + name);
+		//std::cerr << "Program attribute not found: " << name << std::endl;
+		return false;
 	}
 
 	glEnableVertexAttribArray(m_map[name]);
 	glVertexAttribPointer(m_map[name], size, GL_FLOAT, GL_FALSE, stride, (GLvoid *)(offset));
+
+	return true;
 }
 
-void Shader::SendUniform(const std::string & name, int n)
+bool Shader::SendUniform(const std::string & name, int n)
 {
 	if (m_map[name] == -1)
 	{
-		throw std::runtime_error(std::string("Program uniform not found: ") + name);
+		//std::cerr << "Program uniform not found: " << name << std::endl;
+		return false;
 	}
 
 	glUniform1i(m_map[name], n);
+
+	return true;
 }
 
-void Shader::SendUniform(const std::string & name, float f)
+bool Shader::SendUniform(const std::string & name, float f)
 {
 	if (m_map[name] == -1)
 	{
-		throw std::runtime_error(std::string("Program uniform not found: ") + name);
+		//std::cerr << "Program uniform not found: " << name << std::endl;
+		return false;
 	}
 
 	glUniform1f(m_map[name], f);
+
+	return true;
 }
 
-void Shader::SendUniform(const std::string & name, glm::vec2 & vec)
+bool Shader::SendUniform(const std::string & name, glm::vec2 & vec)
 {
 	if (m_map[name] == -1)
 	{
-		throw std::runtime_error(std::string("Program uniform not found: ") + name);
+		//std::cerr << "Program uniform not found: " << name << std::endl;
+		return false;
 	}
 
 	glUniform2fv(m_map[name], 1, glm::value_ptr(vec));
+
+	return true;
 }
 
-void Shader::SendUniform(const std::string & name, glm::vec3 & vec)
+bool Shader::SendUniform(const std::string & name, glm::vec3 & vec)
 {
 	if (m_map[name] == -1)
 	{
-		throw std::runtime_error(std::string("Program uniform not found: ") + name);
+		//std::cerr << "Program uniform not found: " << name << std::endl;
+		return false;
 	}
 
 	glUniform3fv(m_map[name], 1, glm::value_ptr(vec));
 }
 
-void Shader::SendUniform(const std::string & name, glm::mat4 & mat)
+bool Shader::SendUniform(const std::string & name, glm::mat4 & mat)
 {
 	if (m_map[name] == -1)
 	{
-		throw std::runtime_error(std::string("Program uniform not found: ") + name);
+		//std::cerr << "Program uniform not found: " << name << std::endl;
+		return false;
 	}
 
 	glUniformMatrix4fv(m_map[name], 1, GL_FALSE, glm::value_ptr(mat));
+
+	return true;
 }
 
 std::string Shader::CreateStructArrayName(const std::string & str_name, const std::string & member_name, size_t index) const
@@ -153,29 +169,29 @@ int Shader::Init(const std::string & fileVS, const std::string & fileFS)
 		m_map[ShaderStrings::TEXTURE_SHADOW_MAP_UNIFORM] = glGetUniformLocation(m_program, ShaderStrings::TEXTURE_SHADOW_MAP_UNIFORM.c_str());
 
 
-		//for (int i = 0; i < MAX_LIGHTS; ++i) {
-		//	std::string light_type = ArrayStructUniform(ShaderStrings::LIGHT_STRUCT_NAME_UNIFORM, ShaderStrings::LIGHT_STRUCT_TYPE_UNIFORM, i);
-		//	std::string light_pos = ArrayStructUniform(ShaderStrings::LIGHT_STRUCT_NAME_UNIFORM, ShaderStrings::LIGHT_STRUCT_POSITION_UNIFORM, i);
-		//	std::string light_attenuation = ArrayStructUniform(ShaderStrings::LIGHT_STRUCT_NAME_UNIFORM, ShaderStrings::LIGHT_STRUCT_ATTENUATION_UNIFORM, i);
-		//	std::string light_dir = ArrayStructUniform(ShaderStrings::LIGHT_STRUCT_NAME_UNIFORM, ShaderStrings::LIGHT_STRUCT_DIRECTION_UNIFORM, i);
-		//	std::string light_dif = ArrayStructUniform(ShaderStrings::LIGHT_STRUCT_NAME_UNIFORM, ShaderStrings::LIGHT_STRUCT_DIFFUSE_UNIFORM, i);
-		//	std::string light_dif_ratio = ArrayStructUniform(ShaderStrings::LIGHT_STRUCT_NAME_UNIFORM, ShaderStrings::LIGHT_STRUCT_DIFFUSE_RATIO_UNIFORM, i);
-		//	std::string light_spec = ArrayStructUniform(ShaderStrings::LIGHT_STRUCT_NAME_UNIFORM, ShaderStrings::LIGHT_STRUCT_SPECULAR_UNIFORM, i);
-		//	std::string light_spec_ratio = ArrayStructUniform(ShaderStrings::LIGHT_STRUCT_NAME_UNIFORM, ShaderStrings::LIGHT_STRUCT_SPECULAR_RATIO_UNIFORM, i);
-		//	std::string light_shininess = ArrayStructUniform(ShaderStrings::LIGHT_STRUCT_NAME_UNIFORM, ShaderStrings::LIGHT_STRUCT_SHININESS_UNIFORM, i);
-		//	std::string light_spot_angle = ArrayStructUniform(ShaderStrings::LIGHT_STRUCT_NAME_UNIFORM, ShaderStrings::LIGHT_STRUCT_CONE_ANGLE_UNIFORM, i);
-		//
-		//	m_map[light_type] = glGetUniformLocation(m_program, light_type.c_str());
-		//	m_map[light_pos] = glGetUniformLocation(m_program, light_pos.c_str());
-		//	m_map[light_attenuation] = glGetUniformLocation(m_program, light_attenuation.c_str());
-		//	m_map[light_dir] = glGetUniformLocation(m_program, light_dir.c_str());
-		//	m_map[light_dif] = glGetUniformLocation(m_program, light_dif.c_str());
-		//	m_map[light_dif_ratio] = glGetUniformLocation(m_program, light_dif_ratio.c_str());
-		//	m_map[light_spec] = glGetUniformLocation(m_program, light_spec.c_str());
-		//	m_map[light_spec_ratio] = glGetUniformLocation(m_program, light_spec_ratio.c_str());
-		//	m_map[light_shininess] = glGetUniformLocation(m_program, light_shininess.c_str());
-		//	m_map[light_spot_angle] = glGetUniformLocation(m_program, light_spot_angle.c_str());
-		//}
+		for (int i = 0; i < 20; ++i) {
+			std::string light_type = CreateStructArrayName(ShaderStrings::LIGHT_STRUCT_NAME_UNIFORM, ShaderStrings::LIGHT_STRUCT_TYPE_UNIFORM, i);
+			std::string light_pos = CreateStructArrayName(ShaderStrings::LIGHT_STRUCT_NAME_UNIFORM, ShaderStrings::LIGHT_STRUCT_POSITION_UNIFORM, i);
+			std::string light_attenuation = CreateStructArrayName(ShaderStrings::LIGHT_STRUCT_NAME_UNIFORM, ShaderStrings::LIGHT_STRUCT_ATTENUATION_UNIFORM, i);
+			std::string light_dir = CreateStructArrayName(ShaderStrings::LIGHT_STRUCT_NAME_UNIFORM, ShaderStrings::LIGHT_STRUCT_DIRECTION_UNIFORM, i);
+			std::string light_dif = CreateStructArrayName(ShaderStrings::LIGHT_STRUCT_NAME_UNIFORM, ShaderStrings::LIGHT_STRUCT_DIFFUSE_UNIFORM, i);
+			std::string light_dif_ratio = CreateStructArrayName(ShaderStrings::LIGHT_STRUCT_NAME_UNIFORM, ShaderStrings::LIGHT_STRUCT_DIFFUSE_RATIO_UNIFORM, i);
+			std::string light_spec = CreateStructArrayName(ShaderStrings::LIGHT_STRUCT_NAME_UNIFORM, ShaderStrings::LIGHT_STRUCT_SPECULAR_UNIFORM, i);
+			std::string light_spec_ratio = CreateStructArrayName(ShaderStrings::LIGHT_STRUCT_NAME_UNIFORM, ShaderStrings::LIGHT_STRUCT_SPECULAR_RATIO_UNIFORM, i);
+			std::string light_shininess = CreateStructArrayName(ShaderStrings::LIGHT_STRUCT_NAME_UNIFORM, ShaderStrings::LIGHT_STRUCT_SHININESS_UNIFORM, i);
+			std::string light_spot_angle = CreateStructArrayName(ShaderStrings::LIGHT_STRUCT_NAME_UNIFORM, ShaderStrings::LIGHT_STRUCT_CONE_ANGLE_UNIFORM, i);
+		
+			m_map[light_type] = glGetUniformLocation(m_program, light_type.c_str());
+			m_map[light_pos] = glGetUniformLocation(m_program, light_pos.c_str());
+			m_map[light_attenuation] = glGetUniformLocation(m_program, light_attenuation.c_str());
+			m_map[light_dir] = glGetUniformLocation(m_program, light_dir.c_str());
+			m_map[light_dif] = glGetUniformLocation(m_program, light_dif.c_str());
+			m_map[light_dif_ratio] = glGetUniformLocation(m_program, light_dif_ratio.c_str());
+			m_map[light_spec] = glGetUniformLocation(m_program, light_spec.c_str());
+			m_map[light_spec_ratio] = glGetUniformLocation(m_program, light_spec_ratio.c_str());
+			m_map[light_shininess] = glGetUniformLocation(m_program, light_shininess.c_str());
+			m_map[light_spot_angle] = glGetUniformLocation(m_program, light_spot_angle.c_str());
+		}
 	}
 	catch (const std::exception& e) {
 		std::cerr << "ERROR: " << e.what() << std::endl;

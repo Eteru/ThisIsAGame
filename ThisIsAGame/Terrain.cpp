@@ -54,8 +54,8 @@ void Terrain::Init()
 	glBindBuffer(GL_ARRAY_BUFFER, m_model->GetVBO(Model::UV_VB));
 	m_shader->SendAttribute(ShaderStrings::UV_ATTRIBUTE, 3, 0, 0);
 
-	//glBindBuffer(GL_ARRAY_BUFFER, m_model->GetVBO(Model::NORMAL_VB));
-	//m_shader->SendAttribute(ShaderStrings::NORMAL_ATTRIBUTE, 3, 0, 0);
+	glBindBuffer(GL_ARRAY_BUFFER, m_model->GetVBO(Model::NORMAL_VB));
+	m_shader->SendAttribute(ShaderStrings::NORMAL_ATTRIBUTE, 3, 0, 0);
 
 	glBindBuffer(GL_ARRAY_BUFFER, m_model->GetVBO(Model::UV_BLEND_VB));
 	glBufferData(GL_ARRAY_BUFFER, sizeof(m_uv_blend[0]) * m_uv_blend.size(), &m_uv_blend[0], GL_STATIC_DRAW);
@@ -174,6 +174,8 @@ void Terrain::GenerateFlatModel(uint32_t blockSize, uint32_t cellSize, float off
 
 		}
 	}
+
+	im.CalcNormals();
 
 	m_model->InitMesh(im);
 }

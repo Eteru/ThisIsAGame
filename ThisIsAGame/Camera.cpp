@@ -1,4 +1,6 @@
 
+#include <iostream>
+
 #include "Camera.h"
 #include "Constants.h"
 
@@ -9,7 +11,7 @@ Camera::Camera(glm::vec3 position, glm::vec3 target, glm::vec3 up, GLfloat moveS
 
 	m_position = position;
 	m_front = target;
-	m_up = up;
+	m_world_up = up;
 	m_yaw = YAW;
 	m_pitch = PITCH;
 	UpdateWorldView();
@@ -40,6 +42,12 @@ void Camera::Move(CameraMovement movement, float dt)
 	default:
 		break;
 	}
+
+
+	std::cout << "Camera: pos(" << m_position.x << ", " << m_position.y << ", " << m_position.z <<
+		") up(" << m_up.x << ", " << m_up.y << ", " << m_up.z <<
+		") front(" << m_front.x << ", " << m_front.y << ", " << m_front.z <<
+		") right(" << m_right.x << ", " << m_right.y << ", " << m_right.z << std::endl;
 }
 
 void Camera::MouseMove(float xoffset, float yoffset, GLboolean constrainPitch)

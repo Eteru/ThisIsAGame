@@ -5,7 +5,7 @@
 #include "SceneManager.h"
 #include "ResourceManager.h"
 #include "Terrain.h"
-//#include "SkyBox.h"
+#include "SkyBox.h"
 //#include "AnimatedObject.h"
 //#include "TTLSceneObject.h"
 #include "Primitives.h"
@@ -263,12 +263,12 @@ SceneManager::~SceneManager()
 		it = m_cameras.erase(it);
 	}
 
-	//for (auto it = m_lights.begin(); it != m_lights.end();) {
-	//	delete it->second;
-	//	it->second = nullptr;
-	//	it = m_lights.erase(it);
-	//}
-	//
+	for (auto it = m_lights.begin(); it != m_lights.end();) {
+		delete it->second;
+		it->second = nullptr;
+		it = m_lights.erase(it);
+	}
+	
 	//if (nullptr != m_shadow_map) {
 	//	delete m_shadow_map;
 	//	m_shadow_map = nullptr;
@@ -484,7 +484,7 @@ bool SceneManager::Init(std::string filepath)
 		amb_light_ratio = (nullptr == pAmbientalLightRatio) ? 0.1f : std::stof(pAmbientalLightRatio->value());
 	}
 
-	//m_ambiental_light.SetValue(amb_light_ratio, amb_light);
+	m_ambiental_light.SetValue(amb_light_ratio, amb_light);
 
 	rapidxml::xml_node<> *pLights = pRoot->first_node("lights");
 	for (rapidxml::xml_node<> *pLight = pLights->first_node("light"); pLight; pLight = pLight->next_sibling()) {
@@ -495,10 +495,10 @@ bool SceneManager::Init(std::string filepath)
 			continue;
 		}
 		std::string light_id = pLightAttribute->value();
-		//if (m_lights.find(light_id) != m_lights.end()) {
-		//	std::cerr << "Light id already used. Skipping." << std::endl;
-		//	continue;
-		//}
+		if (m_lights.find(light_id) != m_lights.end()) {
+			std::cerr << "Light id already used. Skipping." << std::endl;
+			continue;
+		}
 
 		rapidxml::xml_node<> *pAssociatedObject = pLight->first_node("associatedObject");
 		rapidxml::xml_node<> *pDiffuseColor = pLight->first_node("diffuseColor");
@@ -564,13 +564,13 @@ bool SceneManager::Init(std::string filepath)
 		float shininess = (nullptr == pShininess) ? 0.f : std::stof(pShininess->value());
 		float spot_angle = (nullptr == pSpotAngle) ? 0.f : std::stof(pSpotAngle->value());
 
-		//LightSource *ls = new LightSource(shininess, diff_coef, spec_coef, light_diff_color, light_spec_color, asoc_obj);
-		//ls->SetType(light_type);
-		//ls->SetDirection(light_dir);
-		//ls->SetPosition(light_pos);
-		//ls->SetSpotAngle(spot_angle);
-		//
-		//m_lights[light_id] = ls;
+		LightSource *ls = new LightSource(shininess, diff_coef, spec_coef, light_diff_color, light_spec_color, asoc_obj);
+		ls->SetType(light_type);
+		ls->SetDirection(light_dir);
+		ls->SetPosition(light_pos);
+		ls->SetSpotAngle(spot_angle);
+		
+		m_lights[light_id] = ls;
 	}
 	//m_shadow_map = new ShadowMap(m_lights["1"]);
 
@@ -795,9 +795,9 @@ bool SceneManager::Init(std::string filepath)
 				sz = std::stof(pSz->value());
 			}
 
-			//SkyBox *sb = new SkyBox(pos, rot, scale, name, offsetY, sz);
-			//
-			//object = sb;
+			SkyBox *sb = new SkyBox(pos, rot, scale, name, offsetY, sz);
+			
+			object = sb;
 			break;
 		}
 		case OT_NORMAL:
@@ -954,7 +954,7 @@ bool SceneManager::Init(std::string filepath)
 
 	// Init objects
 	for (auto model : m_objects) {
-		model.second->Init();
+		model.second->Init();		
 	}
 
 	glClearColor(m_background_color.x, m_background_color.y, m_background_color.z, 1.f);
@@ -1053,28 +1053,17 @@ void SceneManager::Draw(bool debug)
 	if (status == GL_FRAMEBUFFER_COMPLETE) {
 		glClearColor(m_background_color.x, m_background_color.y, m_background_color.z, 1.f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		std::cout << "Before Objects: " << glGetError() << std::endl;
-
+		
 		for (auto & obj : m_objects) {
-			try {
-				if (true == debug) {
-					DrawDebug();
-					obj.second->Draw(SceneObject::DEBUG);
-				}
-				else {
-					obj.second->Draw(SceneObject::NORMAL);
-				}
+			if (true == debug) {
+				DrawDebug();
+				obj.second->Draw(SceneObject::DEBUG);
 			}
-			catch (const std::exception& e) {
-				std::cerr << "Draw: object " << obj.second->GetName() << "has error: " << e.what() << std::endl;
+			else {
+				obj.second->Draw(SceneObject::NORMAL);
 			}
-			
 		}
 	}
-
-	//ApplyBloom();
-	//*/
 }
 
 void SceneManager::CleanUp()

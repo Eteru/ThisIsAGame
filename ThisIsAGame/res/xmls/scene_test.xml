@@ -29,9 +29,7 @@
 			<fov>45</fov>
 			<near>0.2</near>
 			<far>10000</far>
-		
-  </camera>
-		<!-- eventual si alte cameras -->
+    </camera>
 	</cameras>
 	<activeCamera>1</activeCamera>
 
@@ -82,9 +80,37 @@
 			<cellSize>1</cellSize>
 			<offsetY>-2</offsetY>
 		</object>
-
+    
     <object id="2">
-			<model>1</model>
+			<model>2</model>>
+			<shader>2</shader>
+			<type>skybox</type>
+			<blend>true</blend>
+			<name>SkyBox</name>
+			<textures>
+				<texture id="15"/>
+			</textures>
+			<position>
+				<x>0</x>
+				<y>0</y>
+				<z>0</z>
+			</position>
+			<rotation>
+				<x>0</x>
+				<y>0</y>
+				<z>0</z>
+			</rotation>
+			<scale>
+				<x>1</x>
+				<y>1</y>
+				<z>1</z>
+			</scale>
+			<offsetY>0</offsetY>
+			<size>1000</size>
+		</object>
+
+    <!--<object id="3">
+			<model>2</model>
 			<shader>13</shader>
 			<type>normal</type>
 			<depthTest>false</depthTest>
@@ -108,7 +134,7 @@
 				<y>10</y>
 				<z>10</z>
 			</scale>
-		</object>
+		</object>-->
 	</objects>
 
   <sounds>
@@ -132,13 +158,13 @@
 		<light id="1">
 			<diffuseColor>
 				<r>1.0</r>
-				<g>0.0</g>
-				<b>0.0</b>
+				<g>1.0</g>
+				<b>1.0</b>
 			</diffuseColor>
 			<specularColor>
 				<r>1.0</r>
-				<g>0.0</g>
-				<b>0.0</b>
+				<g>1.0</g>
+				<b>1.0</b>
 			</specularColor>
 			<type>directional</type>
 			<specCoef>0.3</specCoef>
@@ -151,11 +177,11 @@
       </position>
       <direction>
         <x>0.0</x>
-        <y>0.0</y>
+        <y>-1.0</y>
         <z>0.0</z>
       </direction>
     </light>
-    <light id="2">
+    <!--<light id="2">
       <diffuseColor>
         <r>1.0</r>
         <g>1.0</g>
@@ -176,7 +202,7 @@
         <y>-1.0</y>
         <z>0.0</z>
       </direction>
-    </light>
+    </light>-->
 	</lights>
 	
 	<debugSettings>
