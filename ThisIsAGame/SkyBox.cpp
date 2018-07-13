@@ -39,12 +39,8 @@ void SkyBox::Init()
 	}
 
 	m_scale = glm::vec3(m_size, m_size, m_size);
-	// Center skybox to camera position
-	Camera *cam = SceneManager::GetInstance()->GetActiveCamera();
-	glm::vec3 camera_pos = cam->GetPosition();
-	m_position.x = camera_pos.x - m_half_size;
-	m_position.y = camera_pos.y - m_half_size + m_offsetY;
-	m_position.z = camera_pos.z - m_half_size;
+
+	m_position = SceneManager::GetInstance()->GetActiveCamera()->GetPosition();
 
 	glBindVertexArray(m_model->GetVAO());
 
@@ -62,11 +58,7 @@ void SkyBox::Init()
 
 void SkyBox::Update()
 {
-	Camera *cam = SceneManager::GetInstance()->GetActiveCamera();
-	glm::vec3 camera_pos = cam->GetPosition();
-	m_position.x = camera_pos.x - m_half_size;
-	m_position.y = camera_pos.y - m_half_size + m_offsetY;
-	m_position.z = camera_pos.z - m_half_size;
+	m_position = SceneManager::GetInstance()->GetActiveCamera()->GetPosition();
 
 	GeneralUpdate();
 }

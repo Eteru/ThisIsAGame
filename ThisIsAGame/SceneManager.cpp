@@ -42,6 +42,40 @@ void SceneManager::DestroyObject(std::string id)
 	}
 }
 
+void SceneManager::RegisterMouseListeners(InputMouseInterface * listener)
+{
+	m_mouse_listeners.push_back(listener);
+}
+
+void SceneManager::RegisterKeyboardListeners(InputKeyboardInterface * listener)
+{
+	m_keyboard_listeners.push_back(listener);
+}
+
+void SceneManager::KeyPress(int key, int mods)
+{
+	for (InputKeyboardInterface *listener : m_keyboard_listeners)
+	{
+		listener->KeyPress(key, mods);
+	}
+}
+
+void SceneManager::MouseMove(float x_offset, float y_offset)
+{
+	for (InputMouseInterface *listener : m_mouse_listeners)
+	{
+		listener->MouseMove(x_offset, y_offset);
+	}
+}
+
+void SceneManager::MouseScroll(float y_offset)
+{
+	for (InputMouseInterface *listener : m_mouse_listeners)
+	{
+		listener->MouseScroll(y_offset);
+	}
+}
+
 SceneManager::SceneManager()
 	: m_blur_shader(nullptr), m_grayscale_shader(nullptr), m_combine_tex_shader(nullptr),
 	m_sharpen_shader(nullptr), m_threshold_shader(nullptr)//, m_shadow_map(nullptr), m_target_spawner(nullptr)

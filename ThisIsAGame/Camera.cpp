@@ -2,6 +2,7 @@
 #include <iostream>
 
 #include "Camera.h"
+#include "SceneManager.h"
 #include "Constants.h"
 
 Camera::Camera(glm::vec3 position, glm::vec3 target, glm::vec3 up, GLfloat moveSpeed, GLfloat rotateSpeed, GLfloat cnear, GLfloat cfar, GLfloat fov)
@@ -12,13 +13,27 @@ Camera::Camera(glm::vec3 position, glm::vec3 target, glm::vec3 up, GLfloat moveS
 	m_position = position;
 	m_front = target;
 	m_world_up = up;
-	m_yaw = YAW;
-	m_pitch = PITCH;
-	UpdateWorldView();
+	m_yaw = DEFAULT_YAW;
+	m_pitch = DEFAULT_PITCH;
+
+	m_angle_around_target = DEFAULT_ANGLE_AROUND_TARGET;
+	m_distance_from_target = DEFAULT_DISTANCE_FROM_TARGET;
+
+	m_target = nullptr;
+	//m_target = SceneManager::GetInstance()->GetSceneObject("3");
+
+	//UpdateWorldView();
+
+	SceneManager::GetInstance()->RegisterMouseListeners(this);
 }
 
 Camera::~Camera()
 {
+}
+
+void Camera::SetTarget(SceneObject * so)
+{
+	m_target = so;
 }
 
 void Camera::Move(CameraMovement movement, float dt)
@@ -43,34 +58,30 @@ void Camera::Move(CameraMovement movement, float dt)
 		break;
 	}
 
-
-	std::cout << "Camera: pos(" << m_position.x << ", " << m_position.y << ", " << m_position.z <<
-		") up(" << m_up.x << ", " << m_up.y << ", " << m_up.z <<
-		") front(" << m_front.x << ", " << m_front.y << ", " << m_front.z <<
-		") right(" << m_right.x << ", " << m_right.y << ", " << m_right.z << std::endl;
-}
-
-void Camera::MouseMove(float xoffset, float yoffset, GLboolean constrainPitch)
-{
-	xoffset *= m_sensitivity;
-	yoffset *= m_sensitivity;
-
-	m_yaw -= xoffset;
-	m_pitch -= yoffset;
-
-	// Make sure that when pitch is out of bounds, screen doesn't get flipped
-	if (true == constrainPitch)
-	{
-		if (m_pitch > 89.0f)
-			m_pitch = 89.0f;
-
-		if (m_pitch < -89.0f)
-			m_pitch = -89.0f;
-	}
-
-	// Update Front, Right and Up Vectors using the updated Euler angles
 	UpdateWorldView();
 }
+
+//void Camera::MouseMove(float xoffset, float yoffset, GLboolean constrainPitch)
+//{
+//	xoffset *= m_sensitivity;
+//	yoffset *= m_sensitivity;
+//
+//	m_yaw -= xoffset;
+//	m_pitch -= yoffset;
+//
+//	// Make sure that when pitch is out of bounds, screen doesn't get flipped
+//	if (true == constrainPitch)
+//	{
+//		if (m_pitch > 89.0f)
+//			m_pitch = 89.0f;
+//
+//		if (m_pitch < -89.0f)
+//			m_pitch = -89.0f;
+//	}
+//
+//	// Update Front, Right and Up Vectors using the updated Euler angles
+//	UpdateWorldView();
+//}
 
 void Camera::RotateOX(int dir)
 {
@@ -105,14 +116,88 @@ void Camera::RotateOZ(int dir)
 
 void Camera::UpdateWorldView()
 {
-	// Calculate the new Front vector
-	glm::vec3 front;
-	front.x = cos(glm::radians(m_yaw)) * cos(glm::radians(m_pitch));
-	front.y = sin(glm::radians(m_pitch));
-	front.z = sin(glm::radians(m_yaw)) * cos(glm::radians(m_pitch));
-	m_front = glm::normalize(front);
+	m_target = SceneManager::GetInstance()->GetSceneObject("3");
 
-	// Also re-calculate the Right and Up vector
+	float vert_d = m_distance_from_target * sin(glm::radians(m_pitch));
+	float horiz_d = m_distance_from_target * cos(glm::radians(m_pitch));
+
+	float theta = m_angle_around_target /* + m_target.getRotY()*/;
+	float offset_x = horiz_d * sin(glm::radians(theta));
+	float offset_z = horiz_d * cos(glm::radians(theta));
+
+	m_position.x = m_target->GetPosition().x - offset_x;
+	m_position.y = m_target->GetPosition().y + vert_d;
+	m_position.z = m_target->GetPosition().z - offset_z;
+
+	m_yaw = 180.f - (m_angle_around_target /* + m_target.getRotY()*/);
+
+	m_front = glm::normalize(m_target->GetPosition() - m_position);
 	m_right = glm::normalize(glm::cross(m_front, m_world_up));
 	m_up = glm::normalize(glm::cross(m_right, m_front));
+
+	std::cout << "position: " << m_position.x << ", " << m_position.y << ", " << m_position.z << std::endl;
+}
+
+//void Camera::KeyPress(int key, int mods)
+//{
+//	switch (key)
+//	{
+//	case GLFW_KEY_W:
+//		Move(CameraMovement::FORWARD, 1);
+//		break;
+//	case GLFW_KEY_S:
+//		Move(CameraMovement::BACKWARD, 1);
+//		break;
+//	case GLFW_KEY_A:
+//		Move(CameraMovement::LEFT, 1);
+//		break;
+//	case GLFW_KEY_D:
+//		Move(CameraMovement::RIGHT, 1);
+//		break;
+//	default:
+//		break;
+//	}
+//}
+
+void Camera::MouseScroll(float y_offset)
+{
+	m_distance_from_target -= (y_offset /* m_sensitivity*/);
+
+	if (m_distance_from_target < MIN_DISTANCE_FROM_TARGET)
+	{
+		m_distance_from_target = MIN_DISTANCE_FROM_TARGET;
+	}
+	else if (m_distance_from_target > MAX_DISTANCE_FROM_TARGET)
+	{
+		m_distance_from_target = MAX_DISTANCE_FROM_TARGET;
+	}
+
+	UpdateWorldView();
+}
+
+void Camera::MouseMove(float x_offset, float y_offset)
+{
+	if (true == m_lbutton_pressed)
+	{
+		x_offset *= m_sensitivity;
+		m_angle_around_target -= x_offset;
+		UpdateWorldView();
+	}
+
+	if (true == m_rbutton_pressed)
+	{
+		y_offset *= m_sensitivity;
+		m_pitch -= y_offset;
+		
+		if (m_pitch < -MAX_PITCH)
+		{
+			m_pitch = -MAX_PITCH;
+		}
+		else if (m_pitch > MAX_PITCH)
+		{
+			m_pitch = MAX_PITCH;
+		}
+
+		UpdateWorldView();
+	}
 }

@@ -15,7 +15,7 @@
 
 #define MAX_FBOS 10
 
-class SceneManager
+class SceneManager : public InputKeyboardInterface, public InputMouseInterface
 {
 public:
 	~SceneManager();
@@ -75,6 +75,14 @@ public:
 	void AddObject(SceneObject *so);
 	void DestroyObject(std::string id);
 
+	void RegisterMouseListeners(InputMouseInterface *listener);
+	void RegisterKeyboardListeners(InputKeyboardInterface *listener);
+
+	// Interfaces
+	void KeyPress(int key, int mods);
+	void MouseMove(float x_offset, float y_offset);
+	void MouseScroll(float y_offset);
+
 private:
 	static SceneManager *m_instance;
 
@@ -98,6 +106,10 @@ private:
 	//DebugSettings m_debug_settings;
 	//ShadowMap *m_shadow_map;
 	//TargetSpawner *m_target_spawner;
+
+	// Listeners
+	std::vector<InputMouseInterface *> m_mouse_listeners;
+	std::vector<InputKeyboardInterface *> m_keyboard_listeners;
 
 	SceneManager();
 

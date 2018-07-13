@@ -18,21 +18,17 @@ static void CallbackError(int error, const char* description)
 
 static void CallbackKey(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+	if (action != GLFW_PRESS)
+	{
+		return;
+	}
+
+	if (GLFW_KEY_ESCAPE == key)
+	{
 		glfwSetWindowShouldClose(window, GLFW_TRUE);
+	}
 
-
-	if (key == GLFW_KEY_W && action == GLFW_PRESS)
-		SceneManager::GetInstance()->GetActiveCamera()->Move(CameraMovement::FORWARD, 1);
-
-	if (key == GLFW_KEY_S && action == GLFW_PRESS)
-		SceneManager::GetInstance()->GetActiveCamera()->Move(CameraMovement::BACKWARD, 1);
-
-	if (key == GLFW_KEY_A && action == GLFW_PRESS)
-		SceneManager::GetInstance()->GetActiveCamera()->Move(CameraMovement::LEFT, 1);
-
-	if (key == GLFW_KEY_D && action == GLFW_PRESS)
-		SceneManager::GetInstance()->GetActiveCamera()->Move(CameraMovement::RIGHT, 1);
+	SceneManager::GetInstance()->KeyPress(key, mods);
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
@@ -44,6 +40,31 @@ static void WindowResizeCallback(GLFWwindow* window, int width, int height)
 	glViewport(0, 0, width, height);
 }
 
+static void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
+{
+	if (GLFW_MOUSE_BUTTON_LEFT == button)
+	{
+		if (GLFW_PRESS == action)
+		{
+			SceneManager::GetInstance()->LeftButtonPressed(true);
+		}
+		else if (GLFW_RELEASE == action)
+		{
+			SceneManager::GetInstance()->LeftButtonPressed(false);
+		}
+	}
+	else if (GLFW_MOUSE_BUTTON_RIGHT == button)
+	{
+		if (GLFW_PRESS == action)
+		{
+			SceneManager::GetInstance()->RightButtonPressed(true);
+		}
+		else if (GLFW_RELEASE == action)
+		{
+			SceneManager::GetInstance()->RightButtonPressed(false);
+		}
+	}
+}
 
 // glfw: whenever the mouse moves, this callback is called
 // -------------------------------------------------------
@@ -66,14 +87,14 @@ static void MouseMoveCallback(GLFWwindow* window, double xpos, double ypos)
 	last_x = xpos;
 	last_y = ypos;
 
-	SceneManager::GetInstance()->GetActiveCamera()->MouseMove(xoffset, yoffset);
+	SceneManager::GetInstance()->MouseMove(xoffset, yoffset);
 }
 
 // glfw: whenever the mouse scroll wheel scrolls, this callback is called
 // ----------------------------------------------------------------------
 void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
 {
-	//camera.ProcessMouseScroll(yoffset);
+	SceneManager::GetInstance()->MouseScroll(yoffset);
 }
 
 static void End(const char *error)
@@ -110,10 +131,11 @@ void AppMain()
 
 	// GLFW settings
 	glfwMakeContextCurrent(window);
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
 	glfwSetKeyCallback(window, CallbackKey);
 	glfwSetFramebufferSizeCallback(window, WindowResizeCallback);
+	glfwSetMouseButtonCallback(window, MouseButtonCallback);
 	glfwSetCursorPosCallback(window, MouseMoveCallback);
 	glfwSetScrollCallback(window, ScrollCallback);
 
@@ -148,14 +170,11 @@ void AppMain()
 		glfwPollEvents();
 
 		SceneManager::GetInstance()->Update();
-		std::cout << "After update: " << glGetError() << std::endl;
 
 		SceneManager::GetInstance()->Draw();
 
 		// swap the display buffers (displays what was just drawn)
 		glfwSwapBuffers(window);
-
-		std::cout << "End of loop: " << glGetError() << std::endl;
 	}
 
 	// clean up and exit

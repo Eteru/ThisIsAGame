@@ -133,6 +133,8 @@
     <ClCompile Include="Event.cpp" />
     <ClCompile Include="EventManager.cpp" />
     <ClCompile Include="HeightsGenerator.cpp" />
+    <ClCompile Include="InputKeyboardInterface.cpp" />
+    <ClCompile Include="InputMouseInterface.cpp" />
     <ClCompile Include="LightSource.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Model.cpp" />
@@ -154,6 +156,8 @@
     <ClInclude Include="Event.h" />
     <ClInclude Include="EventManager.h" />
     <ClInclude Include="HeightsGenerator.h" />
+    <ClInclude Include="InputKeyboardInterface.h" />
+    <ClInclude Include="InputMouseInterface.h" />
     <ClInclude Include="LightSource.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="ObjLoader.h" />

@@ -148,9 +148,6 @@ void SceneObject::Draw(DrawType type)
 
 	SharedDrawElements(type);
 	
-	// draw the VAO
-	//glDrawElements(GL_TRIANGLES, model.GetIndincesCount(), GL_UNSIGNED_INT, 0);
-	
 	// unbind the VAO
 	glBindVertexArray(0);
 	
@@ -303,15 +300,9 @@ void SceneObject::SharedDrawElements(DrawType type)
 void SceneObject::GeneralUpdate()
 {
 	m_M = glm::mat4(1.f);
+	m_M = glm::translate(m_M, m_position);
 	m_M = glm::scale(m_M, m_scale);
-	//m_M = glm::translate(m_M, m_position);
 	m_M = glm::rotate(m_M, m_rotation.x, glm::vec3(1.f, 0.f, 0.f));
 	m_M = glm::rotate(m_M, m_rotation.y, glm::vec3(0.f, 1.f, 0.f));
 	m_M = glm::rotate(m_M, m_rotation.z, glm::vec3(0.f, 0.f, 1.f));
-	
-	/*m_M = glm::mat4().SetScale(m_scale) *
-		(glm::mat4().SetRotationX(m_rotation.x) *
-			glm::mat4().SetRotationY(m_rotation.y) *
-			glm::mat4().SetRotationZ(m_rotation.z)) *
-		glm::mat4().SetTranslation(m_position);*/
 }

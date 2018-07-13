@@ -109,7 +109,7 @@
 			<size>1000</size>
 		</object>
 
-    <!--<object id="3">
+    <object id="3">
 			<model>2</model>
 			<shader>13</shader>
 			<type>normal</type>
@@ -121,8 +121,8 @@
 			</textures>
 			<position>
 				<x>0</x>
-				<y>0</y>
-				<z>-10</z>
+				<y>20</y>
+				<z>0</z>
 			</position>
 			<rotation>
 				<x>0</x>
@@ -134,7 +134,7 @@
 				<y>10</y>
 				<z>10</z>
 			</scale>
-		</object>-->
+		</object>
 	</objects>
 
   <sounds>
