@@ -27,6 +27,12 @@ public:
 	void Draw(bool debug = false);
 	void CleanUp();
 	
+	void SetGLFWWindow(GLFWwindow *window);
+	inline GLFWwindow *GetWindow() const
+	{
+		return m_window;
+	}
+
 	//inline const Fog & GetFog() const
 	//{
 	//	return m_fog;
@@ -66,6 +72,7 @@ public:
 	}
 
 
+
 	//inline ShadowMap *GetShadowMap() const
 	//{
 	//	return m_shadow_map;
@@ -75,8 +82,8 @@ public:
 	void AddObject(SceneObject *so);
 	void DestroyObject(std::string id);
 
-	void RegisterMouseListeners(InputMouseInterface *listener);
-	void RegisterKeyboardListeners(InputKeyboardInterface *listener);
+	void RegisterMouseListener(InputMouseInterface *listener);
+	void RegisterKeyboardListener(InputKeyboardInterface *listener);
 
 	// Interfaces
 	void KeyPress(int key, int mods);
@@ -110,6 +117,9 @@ private:
 	// Listeners
 	std::vector<InputMouseInterface *> m_mouse_listeners;
 	std::vector<InputKeyboardInterface *> m_keyboard_listeners;
+
+	// GLFW window
+	GLFWwindow *m_window;
 
 	SceneManager();
 

@@ -13,7 +13,7 @@
 class Camera : public InputMouseInterface
 {
 public:
-	Camera(glm::vec3 position, glm::vec3 target, glm::vec3 up, GLfloat moveSpeed = SPEED, GLfloat rotateSpeed = SENSITIVITY, GLfloat cnear = 0.2f, GLfloat cfar = 1000.f, GLfloat fov = ZOOM);
+	Camera(std::string following_id);
 	~Camera();
 
 	inline glm::mat4 GetView() const
@@ -36,24 +36,22 @@ public:
 		return m_front;
 	}
 
-	void SetTarget(SceneObject *so);
-
-	void Move(CameraMovement movement, float dt);
-	//void MouseMove(float xoffset, float yoffset, GLboolean constrainPitch = true);
-
+	void SetTarget(SceneObject *player);
+	
 	void RotateOX(int dir);
 	void RotateOY(int dir);
 	void RotateOZ(int dir);
 
-	void UpdateWorldView();
+	void Init();
+	void Update();
 
 	// interfaces
-	//virtual void KeyPress(int key, int mods) override;
-
 	virtual void MouseScroll(float y_offset) override;
 	virtual void MouseMove(float x_offset, float y_offset) override;
 
 private:
+	const GLfloat ZOOM = 45.0f;
+	const GLfloat SENSITIVITY = 0.1f;
 	const GLfloat MAX_PITCH = 89.f;
 	const GLfloat DEFAULT_PITCH = 45.f;
 	const GLfloat DEFAULT_YAW = -90.f;
@@ -66,13 +64,11 @@ private:
 	glm::vec3 m_front;
 	glm::vec3 m_up;
 	glm::vec3 m_right;
-	glm::vec3 m_world_up;
 
 	// Angles
 	GLfloat m_yaw;
 	GLfloat m_pitch;
 
-	GLfloat m_movement_speed;
 	GLfloat m_sensitivity;
 
 	GLfloat m_near;
@@ -84,5 +80,8 @@ private:
 	GLfloat m_distance_from_target;
 
 	SceneObject *m_target;
+	std::string m_target_id;
+
+	void UpdateWorldView();
 };
 

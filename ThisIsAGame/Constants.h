@@ -11,9 +11,12 @@ namespace Window
 	const unsigned MIN_OPENGL_MINOR = 0;
 }
 
-// Camera
-enum CameraMovement {FORWARD = 0, BACKWARD, LEFT, RIGHT};
+enum Movement {FORWARD = 0, BACKWARD, LEFT, RIGHT};
 
-const float SPEED = 2.5f;
-const float SENSITIVITY = 0.1f;
-const float ZOOM = 45.0f;
+// Physics
+const glm::vec3 WORLD_UP = glm::vec3(0.f, 1.f, 0.f);
+
+namespace Physics
+{
+
+}

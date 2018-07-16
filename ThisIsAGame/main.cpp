@@ -18,7 +18,7 @@ static void CallbackError(int error, const char* description)
 
 static void CallbackKey(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-	if (action != GLFW_PRESS)
+	if (action == GLFW_RELEASE)
 	{
 		return;
 	}
@@ -161,6 +161,7 @@ void AppMain()
 	// Init managers
 	ResourceManager::GetInstance()->Init("./res/xmls/resources.xml");
 	SceneManager::GetInstance()->Init("./res/xmls/scene_test.xml");
+	SceneManager::GetInstance()->SetGLFWWindow(window);
 
 	// ------------------------------------
 

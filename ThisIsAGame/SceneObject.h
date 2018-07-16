@@ -91,7 +91,8 @@ protected:
 	std::vector<std::string> m_light_ids;
 
 	glm::vec3 m_up;
-	glm::vec3 m_target;
+	glm::vec3 m_front;
+	glm::vec3 m_right;
 
 	void SharedDrawElements(DrawType type = NORMAL);
 	void GeneralUpdate();

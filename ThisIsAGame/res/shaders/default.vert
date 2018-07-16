@@ -22,20 +22,19 @@ out vec4 v_color;
 
 void main()
 {
-	vec4 posL = u_matrix * vec4(in_posL, 1.0);
+	vec4 pos_ms = u_m * vec4(in_posL, 1.0);
+	vec4 pos_ws = u_matrix * vec4(in_posL, 1.0);
 	
 	//mat3 nm3 = mat3(u_nm);
 	//v_normal = normalize(nm3 * in_normal);
 	//v_binorm = normalize(nm3 * in_binorm);
 	//v_tangent = normalize(nm3 * in_tangent);
-
-	vec4 pos = u_m * vec4(in_posL, 1.0);
-
+	
 	v_color = vec4(in_color.rgb, 1.0);
 	v_normal = in_normal;
 	v_uv = in_uv;
 
-	v_pos = pos.xyz;
-	gl_Position = posL;
+	v_pos = pos_ms.xyz;
+	gl_Position = pos_ws;
 }
    

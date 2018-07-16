@@ -8,7 +8,8 @@ enum ObjectType {
 	OT_NORMAL = 0,
 	OT_SKYBOX,
 	OT_TERRAIN,
-	OT_ANIMATED
+	OT_ANIMATED,
+	OT_PLAYER
 };
 
 struct ModelResource

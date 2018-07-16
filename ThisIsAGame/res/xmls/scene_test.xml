@@ -9,26 +9,7 @@
 
 	<cameras>
 		<camera id="1">
-      <position>
-        <x>0.0</x>
-        <y>0.0</y>
-        <z>0.0</z>
-      </position>
-      <target>
-        <x>0.0</x>
-        <y>0.0</y>
-        <z>-1.0</z>
-      </target>
-			<up>
-				<x>0</x>
-				<y>1</y>
-				<z>0</z>
-			</up>
-			<translationSpeed>2.5</translationSpeed>
-			<rotationSpeed>0.1</rotationSpeed>
-			<fov>45</fov>
-			<near>0.2</near>
-			<far>10000</far>
+      <following>3</following>
     </camera>
 	</cameras>
 	<activeCamera>1</activeCamera>
@@ -112,7 +93,7 @@
     <object id="3">
 			<model>2</model>
 			<shader>13</shader>
-			<type>normal</type>
+			<type>player</type>
 			<depthTest>false</depthTest>
 			<blend>true</blend>
 			<name>bila_test</name>
@@ -121,18 +102,18 @@
 			</textures>
 			<position>
 				<x>0</x>
-				<y>20</y>
+				<y>10</y>
 				<z>0</z>
 			</position>
 			<rotation>
 				<x>0</x>
-				<y>0</y>
+				<y>-90</y>
 				<z>0</z>
 			</rotation>
 			<scale>
-				<x>10</x>
-				<y>10</y>
-				<z>10</z>
+				<x>1</x>
+				<y>1</y>
+				<z>1</z>
 			</scale>
 		</object>
 	</objects>

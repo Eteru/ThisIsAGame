@@ -42,7 +42,7 @@ in vec3 v_binorm;
 in vec3 v_tangent;
 in vec4 v_color;
 
-in vec3 in_camera_pos;
+uniform vec3 u_camera_pos;
 
 // lights count
 #define MAX_LIGHTS 20
@@ -137,19 +137,19 @@ vec4 ApplySkyboxReflection(vec4 surface, vec3 n, vec3 e)
 void main()
 {
 	vec4 tex = texture2D(u_texture_0, v_uv);
-	if (tex.a < 0.1) {
+	if (tex.a < 0.1) 
+	{
 		discard;
 	}
 
-	vec3 e = normalize(in_camera_pos - v_pos);
+	vec3 e = normalize(u_camera_pos - v_pos);
 	vec3 n = normalize(v_normal + ApplyNormalMap());
 	
 	//tex = ApplySkyboxReflection(tex, n, e);
 	
 	vec3 light_col = vec3(0.0);
-	
 	light_col += ApplyLight(u_lights[0], tex.rgb, n, e);
-	light_col += ApplyLight(u_lights[1], tex.rgb, n, e);
+	//light_col += ApplyLight(u_lights[1], tex.rgb, n, e);
 	
 	//final color (after gamma correction)
     vec3 gamma = vec3(1.0 / 2.2);

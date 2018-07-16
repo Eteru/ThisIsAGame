@@ -150,13 +150,15 @@ std::vector<glm::vec3> Terrain::GenerateGridSquare(int col, int row, uint32_t ce
 void Terrain::GenerateFlatModel(uint32_t blockSize, uint32_t cellSize, float offsetY)
 {
 	size_t idx = 0;
-	uint32_t verts_per_line = blockSize + 1;
-	uint32_t vertices_count = blockSize * blockSize * 2 * 3;
+	size_t verts_per_line = blockSize + 1;
+	size_t vertices_count = blockSize * blockSize * 2 * 3;
 
 	IndexedModel im;
 	
-	for (int row = 0; row < blockSize - 1; ++row) {
-		for (int col = 0; col < blockSize - 1; ++col) {
+	for (size_t row = 0; row < blockSize - 1; ++row)
+	{
+		for (size_t col = 0; col < blockSize - 1; ++col)
+		{
 			std::vector<glm::vec3> square_verts = GenerateGridSquare(row, col, cellSize, offsetY);
 
 			glm::vec3 NTL = glm::normalize(glm::cross(square_verts[0], square_verts[1]));

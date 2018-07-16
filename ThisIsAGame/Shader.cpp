@@ -107,6 +107,8 @@ bool Shader::SendUniform(const std::string & name, glm::vec3 & vec)
 	}
 
 	glUniform3fv(m_map[name], 1, glm::value_ptr(vec));
+
+	return true;
 }
 
 bool Shader::SendUniform(const std::string & name, glm::mat4 & mat)

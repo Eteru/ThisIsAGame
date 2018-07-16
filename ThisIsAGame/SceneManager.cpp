@@ -6,6 +6,7 @@
 #include "ResourceManager.h"
 #include "Terrain.h"
 #include "SkyBox.h"
+#include "Player.h"
 //#include "AnimatedObject.h"
 //#include "TTLSceneObject.h"
 #include "Primitives.h"
@@ -16,6 +17,11 @@
 
 SceneManager *SceneManager::m_instance = nullptr;
 
+void SceneManager::SetGLFWWindow(GLFWwindow * window)
+{
+	m_window = window;
+}
+
 void SceneManager::PlaySound(std::string id)
 {
 	//if (m_sounds.find(id) != m_sounds.end()) {
@@ -25,7 +31,8 @@ void SceneManager::PlaySound(std::string id)
 
 void SceneManager::AddObject(SceneObject * so)
 {
-	if (nullptr == so) {
+	if (nullptr == so)
+	{
 		return;
 	}
 
@@ -35,19 +42,20 @@ void SceneManager::AddObject(SceneObject * so)
 
 void SceneManager::DestroyObject(std::string id)
 {
-	if(m_objects.find(id) != m_objects.end()) {
+	if (m_objects.find(id) != m_objects.end()) 
+	{
 		delete m_objects[id];
 		m_objects[id] = nullptr;
 		m_objects.erase(id);
 	}
 }
 
-void SceneManager::RegisterMouseListeners(InputMouseInterface * listener)
+void SceneManager::RegisterMouseListener(InputMouseInterface * listener)
 {
 	m_mouse_listeners.push_back(listener);
 }
 
-void SceneManager::RegisterKeyboardListeners(InputKeyboardInterface * listener)
+void SceneManager::RegisterKeyboardListener(InputKeyboardInterface * listener)
 {
 	m_keyboard_listeners.push_back(listener);
 }
@@ -78,7 +86,7 @@ void SceneManager::MouseScroll(float y_offset)
 
 SceneManager::SceneManager()
 	: m_blur_shader(nullptr), m_grayscale_shader(nullptr), m_combine_tex_shader(nullptr),
-	m_sharpen_shader(nullptr), m_threshold_shader(nullptr)//, m_shadow_map(nullptr), m_target_spawner(nullptr)
+	m_sharpen_shader(nullptr), m_threshold_shader(nullptr), m_window(nullptr)//, m_shadow_map(nullptr), m_target_spawner(nullptr)
 {
 }
 
@@ -250,14 +258,16 @@ void SceneManager::ApplyBloom()
 
 void SceneManager::RenderPost(Shader * s, uint32_t idx, uint32_t tex_idx, float x_offset, float y_offset)
 {
-	if (idx >= MAX_FBOS || tex_idx >= MAX_FBOS) {
+	if (idx >= MAX_FBOS || tex_idx >= MAX_FBOS)
+	{
 		return;
 	}
 
 	glBindFramebuffer(GL_FRAMEBUFFER, idx == 0 ? 0 : m_fbos[idx]);
 
 	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-	if (status == GL_FRAMEBUFFER_COMPLETE) {
+	if (status == GL_FRAMEBUFFER_COMPLETE) 
+	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glUseProgram(s->GetProgramID());
 		glBindBuffer(GL_ARRAY_BUFFER, m_screen_vbo);
@@ -285,24 +295,27 @@ void SceneManager::RenderPost(Shader * s, uint32_t idx, uint32_t tex_idx, float 
 
 SceneManager::~SceneManager()
 {
-	for (auto it = m_objects.begin(); it != m_objects.end();) {
+	for (auto it = m_objects.begin(); it != m_objects.end();) 
+	{
 		delete it->second;
 		it->second = nullptr;
 		it = m_objects.erase(it);
 	}
 
-	for (auto it = m_cameras.begin(); it != m_cameras.end();) {
+	for (auto it = m_cameras.begin(); it != m_cameras.end();)
+	{
 		delete it->second;
 		it->second = nullptr;
 		it = m_cameras.erase(it);
 	}
 
-	for (auto it = m_lights.begin(); it != m_lights.end();) {
+	for (auto it = m_lights.begin(); it != m_lights.end();) 
+	{
 		delete it->second;
 		it->second = nullptr;
 		it = m_lights.erase(it);
 	}
-	
+
 	//if (nullptr != m_shadow_map) {
 	//	delete m_shadow_map;
 	//	m_shadow_map = nullptr;
@@ -320,7 +333,8 @@ SceneManager::~SceneManager()
 
 SceneManager * SceneManager::GetInstance()
 {
-	if (nullptr == m_instance) {
+	if (nullptr == m_instance) 
+	{
 		m_instance = new SceneManager;
 	}
 
@@ -331,7 +345,8 @@ bool SceneManager::Init(std::string filepath)
 {
 	FILE *f = fopen(filepath.c_str(), "r");
 
-	if (NULL == f) {
+	if (NULL == f)
+	{
 		std::cerr << "Invallid path for scene manager xml file." << std::endl;
 		return false;
 	}
@@ -341,7 +356,7 @@ bool SceneManager::Init(std::string filepath)
 	fseek(f, 0, SEEK_SET);
 
 	char *string = new char[fsize + 1];
-	int sz = fread(string, fsize, 1, f);
+	size_t sz = fread(string, fsize, 1, f);
 	fclose(f);
 
 	string[fsize] = '\0';
@@ -354,10 +369,12 @@ bool SceneManager::Init(std::string filepath)
 	//background
 	rapidxml::xml_node<> *pBkg = pRoot->first_node("backgroundColor");
 
-	if (nullptr == pBkg) {
+	if (nullptr == pBkg) 
+	{
 		m_background_color = glm::vec3(0.f, 0.f, 0.f);
 	}
-	else {
+	else 
+	{
 		m_background_color.x = std::stof(pBkg->first_node("r")->value());
 		m_background_color.y = std::stof(pBkg->first_node("g")->value());
 		m_background_color.z = std::stof(pBkg->first_node("b")->value());
@@ -365,120 +382,59 @@ bool SceneManager::Init(std::string filepath)
 
 	//cameras
 	rapidxml::xml_node<> *pCameras = pRoot->first_node("cameras");
-	if (nullptr == pCameras) {
+	if (nullptr == pCameras) 
+	{
 		std::cerr << "Cameras are missing" << std::endl;
 		return false;
 	}
 
-	for (rapidxml::xml_node<> *pCamera = pCameras->first_node("camera"); pCamera; pCamera = pCamera->next_sibling()) {
+	for (rapidxml::xml_node<> *pCamera = pCameras->first_node("camera");
+		pCamera; 
+		pCamera = pCamera->next_sibling())
+	{
 		rapidxml::xml_attribute<> *pAttribute = pCamera->first_attribute("id");
 
-		if (nullptr == pAttribute) {
+		if (nullptr == pAttribute) 
+		{
 			std::cerr << "Camera id missing" << std::endl;
 			return false;
 		}
 
 		std::string id = std::string(pAttribute->value());
 
-		float translateSpeed, rotationSpeed, fov, cnear, cfar;
-		glm::vec3 pos, target, up;
-
-		rapidxml::xml_node<> *pPosition = pCamera->first_node("position");
-
-		if (nullptr == pPosition) {
-			pos = glm::vec3(0.f, 0.f, 0.f);
+		std::string target_id = "";
+		rapidxml::xml_node<> *pFollowingObject = pCamera->first_node("following");
+		if (nullptr != pFollowingObject)
+		{
+			target_id = pFollowingObject->value();
 		}
-		else {
-			pos.x = std::stof(pPosition->first_node("x")->value());
-			pos.y = std::stof(pPosition->first_node("y")->value());
-			pos.z = std::stof(pPosition->first_node("z")->value());
+		else
+		{
+			throw std::runtime_error(std::string("Camera has no following object id."));
 		}
 
-		rapidxml::xml_node<> *pTarget = pCamera->first_node("target");
-
-		if (nullptr == pTarget) {
-			target = glm::vec3(0.f, 0.f, -1.f);
-		}
-		else {
-			target.x = std::stof(pTarget->first_node("x")->value());
-			target.y = std::stof(pTarget->first_node("y")->value());
-			target.z = std::stof(pTarget->first_node("z")->value());
-		}
-
-		rapidxml::xml_node<> *pUp = pCamera->first_node("up");
-
-		if (nullptr == pUp) {
-			up = glm::vec3(0.f, 1.f, 0.f);
-		}
-		else {
-			up.x = std::stof(pUp->first_node("x")->value());
-			up.y = std::stof(pUp->first_node("y")->value());
-			up.z = std::stof(pUp->first_node("z")->value());
-		}
-
-		rapidxml::xml_node<> *pTranslationSpeed = pCamera->first_node("translationSpeed");
-
-		if (nullptr == pTranslationSpeed) {
-			translateSpeed = 10.f;
-		}
-		else {
-			translateSpeed = std::stof(pTranslationSpeed->value());
-		}
-
-		rapidxml::xml_node<> *pRotationSpeed = pCamera->first_node("rotationSpeed");
-
-		if (nullptr == pRotationSpeed) {
-			rotationSpeed = 0.3f;
-		}
-		else {
-			rotationSpeed = std::stof(pRotationSpeed->value());
-		}
-
-		rapidxml::xml_node<> *pFov = pCamera->first_node("fov");
-
-		if (nullptr == pFov) {
-			fov = 45.f;
-		}
-		else {
-			fov = std::stof(pFov->value());
-		}
-
-		rapidxml::xml_node<> *pNear = pCamera->first_node("near");
-
-		if (nullptr == pNear) {
-			cnear = 0.2f;
-		}
-		else {
-			cnear = std::stof(pNear->value());
-		}
-
-		rapidxml::xml_node<> *pFar = pCamera->first_node("far");
-
-		if (nullptr == pFar) {
-			cfar = 10000.f;
-		}
-		else {
-			cfar = std::stof(pFar->value());
-		}
-
-		m_cameras[id] = new Camera(pos, target, up, translateSpeed, rotationSpeed, cnear, cfar, fov);
+		m_cameras[id] = new Camera(target_id);
 	}
 
 	rapidxml::xml_node<> *pActiveCamera = pRoot->first_node("activeCamera");
-	if (nullptr == pActiveCamera) {
+	if (nullptr == pActiveCamera)
+	{
 		m_active_camera = "1";
 	}
-	else {
+	else 
+	{
 		m_active_camera = pActiveCamera->value();
 	}
 
 	// fog
 	rapidxml::xml_node<> *pFog = pRoot->first_node("fog");
-	if (nullptr != pFog) {
+	if (nullptr != pFog) 
+	{
 		rapidxml::xml_node<> *pFogColor = pFog->first_node("color");
 
 		float fr, fg, fb;
-		if (nullptr != pFogColor) {
+		if (nullptr != pFogColor) 
+		{
 			rapidxml::xml_node<> *pFogColorR = pFogColor->first_node("r");
 			rapidxml::xml_node<> *pFogColorG = pFogColor->first_node("g");
 			rapidxml::xml_node<> *pFogColorB = pFogColor->first_node("b");
@@ -502,9 +458,11 @@ bool SceneManager::Init(std::string filepath)
 
 	float amb_light_ratio = 0.1f;
 	glm::vec3 amb_light = glm::vec3(0, 0, 0);
-	if (nullptr != pAmbientalLight) {
+	if (nullptr != pAmbientalLight) 
+	{
 		rapidxml::xml_node<> *pAmbientalLightColor = pAmbientalLight->first_node("color");
-		if (nullptr != pAmbientalLightColor) {
+		if (nullptr != pAmbientalLightColor) 
+		{
 			rapidxml::xml_node<> *pAmbientalLightColorR = pAmbientalLightColor->first_node("r");
 			rapidxml::xml_node<> *pAmbientalLightColorG = pAmbientalLightColor->first_node("g");
 			rapidxml::xml_node<> *pAmbientalLightColorB = pAmbientalLightColor->first_node("b");
@@ -521,15 +479,21 @@ bool SceneManager::Init(std::string filepath)
 	m_ambiental_light.SetValue(amb_light_ratio, amb_light);
 
 	rapidxml::xml_node<> *pLights = pRoot->first_node("lights");
-	for (rapidxml::xml_node<> *pLight = pLights->first_node("light"); pLight; pLight = pLight->next_sibling()) {
+	for (rapidxml::xml_node<> *pLight = pLights->first_node("light");
+		pLight;
+		pLight = pLight->next_sibling()) 
+	{
 		rapidxml::xml_attribute<> *pLightAttribute = pLight->first_attribute("id");
 
-		if (nullptr == pLightAttribute) {
+		if (nullptr == pLightAttribute)
+		{
 			std::cerr << "Light id missing" << std::endl;
 			continue;
 		}
+
 		std::string light_id = pLightAttribute->value();
-		if (m_lights.find(light_id) != m_lights.end()) {
+		if (m_lights.find(light_id) != m_lights.end())
+		{
 			std::cerr << "Light id already used. Skipping." << std::endl;
 			continue;
 		}
@@ -549,7 +513,8 @@ bool SceneManager::Init(std::string filepath)
 		std::string asoc_obj = (nullptr == pAssociatedObject) ? "" : pAssociatedObject->value();
 
 		glm::vec3 light_diff_color = glm::vec3(0, 0, 0);
-		if (nullptr != pDiffuseColor) {
+		if (nullptr != pDiffuseColor)
+		{
 			rapidxml::xml_node<> *pDiffuseColorR = pDiffuseColor->first_node("r");
 			rapidxml::xml_node<> *pDiffuseColorG = pDiffuseColor->first_node("g");
 			rapidxml::xml_node<> *pDiffuseColorB = pDiffuseColor->first_node("b");
@@ -560,7 +525,8 @@ bool SceneManager::Init(std::string filepath)
 		}
 
 		glm::vec3 light_spec_color = glm::vec3(0, 0, 0);
-		if (nullptr != pSpecularColor) {
+		if (nullptr != pSpecularColor) 
+		{
 			rapidxml::xml_node<> *pSpecularColorR = pSpecularColor->first_node("r");
 			rapidxml::xml_node<> *pSpecularColorG = pSpecularColor->first_node("g");
 			rapidxml::xml_node<> *pSpecularColorB = pSpecularColor->first_node("b");
@@ -571,7 +537,8 @@ bool SceneManager::Init(std::string filepath)
 		}
 
 		glm::vec3 light_dir = glm::vec3(0, 0, 0);
-		if (nullptr != pLightDir) {
+		if (nullptr != pLightDir) 
+		{
 			rapidxml::xml_node<> *pLightDirX = pLightDir->first_node("x");
 			rapidxml::xml_node<> *pLightDirY = pLightDir->first_node("y");
 			rapidxml::xml_node<> *pLightDirZ = pLightDir->first_node("z");
@@ -582,7 +549,8 @@ bool SceneManager::Init(std::string filepath)
 		}
 
 		glm::vec3 light_pos = glm::vec3(0, 0, 0);
-		if (nullptr != pLightPos) {
+		if (nullptr != pLightPos) 
+		{
 			rapidxml::xml_node<> *pLightPosX = pLightPos->first_node("x");
 			rapidxml::xml_node<> *pLightPosY = pLightPos->first_node("y");
 			rapidxml::xml_node<> *pLightPosZ = pLightPos->first_node("z");
@@ -603,22 +571,27 @@ bool SceneManager::Init(std::string filepath)
 		ls->SetDirection(light_dir);
 		ls->SetPosition(light_pos);
 		ls->SetSpotAngle(spot_angle);
-		
+
 		m_lights[light_id] = ls;
 	}
 	//m_shadow_map = new ShadowMap(m_lights["1"]);
 
 	//objects
 	rapidxml::xml_node<> *pObjects = pRoot->first_node("objects");
-	if (nullptr == pObjects) {
+	if (nullptr == pObjects) 
+	{
 		std::cerr << "Objects are missing" << std::endl;
 		return false;
 	}
 
-	for (rapidxml::xml_node<> *pObject = pObjects->first_node("object"); pObject; pObject = pObject->next_sibling()) {
+	for (rapidxml::xml_node<> *pObject = pObjects->first_node("object");
+		pObject; 
+		pObject = pObject->next_sibling())
+	{
 		rapidxml::xml_attribute<> *pAttribute = pObject->first_attribute("id");
 
-		if (nullptr == pAttribute) {
+		if (nullptr == pAttribute)
+		{
 			std::cerr << "Object id missing" << std::endl;
 			return false;
 		}
@@ -626,7 +599,8 @@ bool SceneManager::Init(std::string filepath)
 		std::string id = std::string(pAttribute->value());
 
 		rapidxml::xml_node<> *pShader = pObject->first_node("shader");
-		if (nullptr == pShader) {
+		if (nullptr == pShader)
+		{
 			std::cerr << "Shader id missing" << std::endl;
 			return false;
 		}
@@ -634,7 +608,8 @@ bool SceneManager::Init(std::string filepath)
 		std::string shaderID = pShader->value();
 
 		rapidxml::xml_node<> *pType = pObject->first_node("type");
-		if (nullptr == pType) {
+		if (nullptr == pType)
+		{
 			std::cerr << "Object type missing" << std::endl;
 			return false;
 		}
@@ -642,44 +617,60 @@ bool SceneManager::Init(std::string filepath)
 		std::string type = pType->value();
 		ObjectType ot = OT_NORMAL;
 
-		if ("normal" == type) {
+		if ("normal" == type) 
+		{
 			ot = OT_NORMAL;
 		}
-		else if ("skybox" == type) {
+		else if ("skybox" == type) 
+		{
 			ot = OT_SKYBOX;
 		}
-		else if ("terrain" == type) {
+		else if ("terrain" == type) 
+		{
 			ot = OT_TERRAIN;
 		}
-		else if ("animated" == type) {
+		else if ("animated" == type) 
+		{
 			ot = OT_ANIMATED;
+		}
+		else if ("player" == type)
+		{
+			ot = OT_PLAYER;
 		}
 
 		bool depthTest = true;
 		rapidxml::xml_node<> *pDepthTest = pObject->first_node("depthTest");
-		if (nullptr != pDepthTest) {
+		if (nullptr != pDepthTest) 
+		{
 			depthTest = pDepthTest->value() == "true" ? true : false;
 		}
 
 		bool blend = true;
 		rapidxml::xml_node<> *pBlend = pObject->first_node("blend");
-		if (nullptr != pBlend) {
+		if (nullptr != pBlend) 
+		{
 			blend = pBlend->value() == "true" ? true : false;
 		}
 
 		std::string name = "";
 		rapidxml::xml_node<> *pName = pObject->first_node("name");
-		if (nullptr != pName) {
+		if (nullptr != pName)
+		{
 			name = pName->value();
 		}
 
 		rapidxml::xml_node<> *pTextures = pObject->first_node("textures");
 		std::vector<std::string> texture_ids;
-		if (nullptr != pTextures) {
-			for (rapidxml::xml_node<> *pTexture = pTextures->first_node("texture"); pTexture; pTexture = pTexture->next_sibling()) {
+		if (nullptr != pTextures)
+		{
+			for (rapidxml::xml_node<> *pTexture = pTextures->first_node("texture");
+				pTexture; 
+				pTexture = pTexture->next_sibling())
+			{
 				rapidxml::xml_attribute<> *pAttribute = pTexture->first_attribute("id");
 
-				if (nullptr == pAttribute) {
+				if (nullptr == pAttribute) 
+				{
 					std::cerr << "Texture id missing" << std::endl;
 					return false;
 				}
@@ -690,8 +681,12 @@ bool SceneManager::Init(std::string filepath)
 
 		rapidxml::xml_node<> *pObjLights = pObject->first_node("lights");
 		std::vector<std::string> light_ids;
-		if (nullptr != pObjLights) {
-			for (rapidxml::xml_node<> *pObjLight = pObjLights->first_node("light"); pObjLight; pObjLight = pObjLight->next_sibling()) {
+		if (nullptr != pObjLights) 
+		{
+			for (rapidxml::xml_node<> *pObjLight = pObjLights->first_node("light");
+				pObjLight;
+				pObjLight = pObjLight->next_sibling())
+			{
 				light_ids.push_back(pObjLight->value());
 			}
 		}
@@ -699,10 +694,12 @@ bool SceneManager::Init(std::string filepath)
 		glm::vec3 pos;
 		rapidxml::xml_node<> *pPosition = pObject->first_node("position");
 
-		if (nullptr == pPosition) {
+		if (nullptr == pPosition) 
+		{
 			pos = glm::vec3(0.f, 0.f, 0.f);
 		}
-		else {
+		else 
+		{
 			pos.x = std::stof(pPosition->first_node("x")->value());
 			pos.y = std::stof(pPosition->first_node("y")->value());
 			pos.z = std::stof(pPosition->first_node("z")->value());
@@ -711,10 +708,12 @@ bool SceneManager::Init(std::string filepath)
 		glm::vec3 rot;
 		rapidxml::xml_node<> *pRotation = pObject->first_node("rotation");
 
-		if (nullptr == pRotation) {
+		if (nullptr == pRotation)
+		{
 			pos = glm::vec3(0.f, 0.f, 0.f);
 		}
-		else {
+		else 
+		{
 			rot.x = std::stof(pRotation->first_node("x")->value());
 			rot.y = std::stof(pRotation->first_node("y")->value());
 			rot.z = std::stof(pRotation->first_node("z")->value());
@@ -723,10 +722,12 @@ bool SceneManager::Init(std::string filepath)
 		glm::vec3 scale;
 		rapidxml::xml_node<> *pScale = pObject->first_node("scale");
 
-		if (nullptr == pScale) {
+		if (nullptr == pScale)
+		{
 			pos = glm::vec3(0.f, 0.f, 0.f);
 		}
-		else {
+		else 
+		{
 			scale.x = std::stof(pScale->first_node("x")->value());
 			scale.y = std::stof(pScale->first_node("y")->value());
 			scale.z = std::stof(pScale->first_node("z")->value());
@@ -735,10 +736,12 @@ bool SceneManager::Init(std::string filepath)
 		glm::vec3 color;
 		rapidxml::xml_node<> *pColor = pObject->first_node("color");
 
-		if (nullptr == pColor) {
+		if (nullptr == pColor)
+		{
 			color = glm::vec3(0.f, 0.f, 0.f);
 		}
-		else {
+		else 
+		{
 			color.x = std::stof(pColor->first_node("r")->value());
 			color.y = std::stof(pColor->first_node("g")->value());
 			color.z = std::stof(pColor->first_node("b")->value());
@@ -747,10 +750,12 @@ bool SceneManager::Init(std::string filepath)
 		float selfRotateSpeed;
 		rapidxml::xml_node<> *pSelfRotateSpeed = pObject->first_node("selfRotateSpeed");
 
-		if (nullptr == pSelfRotateSpeed) {
+		if (nullptr == pSelfRotateSpeed) 
+		{
 			selfRotateSpeed = 0.1f;
 		}
-		else {
+		else
+		{
 			selfRotateSpeed = std::stof(pSelfRotateSpeed->value());
 		}
 
@@ -765,7 +770,8 @@ bool SceneManager::Init(std::string filepath)
 		{
 			float displacement = 0.5f;
 			rapidxml::xml_node<> *pDisplacementMax = pObject->first_node("displacement_max");
-			if (nullptr != pDisplacementMax) {
+			if (nullptr != pDisplacementMax)
+			{
 				displacement = std::stof(pDisplacementMax->value());
 			}
 
@@ -779,29 +785,34 @@ bool SceneManager::Init(std::string filepath)
 		{
 			uint32_t blockSize = 4; // default
 			rapidxml::xml_node<> *pBlockSize = pObject->first_node("blockSize");
-			if (nullptr != pBlockSize) {
+			if (nullptr != pBlockSize)
+			{
 				blockSize = std::stoi(pBlockSize->value());
 			}
 
 			uint32_t cellSize = 1; // default
 			rapidxml::xml_node<> *pCellSize = pObject->first_node("cellSize");
-			if (nullptr != pCellSize) {
+			if (nullptr != pCellSize) 
+			{
 				cellSize = std::stoi(pCellSize->value());
 			}
 
 			float offsetY = 0.f; // default
 			rapidxml::xml_node<> *pOffsetY = pObject->first_node("offsetY");
-			if (nullptr != pOffsetY) {
+			if (nullptr != pOffsetY)
+			{
 				offsetY = std::stof(pOffsetY->value());
 			}
 
 			glm::vec3 heights;
 			rapidxml::xml_node<> *pHeights = pObject->first_node("heights");
 
-			if (nullptr == pHeights) {
+			if (nullptr == pHeights) 
+			{
 				heights = glm::vec3(0.f, 0.f, 0.f);
 			}
-			else {
+			else
+			{
 				heights.x = std::stof(pHeights->first_node("r")->value());
 				heights.y = std::stof(pHeights->first_node("g")->value());
 				heights.z = std::stof(pHeights->first_node("b")->value());
@@ -819,18 +830,20 @@ bool SceneManager::Init(std::string filepath)
 		{
 			float offsetY = 0.f; // default
 			rapidxml::xml_node<> *pOffsetY = pObject->first_node("offsetY");
-			if (nullptr != pOffsetY) {
+			if (nullptr != pOffsetY) 
+			{
 				offsetY = std::stof(pOffsetY->value());
 			}
 
 			float sz = 0.f; // default
 			rapidxml::xml_node<> *pSz = pObject->first_node("size");
-			if (nullptr != pSz) {
+			if (nullptr != pSz) 
+			{
 				sz = std::stof(pSz->value());
 			}
 
 			SkyBox *sb = new SkyBox(pos, rot, scale, name, offsetY, sz);
-			
+
 			object = sb;
 			break;
 		}
@@ -839,13 +852,20 @@ bool SceneManager::Init(std::string filepath)
 			object = new SceneObject(pos, rot, scale, depthTest, name);
 			break;
 		}
+		case OT_PLAYER:
+		{
+			object = new Player(pos, rot, scale, depthTest, name);
+			break;
+		}
 		default:
 			break;
 		}
 
-		if (OT_TERRAIN != ot) {
+		if (OT_TERRAIN != ot) 
+		{
 			rapidxml::xml_node<> *pModel = pObject->first_node("model");
-			if (nullptr == pModel) {
+			if (nullptr == pModel)
+			{
 				std::cerr << "Model id missing" << std::endl;
 				return false;
 			}
@@ -856,17 +876,20 @@ bool SceneManager::Init(std::string filepath)
 
 		object->SetBlend(blend);
 		object->SetShader(ResourceManager::GetInstance()->LoadShader(shaderID));
-		for (std::string texID : texture_ids) {
+		for (std::string texID : texture_ids)
+		{
 			object->AddTexture(ResourceManager::GetInstance()->LoadTexture(texID));
 		}
 
-		for (std::string lightID : light_ids) {
+		for (std::string lightID : light_ids) 
+		{
 			object->AddLightID(lightID);
 		}
 
 		// Trajectory
 		rapidxml::xml_node<> *pTrajectory = pObject->first_node("trajectory");
-		if (nullptr != pTrajectory) {
+		if (nullptr != pTrajectory) 
+		{
 			// default values
 			uint32_t iter_count = 1;
 			float traj_speed = 1.f;
@@ -879,22 +902,28 @@ bool SceneManager::Init(std::string filepath)
 			rapidxml::xml_attribute<> *pTjDirection = pTrajectory->first_attribute("direction");
 			rapidxml::xml_attribute<> *pTjSpeed = pTrajectory->first_attribute("speed");
 
-			if (nullptr != pTjType) {
+			if (nullptr != pTjType) 
+			{
 				type = pTjType->value();
 			}
-			if (nullptr != pTjIterCount) {
+			if (nullptr != pTjIterCount)
+			{
 				std::string iter_value = pTjIterCount->value();
-				if ("infinite" == iter_value) {
+				if ("infinite" == iter_value) 
+				{
 					iter_count = -1;
 				}
-				else {
+				else 
+				{
 					iter_count = std::stoi(iter_value);
 				}
 			}
-			if (nullptr != pTjDirection) {
+			if (nullptr != pTjDirection)
+			{
 				direction = pTjDirection->value();
 			}
-			if (nullptr != pTjSpeed) {
+			if (nullptr != pTjSpeed)
+			{
 				traj_speed = std::stof(pTjSpeed->value());
 			}
 
@@ -940,7 +969,7 @@ bool SceneManager::Init(std::string filepath)
 		object->SetWired(wired);
 		m_objects[id] = object;
 	}
-	
+
 	//debug settings
 	//rapidxml::xml_node<> *pDebug = pRoot->first_node("debugSettings");
 	//if (nullptr != pDebug) {
@@ -987,8 +1016,14 @@ bool SceneManager::Init(std::string filepath)
 	m_combine_tex_shader = ResourceManager::GetInstance()->LoadShader("11");
 
 	// Init objects
-	for (auto model : m_objects) {
-		model.second->Init();		
+	for (auto model : m_objects) 
+	{
+		model.second->Init();
+	}
+
+	for (auto cam : m_cameras)
+	{
+		cam.second->Init();
 	}
 
 	glClearColor(m_background_color.x, m_background_color.y, m_background_color.z, 1.f);
@@ -1003,23 +1038,31 @@ bool SceneManager::Init(std::string filepath)
 
 void SceneManager::Update()
 {
-	for (auto & obj : m_objects) {
+	for (auto & obj : m_objects) 
+	{
 		obj.second->Update();
 	}
 
+	m_cameras[m_active_camera]->Update();
+
 	// Collision detection
-	for (auto obj = m_objects.begin(); obj != m_objects.end(); ++obj) {
-		for (auto obj2 = std::next(obj); obj2 != m_objects.end(); ++obj2) {
-			if ("SkyBox" == obj2->second->GetName()) {
+	for (auto obj = m_objects.begin(); obj != m_objects.end(); ++obj)
+	{
+		for (auto obj2 = std::next(obj); obj2 != m_objects.end(); ++obj2) 
+		{
+			if ("SkyBox" == obj2->second->GetName())
+			{
 				continue;
 			}
 
-			if (true == obj->second->Collides(obj2->second)) {
+			if (true == obj->second->Collides(obj2->second)) 
+			{
 				//std::cout << obj->second->GetName() << " collides with " << obj2->second->GetName() << std::endl;
 			}
 		}
 
-		if (true == obj->second->Contains(m_cameras[m_active_camera]->GetPosition())) {
+		if (true == obj->second->Contains(m_cameras[m_active_camera]->GetPosition())) 
+		{
 			std::cout << "Camera collides with " << obj->second->GetName() << std::endl;
 		}
 	}
@@ -1049,7 +1092,7 @@ void SceneManager::Draw(bool debug)
 			}
 		}
 	}
-	
+
 	// shadowmap on screen
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -1084,16 +1127,20 @@ void SceneManager::Draw(bool debug)
 
 	// check for framebuffer complete
 	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-	if (status == GL_FRAMEBUFFER_COMPLETE) {
+	if (status == GL_FRAMEBUFFER_COMPLETE) 
+	{
 		glClearColor(m_background_color.x, m_background_color.y, m_background_color.z, 1.f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		
-		for (auto & obj : m_objects) {
-			if (true == debug) {
+
+		for (auto & obj : m_objects) 
+		{
+			if (true == debug) 
+			{
 				DrawDebug();
 				obj.second->Draw(SceneObject::DEBUG);
 			}
-			else {
+			else 
+			{
 				obj.second->Draw(SceneObject::NORMAL);
 			}
 		}
@@ -1110,7 +1157,8 @@ void SceneManager::CleanUp()
 
 void SceneManager::InitScreenQuad()
 {
-	static const GLfloat quad_vbo_data[] = {
+	static const GLfloat quad_vbo_data[] = 
+	{
 		-1.0f, -1.0f, 0.0f,
 		1.0f, -1.0f, 0.0f,
 		-1.0f,  1.0f, 0.0f,
@@ -1149,7 +1197,8 @@ void SceneManager::InitFBO()
 
 	// Init screen texture
 	glGenTextures(MAX_FBOS, m_screen_textures);
-	for (size_t i = 0; i < MAX_FBOS; ++i) {
+	for (size_t i = 0; i < MAX_FBOS; ++i)
+	{
 		glBindTexture(GL_TEXTURE_2D, m_screen_textures[i]);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, Window::WIDTH, Window::HEIGHT,
 			0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, NULL);
@@ -1161,7 +1210,7 @@ void SceneManager::InitFBO()
 		// bind renderbuffer and create a 16-bit depth buffer
 		// width and height of renderbuffer = width and height of
 		// the texture
-		
+
 		// bind the framebuffer
 		glBindFramebuffer(GL_FRAMEBUFFER, m_fbos[i]);
 		// specify texture as color attachment
@@ -1171,7 +1220,7 @@ void SceneManager::InitFBO()
 		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
 			GL_RENDERBUFFER, m_depth_render_bos);
 	}
-	
+
 	//glBindRenderbuffer(GL_RENDERBUFFER, 0);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }

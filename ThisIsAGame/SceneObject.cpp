@@ -19,7 +19,7 @@ SceneObject::SceneObject(glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, bool dep
 	}
 
 	m_up = glm::vec3(0.f, 1.f, 0.f);
-	m_target = glm::vec3(0.f, 0.f, -1.f);
+	m_front = glm::vec3(0.f, 0.f, -1.f);
 }
 
 
@@ -178,7 +178,7 @@ void SceneObject::SharedDrawElements(DrawType type)
 	Camera *cam = SceneManager::GetInstance()->GetActiveCamera();
 
 	for (size_t i = 0; i < m_textures.size(); ++i) {
-		glActiveTexture(GL_TEXTURE0 + i);
+		glActiveTexture(static_cast<GLenum>(GL_TEXTURE0 + i));
 		glBindTexture(m_textures[i]->GetTextureType(), m_textures[i]->GetID());
 	
 		s->SendUniform(ShaderStrings::TEXTURE_UNIFORMS[i], static_cast<int>(i));
@@ -302,7 +302,10 @@ void SceneObject::GeneralUpdate()
 	m_M = glm::mat4(1.f);
 	m_M = glm::translate(m_M, m_position);
 	m_M = glm::scale(m_M, m_scale);
-	m_M = glm::rotate(m_M, m_rotation.x, glm::vec3(1.f, 0.f, 0.f));
-	m_M = glm::rotate(m_M, m_rotation.y, glm::vec3(0.f, 1.f, 0.f));
-	m_M = glm::rotate(m_M, m_rotation.z, glm::vec3(0.f, 0.f, 1.f));
+	m_M = glm::rotate(m_M, glm::radians(m_rotation.x), glm::vec3(1.f, 0.f, 0.f));
+	m_M = glm::rotate(m_M, glm::radians(m_rotation.y), glm::vec3(0.f, 1.f, 0.f));
+	m_M = glm::rotate(m_M, glm::radians(m_rotation.z), glm::vec3(0.f, 0.f, 1.f));
+
+	m_right = glm::normalize(glm::cross(m_front, WORLD_UP));
+	m_up = glm::normalize(glm::cross(m_right, m_front));
 }
