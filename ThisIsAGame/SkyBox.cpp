@@ -15,6 +15,11 @@ SkyBox::~SkyBox()
 
 void SkyBox::Init()
 {
+	if (true == m_init)
+	{
+		return;
+	}
+
 	if (nullptr == m_model)
 	{
 		throw std::runtime_error(std::string("Model is nullptr: ") + m_id);
@@ -38,9 +43,9 @@ void SkyBox::Init()
 		tex->Load();
 	}
 
-	m_scale = glm::vec3(m_size, m_size, m_size);
+	m_transform.scale = glm::vec3(m_size, m_size, m_size);
 
-	m_position = SceneManager::GetInstance()->GetActiveCamera()->GetPosition();
+	m_transform.position = SceneManager::GetInstance()->GetActiveCamera()->GetPosition();
 
 	glBindVertexArray(m_model->GetVAO());
 
@@ -54,17 +59,21 @@ void SkyBox::Init()
 	m_shader->SendAttribute(ShaderStrings::NORMAL_ATTRIBUTE, 3, 0, 0);
 
 	glBindVertexArray(0);
+
+	m_init = true;
 }
 
-void SkyBox::Update()
+void SkyBox::Update(float dt)
 {
-	m_position = SceneManager::GetInstance()->GetActiveCamera()->GetPosition();
+	m_transform.position = SceneManager::GetInstance()->GetActiveCamera()->GetPosition();
 
 	GeneralUpdate();
 }
 
 void SkyBox::Draw(DrawType type)
 {
+	glDisable(GL_CULL_FACE);
+
 	// bind the program
 	glUseProgram(m_shader->GetProgramID());
 	// bind the VAO
@@ -83,6 +92,8 @@ void SkyBox::Draw(DrawType type)
 
 	// unbind the program
 	glUseProgram(0);
+
+	glEnable(GL_CULL_FACE);
 }
 
 bool SkyBox::Collides(SceneObject * obj)

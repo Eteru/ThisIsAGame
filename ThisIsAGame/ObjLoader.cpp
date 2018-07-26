@@ -1,5 +1,6 @@
 
 #include <fstream>
+#include <sstream>
 #include <iostream>
 #include <algorithm>
 #include <map>
@@ -11,6 +12,8 @@ static inline unsigned int FindNextChar(unsigned int start, const char* str, uns
 static inline unsigned int ParseOBJIndexValue(const std::string& token, unsigned int start, unsigned int end);
 static inline float ParseOBJFloatValue(const std::string& token, unsigned int start, unsigned int end);
 static inline std::vector<std::string> SplitString(const std::string &s, char delim);
+static glm::vec2 ParseOBJVec2(const std::string& line);
+static glm::vec3 ParseOBJVec3(const std::string& line);
 
 OBJModel::OBJModel(const std::string& fileName)
 {
@@ -76,6 +79,78 @@ void IndexedModel::CalcNormals()
 
 	for (unsigned int i = 0; i < positions.size(); i++)
 		normals[i] = glm::normalize(normals[i]);
+}
+
+void IndexedModel::SaveModel()
+{
+	std::ofstream outfile("./res/models/terrain");
+
+	for (size_t i = 0; i < positions.size(); ++i)
+	{
+		outfile << "v " << positions[i].x << " " << positions[i].y << " " << positions[i].z << "\n";
+	}
+	
+	for (size_t i = 0; i < normals.size(); ++i)
+	{
+		outfile << "n " << normals[i].x << " " << normals[i].y << " " << normals[i].z << "\n";
+	}
+	
+	for (size_t i = 0; i < texCoords.size(); ++i)
+	{
+		outfile << "uv " << texCoords[i].x << " " << texCoords[i].y << "\n";
+	}
+	
+	for (size_t i = 0; i < indices.size(); ++i)
+	{
+		outfile << indices[i] << "\n";
+	}
+
+	outfile.close();
+}
+
+IndexedModel IndexedModel::LoadModel()
+{
+	IndexedModel im;
+
+	std::ifstream file("./res/models/terrain");
+
+	if (!file)
+	{
+		throw std::runtime_error(std::string("Terrain file unavailable"));
+	}
+	float miny = FLT_MAX;
+	while (file.good())
+	{
+		std::string line;
+		std::getline(file, line);
+
+		if (line.size() < 1)
+			continue;
+		
+		switch (line[0])
+		{
+		case 'v':
+			im.positions.push_back(ParseOBJVec3(line));
+			if (im.positions.back().y < miny)
+				miny = im.positions.back().y;
+			continue;
+		case 'n':
+			im.normals.push_back(ParseOBJVec3(line));
+			continue;
+		case 'u':
+			im.texCoords.push_back(ParseOBJVec2(line));
+			continue;
+		default:
+			im.indices.push_back(std::stoi(line));
+			continue;
+		}
+	}
+
+	file.close();
+
+	std::cerr << "Min y: " << miny << std::endl;
+
+	return im;
 }
 
 IndexedModel OBJModel::ToIndexedModel()
@@ -293,7 +368,7 @@ OBJIndex OBJModel::ParseOBJIndex(const std::string& token, bool* hasUVs, bool* h
 	return result;
 }
 
-glm::vec3 OBJModel::ParseOBJVec3(const std::string& line)
+glm::vec3 ParseOBJVec3(const std::string& line)
 {
 	unsigned int tokenLength = line.length();
 	const char* tokenString = line.c_str();
@@ -326,7 +401,7 @@ glm::vec3 OBJModel::ParseOBJVec3(const std::string& line)
 	//glm::vec3(atof(tokens[1].c_str()), atof(tokens[2].c_str()), atof(tokens[3].c_str()))
 }
 
-glm::vec2 OBJModel::ParseOBJVec2(const std::string& line)
+glm::vec2 ParseOBJVec2(const std::string& line)
 {
 	unsigned int tokenLength = line.length();
 	const char* tokenString = line.c_str();

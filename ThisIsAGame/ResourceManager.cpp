@@ -49,19 +49,22 @@ ResourceManager::ResourceManager()
 
 ResourceManager::~ResourceManager()
 {
-	for (auto it = m_model_map.begin(); it != m_model_map.end();) {
+	for (auto it = m_model_map.begin(); it != m_model_map.end();) 
+	{
 		delete it->second;
 		it->second = nullptr;
 		it = m_model_map.erase(it);
 	}
 
-	for (auto it = m_shader_map.begin(); it != m_shader_map.end();) {
+	for (auto it = m_shader_map.begin(); it != m_shader_map.end();)
+	{
 		delete it->second;
 		it->second = nullptr;
 		it = m_shader_map.erase(it);
 	}
 
-	for (auto it = m_texture_map.begin(); it != m_texture_map.end();) {
+	for (auto it = m_texture_map.begin(); it != m_texture_map.end();) 
+	{
 		delete it->second;
 		it->second = nullptr;
 		it = m_texture_map.erase(it);
@@ -73,19 +76,22 @@ ResourceManager::~ResourceManager()
 	//	it = m_sound_map.erase(it);
 	//}
 
-	for (auto it = m_model_resource_map.begin(); it != m_model_resource_map.end();) {
+	for (auto it = m_model_resource_map.begin(); it != m_model_resource_map.end();) 
+	{
 		delete it->second;
 		it->second = nullptr;
 		it = m_model_resource_map.erase(it);
 	}
 
-	for (auto it = m_shader_resource_map.begin(); it != m_shader_resource_map.end();) {
+	for (auto it = m_shader_resource_map.begin(); it != m_shader_resource_map.end();)
+	{
 		delete it->second;
 		it->second = nullptr;
 		it = m_shader_resource_map.erase(it);
 	}
 
-	for (auto it = m_texture_resource_map.begin(); it != m_texture_resource_map.end();) {
+	for (auto it = m_texture_resource_map.begin(); it != m_texture_resource_map.end();) 
+	{
 		delete it->second;
 		it->second = nullptr;
 		it = m_texture_resource_map.erase(it);
@@ -100,7 +106,8 @@ ResourceManager::~ResourceManager()
 
 ResourceManager * ResourceManager::GetInstance()
 {
-	if (nullptr == m_instance) {
+	if (nullptr == m_instance) 
+	{
 		m_instance = new ResourceManager;
 	}
 
@@ -109,7 +116,8 @@ ResourceManager * ResourceManager::GetInstance()
 
 Model * ResourceManager::GetModel(std::string id)
 {
-	if (m_model_map.find(id) == m_model_map.end()) {
+	if (m_model_map.find(id) == m_model_map.end()) 
+	{
 		return nullptr;
 	}
 
@@ -118,7 +126,8 @@ Model * ResourceManager::GetModel(std::string id)
 
 Texture * ResourceManager::GetTexture(std::string id)
 {
-	if (m_texture_map.find(id) == m_texture_map.end()) {
+	if (m_texture_map.find(id) == m_texture_map.end())
+	{
 		return nullptr;
 	}
 
@@ -127,7 +136,8 @@ Texture * ResourceManager::GetTexture(std::string id)
 
 Shader * ResourceManager::GetShader(std::string id)
 {
-	if (m_shader_map.find(id) == m_shader_map.end()) {
+	if (m_shader_map.find(id) == m_shader_map.end())
+	{
 		return nullptr;
 	}
 
@@ -158,7 +168,10 @@ bool ResourceManager::Init(std::string filepath)
 
 	// models
 	rapidxml::xml_node<> *pModels = pRoot->first_node("models");
-	for (rapidxml::xml_node<> *pNode = pModels->first_node("model"); pNode; pNode = pNode->next_sibling()) {
+	for (rapidxml::xml_node<> *pNode = pModels->first_node("model");
+		pNode;
+		pNode = pNode->next_sibling())
+	{
 		ModelResource *mr = new ModelResource;
 		// Get attributes -- only one field for now, no need to iterate
 		//for (rapidxml::xml_attribute<> *pAttribute = pNode->first_attribute(); pAttribute; pAttribute = pAttribute->next_attribute()) {
@@ -177,7 +190,10 @@ bool ResourceManager::Init(std::string filepath)
 
 	// shaders
 	rapidxml::xml_node<> *pShader = pRoot->first_node("shaders");
-	for (rapidxml::xml_node<> *pNode = pShader->first_node("shader"); pNode; pNode = pNode->next_sibling()) {
+	for (rapidxml::xml_node<> *pNode = pShader->first_node("shader");
+		pNode;
+		pNode = pNode->next_sibling())
+	{
 		ShaderResource *sr = new ShaderResource;
 
 		rapidxml::xml_attribute<> *pAttribute = pNode->first_attribute();
@@ -194,25 +210,36 @@ bool ResourceManager::Init(std::string filepath)
 
 	// textures
 	rapidxml::xml_node<> *pTexture = pRoot->first_node("textures");
-	for (rapidxml::xml_node<> *pNode = pTexture->first_node("texture"); pNode; pNode = pNode->next_sibling()) {
+	for (rapidxml::xml_node<> *pNode = pTexture->first_node("texture");
+		pNode;
+		pNode = pNode->next_sibling())
+	{
 		TextureResource *tr = new TextureResource;
 
-		for (rapidxml::xml_attribute<> *pAttribute = pNode->first_attribute(); pAttribute; pAttribute = pAttribute->next_attribute()) {
+		for (rapidxml::xml_attribute<> *pAttribute = pNode->first_attribute(); 
+			pAttribute; 
+			pAttribute = pAttribute->next_attribute()) 
+		{
 			std::string name = pAttribute->name();
 
-			if ("id" == name) {
+			if ("id" == name)
+			{
 				tr->id = std::string(pAttribute->value());
 			}
-			else if ("type" == name) {
+			else if ("type" == name) 
+			{
 				std::string value = std::string(pAttribute->value());
 
-				if ("2d" == value) {
+				if ("2d" == value)
+				{
 					tr->type = GL_TEXTURE_2D;
 				}
-				else if ("cube" == value) {
+				else if ("cube" == value) 
+				{
 					tr->type = GL_TEXTURE_CUBE_MAP;
 				}
-				else {
+				else 
+				{
 					std::cerr << "Not a 2d texture: " << value << std::endl;
 					return false;
 				}
@@ -225,10 +252,16 @@ bool ResourceManager::Init(std::string filepath)
 		rapidxml::xml_node<> *pMinFilter = pNode->first_node("min_filter");
 		std::string minFilterValue = std::string(pMinFilter->value());
 
-		if ("LINEAR" == minFilterValue) {
+		if ("LINEAR" == minFilterValue)
+		{
 			tr->min_filter = GL_LINEAR;
 		}
-		else {
+		else if ("MIPMAP_LINEAR" == minFilterValue)
+		{
+			tr->min_filter = GL_LINEAR_MIPMAP_LINEAR;
+		}
+		else
+		{
 			std::cerr << "Not linear min filter: " << minFilterValue << std::endl;
 			return false;
 		}
@@ -236,10 +269,12 @@ bool ResourceManager::Init(std::string filepath)
 		rapidxml::xml_node<> *pMagFilter = pNode->first_node("mag_filter");
 		std::string magFilterValue = std::string(pMagFilter->value());
 		
-		if ("LINEAR" == magFilterValue) {
+		if ("LINEAR" == magFilterValue)
+		{
 			tr->mag_filter = GL_LINEAR;
 		}
-		else {
+		else 
+		{
 			std::cerr << "Not linear mag filter: " << magFilterValue << std::endl;
 			return false;
 		}
@@ -247,13 +282,16 @@ bool ResourceManager::Init(std::string filepath)
 		rapidxml::xml_node<> *pWrap_s = pNode->first_node("wrap_s");
 		std::string wrap_sValue = std::string(pWrap_s->value());
 
-		if ("CLAMP_TO_EDGE" == wrap_sValue) {
+		if ("CLAMP_TO_EDGE" == wrap_sValue)
+		{
 			tr->wrap_s = GL_CLAMP_TO_EDGE;
 		}
-		else if ("REPEAT" == wrap_sValue) {
+		else if ("REPEAT" == wrap_sValue)
+		{
 			tr->wrap_s = GL_REPEAT;
 		}
-		else {
+		else 
+		{
 			std::cerr << "Not CLAMP_TO_EDGE wrap_s filter: " << wrap_sValue << std::endl;
 			return false;
 		}
@@ -261,13 +299,16 @@ bool ResourceManager::Init(std::string filepath)
 		rapidxml::xml_node<> *pWrap_t = pNode->first_node("wrap_t");
 		std::string wrap_tValue = std::string(pWrap_t->value());
 
-		if ("CLAMP_TO_EDGE" == wrap_tValue) {
+		if ("CLAMP_TO_EDGE" == wrap_tValue) 
+		{
 			tr->wrap_t = GL_CLAMP_TO_EDGE;
 		}
-		else if ("REPEAT" == wrap_tValue) {
+		else if ("REPEAT" == wrap_tValue)
+		{
 			tr->wrap_t = GL_REPEAT;
 		}
-		else {
+		else 
+		{
 			std::cerr << "Not CLAMP_TO_EDGE wrap_t filter: " << wrap_tValue << std::endl;
 			return false;
 		}
@@ -284,7 +325,10 @@ bool ResourceManager::Init(std::string filepath)
 	//}
 
 	rapidxml::xml_node<> *pSounds = pRoot->first_node("sounds");
-	for (rapidxml::xml_node<> *pNode = pSounds->first_node("sound"); pNode; pNode = pNode->next_sibling()) {
+	for (rapidxml::xml_node<> *pNode = pSounds->first_node("sound");
+		pNode;
+		pNode = pNode->next_sibling()) 
+	{
 		SoundResource *sr = new SoundResource;
 
 		rapidxml::xml_attribute<> *pAttribute = pNode->first_attribute();
@@ -304,11 +348,13 @@ bool ResourceManager::Init(std::string filepath)
 
 Model *ResourceManager::LoadModel(std::string id)
 {
-	if (m_model_resource_map.find(id) == m_model_resource_map.end()) {
+	if (m_model_resource_map.find(id) == m_model_resource_map.end())
+	{
 		return nullptr;
 	}
 
-	if (m_model_map.find(id) == m_model_map.end()) {
+	if (m_model_map.find(id) == m_model_map.end()) 
+	{
 		m_model_map[id] = new Model(m_model_resource_map[id]);
 	}
 
@@ -319,11 +365,13 @@ Model *ResourceManager::LoadModel(std::string id)
 
 Shader *ResourceManager::LoadShader(std::string id)
 {
-	if (m_shader_resource_map.find(id) == m_shader_resource_map.end()) {
+	if (m_shader_resource_map.find(id) == m_shader_resource_map.end()) 
+	{
 		return nullptr;
 	}
 
-	if (m_shader_map.find(id) == m_shader_map.end()) {
+	if (m_shader_map.find(id) == m_shader_map.end())
+	{
 		m_shader_map[id] = new Shader(m_shader_resource_map[id]);
 	}
 
@@ -334,11 +382,13 @@ Shader *ResourceManager::LoadShader(std::string id)
 
 Texture *ResourceManager::LoadTexture(std::string id)
 {
-	if (m_texture_resource_map.find(id) == m_texture_resource_map.end()) {
+	if (m_texture_resource_map.find(id) == m_texture_resource_map.end())
+	{
 		return nullptr;
 	}
 
-	if (m_texture_map.find(id) == m_texture_map.end()) {
+	if (m_texture_map.find(id) == m_texture_map.end()) 
+	{
 		m_texture_map[id] = new Texture(m_texture_resource_map[id]);
 	}
 
@@ -364,7 +414,8 @@ Texture *ResourceManager::LoadTexture(std::string id)
 
 void ResourceManager::CleanUp()
 {
-	if (nullptr != m_instance) {
+	if (nullptr != m_instance) 
+	{
 		delete m_instance;
 		m_instance = nullptr;
 	}

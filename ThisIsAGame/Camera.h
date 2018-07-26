@@ -43,7 +43,7 @@ public:
 	void RotateOZ(int dir);
 
 	void Init();
-	void Update();
+	void Update(float dt);
 
 	// interfaces
 	virtual void MouseScroll(float y_offset) override;

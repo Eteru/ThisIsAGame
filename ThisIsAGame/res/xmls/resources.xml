@@ -8,6 +8,9 @@
     <model id="2">
       <path>./res/models/cube.obj</path>
     </model>
+    <model id="3">
+      <path>./res/models/tree.obj</path>
+    </model>
 	</models>
   
 	<shaders>
@@ -88,7 +91,7 @@
 			<wrap_t>REPEAT</wrap_t>
 		</texture>
 		<texture id="4" type="2d">
-			<path>./res/textures/croco.tga</path>			
+			<path>./res/textures/tree.tga</path>			
 			<min_filter>LINEAR</min_filter>
 			<mag_filter>LINEAR</mag_filter>
 			<wrap_s>CLAMP_TO_EDGE</wrap_s>

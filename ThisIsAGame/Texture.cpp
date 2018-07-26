@@ -37,10 +37,16 @@ void Texture::Load()
 	glGenTextures(1, &m_id);
 	glBindTexture(m_tr->type, m_id);
 
+	if (GL_LINEAR_MIPMAP_LINEAR == m_tr->min_filter)
+	{
+		glGenerateMipmap(m_tr->type);
+		glTexParameterf(m_tr->type, GL_TEXTURE_LOD_BIAS, -0.4f);
+	}
+
 	glTexParameteri(m_tr->type, GL_TEXTURE_WRAP_S, m_tr->wrap_s);
 	glTexParameteri(m_tr->type, GL_TEXTURE_WRAP_T, m_tr->wrap_t);
 	glTexParameterf(m_tr->type, GL_TEXTURE_MIN_FILTER, m_tr->min_filter);
-	glTexParameterf(m_tr->type, GL_TEXTURE_MAG_FILTER, m_tr->mag_filter);
+	glTexParameterf(m_tr->type, GL_TEXTURE_MAG_FILTER, m_tr->mag_filter);	
 
 	GLenum format = bpp == 32 ? GL_RGBA : GL_RGB;
 

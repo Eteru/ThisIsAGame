@@ -9,7 +9,8 @@ enum ObjectType {
 	OT_SKYBOX,
 	OT_TERRAIN,
 	OT_ANIMATED,
-	OT_PLAYER
+	OT_PLAYER,
+	OT_BATCH
 };
 
 struct ModelResource
@@ -41,6 +42,17 @@ struct SoundResource
 	bool repeat;
 	std::string id;
 	std::string sound_path;
+};
+
+struct Transform
+{
+	glm::vec3 position;
+	glm::vec3 rotation;
+	glm::vec3 scale;
+
+	glm::vec3 up;
+	glm::vec3 front;
+	glm::vec3 right;
 };
 
 struct BoundingBox

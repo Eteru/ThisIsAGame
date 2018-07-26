@@ -1,21 +1,6 @@
 #version 150
 #extension GL_NV_shadow_samplers_cube : enable
 
-in vec3 v_normal;
-in vec3 v_pos;
-in vec4 v_pos_light_space;
-in vec4 v_color;
-in vec2 v_uv;
-in vec2 v_uvBlend;
-
-uniform vec3 u_camera_pos;
-
-uniform sampler2D u_texture_0;
-uniform sampler2D u_texture_1;
-uniform sampler2D u_texture_2;
-uniform sampler2D u_texture_3;
-uniform sampler2D u_texture_shadow_map;
-
 // declare structs
 struct Fog
 {
@@ -50,6 +35,22 @@ struct Light
 	float cone_angle;
 };
 
+in float v_visibility;
+in vec3 v_normal;
+in vec3 v_pos;
+in vec4 v_pos_light_space;
+in vec4 v_color;
+in vec2 v_uv;
+in vec2 v_uvBlend;
+
+uniform vec3 u_camera_pos;
+
+uniform sampler2D u_texture_0;
+uniform sampler2D u_texture_1;
+uniform sampler2D u_texture_2;
+uniform sampler2D u_texture_3;
+uniform sampler2D u_texture_shadow_map;
+
 // lights count
 #define MAX_LIGHTS 20
 uniform int u_lights_count;
@@ -65,7 +66,7 @@ uniform Light u_lights[MAX_LIGHTS];
 // out value
 out vec4 out_frag_color;
 
-#define M_PI 3.14159265358
+const float M_PI = 3.14159;
 
 float ShadowPercentage()
 {
@@ -125,16 +126,18 @@ vec3 ApplyLight(Light light, vec3 surface, vec3 normal, vec3 eye)
 
 vec3 ApplyFog(vec3 color)
 {
-	float alpha_clamped = clamp(u_fog.alpha, 0.0, 1.0);
-	
-	return alpha_clamped * u_fog.color + (1.0 - alpha_clamped) * color.xyz;
+	return mix(u_fog.color, color, v_visibility);
 }
 
 void main()
 {
-	const vec3 start_color = vec3(0.286, 0.219, 0.16);
-	const vec3 end_color = vec3(1.0, 1.0, 1.0);
-	vec3 color = mix(start_color, end_color, v_pos.y / 10.0);
+	//const vec3 start_color = vec3(0.286, 0.219, 0.16);
+	//const vec3 end_color = vec3(1.0, 1.0, 1.0);
+	const vec3 start_color = vec3(0.0);
+	const vec3 end_color = vec3(1.0);
+
+	float height_perc = clamp(v_pos.y + 10.f, 0.0, 20.0) / 20.0;
+	vec3 color = mix(start_color, end_color, height_perc);
 
 	vec4 c_final = vec4(color, 1.0);
 	
@@ -150,5 +153,5 @@ void main()
     vec3 gamma = vec3(1.0 / 2.2);
 	light_col = pow(light_col, gamma);
 	
-	out_frag_color = vec4(light_col, c_final.a);
+	out_frag_color = vec4(ApplyFog(light_col), c_final.a);
 }

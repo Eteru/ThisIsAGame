@@ -52,7 +52,7 @@ public:
 
 	inline glm::vec3 GetPosition() const
 	{
-		return m_position;
+		return m_transform.position;
 	}
 
 	inline const Model *GetMesh() const
@@ -62,16 +62,16 @@ public:
 
 	inline glm::vec3 GetScale() const
 	{
-		return m_scale;
+		return m_transform.scale;
 	}
 
 	inline glm::vec3 GetRotation() const
 	{
-		return m_rotation;
+		return m_transform.rotation;
 	}
 
 	virtual void Init();
-	virtual void Update();
+	virtual void Update(float dt);
 	virtual void Draw(DrawType type = NORMAL);
 	virtual bool Collides(SceneObject * obj);
 	virtual bool Contains(const glm::vec3 & point);
@@ -79,20 +79,16 @@ public:
 protected:
 	bool m_depth_test;
 	bool m_is_wired;
+	bool m_init;
 	std::string m_id;
-	glm::vec3 m_position;
-	glm::vec3 m_rotation;
-	glm::vec3 m_scale;
+	
+	Transform m_transform;
 	glm::mat4 m_M;
 	Model *m_model;
 	Shader *m_shader;
 	//Trajectory *m_trajectory;
 	std::vector<Texture *> m_textures;
 	std::vector<std::string> m_light_ids;
-
-	glm::vec3 m_up;
-	glm::vec3 m_front;
-	glm::vec3 m_right;
 
 	void SharedDrawElements(DrawType type = NORMAL);
 	void GeneralUpdate();

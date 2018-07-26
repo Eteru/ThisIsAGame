@@ -9,7 +9,7 @@
 
 	<cameras>
 		<camera id="1">
-      <following>3</following>
+      <following>player</following>
     </camera>
 	</cameras>
 	<activeCamera>1</activeCamera>
@@ -20,17 +20,15 @@
       <g>1.0</g>
       <b>1.0</b>
     </color>
-    <start>50</start>
-    <end>300</end>
   </fog>
 
 	<objects>
-    <object id="1">
+    <object id="terrain">
 			<shader>1</shader>
 			<type>terrain</type>
 			<depthTest>true</depthTest>
 			<blend>true</blend>
-			<name>teren</name>
+			<name>terrain</name>
 			<textures>
 				<texture id="1"/>
 				<texture id="2"/>
@@ -39,8 +37,8 @@
 			</textures>
 			<position>
 				<x>0</x>
-				<y>-2</y>
-				<z>-5</z>
+				<y>0</y>
+				<z>0</z>
 			</position>
 			<rotation>
 				<x>0</x>
@@ -57,16 +55,16 @@
 				<g>2</g>
 				<b>-1</b>
 			</heights>
-			<blockSize>80</blockSize>
-			<cellSize>1</cellSize>
+			<blockSize>600</blockSize>
+			<cellSize>3</cellSize>
 			<offsetY>-2</offsetY>
 		</object>
     
-    <object id="2">
+    <object id="skybox">
 			<model>2</model>>
 			<shader>2</shader>
 			<type>skybox</type>
-			<blend>true</blend>
+			<blend>false</blend>
 			<name>SkyBox</name>
 			<textures>
 				<texture id="15"/>
@@ -90,11 +88,11 @@
 			<size>1000</size>
 		</object>
 
-    <object id="3">
+    <object id="player">
 			<model>2</model>
 			<shader>13</shader>
 			<type>player</type>
-			<depthTest>false</depthTest>
+			<depthTest>true</depthTest>
 			<blend>true</blend>
 			<name>bila_test</name>
 			<textures>
@@ -102,7 +100,7 @@
 			</textures>
 			<position>
 				<x>0</x>
-				<y>10</y>
+				<y>35</y>
 				<z>0</z>
 			</position>
 			<rotation>
@@ -116,6 +114,30 @@
 				<z>1</z>
 			</scale>
 		</object>
+
+    <object id="batch_1">
+      <model>3</model>
+      <shader>13</shader>
+      <type>batch</type>
+      <depthTest>true</depthTest>
+      <blend>true</blend>
+      <name>batch_trees</name>
+      <textures>
+        <texture id="4"/>
+      </textures>
+      <count>200</count>
+      <rotation>
+        <x>0</x>
+        <y>-90</y>
+        <z>0</z>
+      </rotation>
+      <scale>
+        <x>3</x>
+        <y>3</y>
+        <z>3</z>
+      </scale>
+    </object>
+    
 	</objects>
 
   <sounds>

@@ -9,7 +9,7 @@ public:
 	~SkyBox();
 
 	virtual void Init() override;
-	virtual void Update() override;
+	virtual void Update(float dt) override;
 	virtual void Draw(DrawType type = NORMAL) override;
 	virtual bool Collides(SceneObject * obj) override;
 	virtual bool Contains(const glm::vec3 & point) override;

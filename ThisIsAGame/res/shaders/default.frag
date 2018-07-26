@@ -35,6 +35,7 @@ struct Light
 	float cone_angle;
 };
 
+in float v_visibility;
 in vec2 v_uv;
 in vec3 v_normal;
 in vec3 v_pos;
@@ -64,7 +65,7 @@ uniform Light u_lights[MAX_LIGHTS];
 // out value
 out vec4 out_frag_color;
 
-#define M_PI 3.1415926535897932384626433832795
+const float M_PI = 3.14159;
 
 vec3 ComputeLight(Light light, vec3 l, vec3 surface, vec3 normal, vec3 eye, float attenuation)
 {
@@ -113,9 +114,7 @@ vec3 ApplyLight(Light light, vec3 surface, vec3 normal, vec3 eye)
 
 vec3 ApplyFog(vec3 color)
 {
-	float alpha_clamped = clamp(u_fog.alpha, 0.0, 1.0);
-	
-	return alpha_clamped * u_fog.color + (1.0 - alpha_clamped) * color.xyz;
+	return mix(u_fog.color, color, v_visibility);
 }
 
 vec3 ApplyNormalMap()
@@ -155,6 +154,5 @@ void main()
     vec3 gamma = vec3(1.0 / 2.2);
 	light_col = pow(light_col, gamma);
 	
-	out_frag_color = vec4(light_col, 1.0);
-	//out_frag_color = vec4(ApplyFog(light_col), 1.0);
+	out_frag_color = vec4(ApplyFog(light_col), tex.a);
 }

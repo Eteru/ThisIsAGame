@@ -64,7 +64,7 @@ void Camera::Init()
 	UpdateWorldView();
 }
 
-void Camera::Update()
+void Camera::Update(float dt)
 {
 	UpdateWorldView();
 }
@@ -74,15 +74,13 @@ void Camera::UpdateWorldView()
 	float vert_d = m_distance_from_target * sin(glm::radians(m_pitch));
 	float horiz_d = m_distance_from_target * cos(glm::radians(m_pitch));
 
-	float theta = m_angle_around_target /* + m_target.getRotY()*/;
+	float theta = m_angle_around_target + m_target->GetRotation().y;
 	float offset_x = horiz_d * sin(glm::radians(theta));
 	float offset_z = horiz_d * cos(glm::radians(theta));
 
-	m_position.x = m_target->GetPosition().x - offset_x;
-	m_position.y = m_target->GetPosition().y + vert_d;
-	m_position.z = m_target->GetPosition().z - offset_z;
+	m_position = m_target->GetPosition() + glm::vec3(-offset_x, vert_d, -offset_z);
 
-	m_yaw = 180.f - (m_angle_around_target /* + m_target.getRotY()*/);
+	m_yaw = 180.f - (m_angle_around_target + m_target->GetRotation().y);
 
 	m_front = glm::normalize(m_target->GetPosition() - m_position);
 	m_right = glm::normalize(glm::cross(m_front, WORLD_UP));

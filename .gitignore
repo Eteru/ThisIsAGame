@@ -216,3 +216,6 @@ pip-log.txt
 .mr.developer.cfg
 *.db
 *.opendb
+ThisIsAGame/res/models/terrain
+ThisIsAGame/res/models/terrainx1000
+ThisIsAGame/res/models/terrainx1000

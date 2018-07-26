@@ -7,7 +7,7 @@
 #include <glm/glm.hpp>
 #include "SceneObject.h"
 #include "Camera.h"
-//#include "Fog.h"
+#include "Fog.h"
 #include "AmbientalLight.h"
 #include "LightSource.h"
 //#include "ShadowMap.h"
@@ -23,7 +23,7 @@ public:
 	static SceneManager *GetInstance();
 
 	bool Init(std::string filepath);
-	void Update();
+	void Update(float dt);
 	void Draw(bool debug = false);
 	void CleanUp();
 	
@@ -33,10 +33,10 @@ public:
 		return m_window;
 	}
 
-	//inline const Fog & GetFog() const
-	//{
-	//	return m_fog;
-	//}
+	inline const Fog & GetFog() const
+	{
+		return m_fog;
+	}
 
 	inline const AmbientalLight & GetAmbientalLight()
 	{
@@ -108,7 +108,7 @@ private:
 	//std::map<std::string, Sound *> m_sounds;
 	std::string m_active_camera;
 
-	//Fog m_fog;
+	Fog m_fog;
 	AmbientalLight m_ambiental_light;
 	//DebugSettings m_debug_settings;
 	//ShadowMap *m_shadow_map;

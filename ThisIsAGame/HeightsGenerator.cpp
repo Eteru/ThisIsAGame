@@ -24,7 +24,7 @@ float HeightsGenerator::GenerateHeight(int x, int z)
 
 		total += GetInterpolatedNoise(x * 0.25f, z * 0.25f) * amp;
 	}
-
+		
 	return total;
 }
 

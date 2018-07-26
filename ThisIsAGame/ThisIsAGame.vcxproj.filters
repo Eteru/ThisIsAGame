@@ -81,6 +81,12 @@
     <ClCompile Include="Player.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Fog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneObjectBatch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Strings.h">
@@ -152,12 +158,21 @@
     <ClInclude Include="Player.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Fog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneObjectBatch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Object Include="res\models\sphere.obj">
       <Filter>Resource Files</Filter>
     </Object>
     <Object Include="res\models\cube.obj">
+      <Filter>Resource Files</Filter>
+    </Object>
+    <Object Include="res\models\tree.obj">
       <Filter>Resource Files</Filter>
     </Object>
   </ItemGroup>

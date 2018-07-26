@@ -5,20 +5,39 @@
 #include "ObjLoader.h"
 #include "Strings.h"
 
-Terrain::Terrain(glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec3 heights, bool depth_test, std::string id)
-	: SceneObject(pos, rot, scale, depth_test, id)
+Terrain::Terrain(glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec3 heights,
+	bool depth_test, std::string id)
+	: SceneObject(pos, rot, scale, depth_test, id), m_heights(heights),
+	m_height_map(nullptr)
 {
-	m_heights = heights;
 }
 
 Terrain::~Terrain()
 { // Terrains has its own model that has to be deleted
 	if (nullptr != m_model)
+	{
 		delete m_model;
+	}
+
+	if (nullptr != m_height_map)
+	{
+		uint32_t verts = m_block_size / m_cell_size + 1;
+		for (uint32_t i = 0; i < verts; ++i)
+		{
+			delete[] m_height_map[i];
+		}
+
+		delete[] m_height_map;
+	}
 }
 
 void Terrain::Init()
 {
+	if (true == m_init)
+	{
+		return;
+	}
+
 	if (nullptr == m_shader)
 	{
 		throw std::runtime_error(std::string("Shader is nullptr: ") + m_id);
@@ -37,13 +56,26 @@ void Terrain::Init()
 	}
 
 	m_model = new Model();
-	GenerateFlatModel(m_block_size, m_cell_size, m_offsetY);
-	m_half_size = static_cast<uint32_t>(m_block_size * m_cell_size * 0.5f);
+
+	try 
+	{
+		IndexedModel im = IndexedModel::LoadModel();
+		InitHeightMap(im);
+
+		m_model->InitMesh(im);
+	}
+	catch (const std::exception& e) {
+		std::cerr << "ERROR: " << e.what() << std::endl;
+
+		GenerateFlatModel(m_block_size, m_cell_size, m_offsetY);
+	}
+
+	m_half_size = static_cast<uint32_t>(m_block_size * 0.5f);
 
 	// Center terrain to camera position
 	Camera *cam = SceneManager::GetInstance()->GetActiveCamera();
-	m_position.x = cam->GetPosition().x - m_half_size;
-	m_position.z = cam->GetPosition().z - m_half_size;
+	m_transform.position.x = cam->GetPosition().x - m_half_size;
+	m_transform.position.z = cam->GetPosition().z - m_half_size;
 
 
 	glBindVertexArray(m_model->GetVAO());
@@ -57,50 +89,18 @@ void Terrain::Init()
 	glBindBuffer(GL_ARRAY_BUFFER, m_model->GetVBO(Model::NORMAL_VB));
 	m_shader->SendAttribute(ShaderStrings::NORMAL_ATTRIBUTE, 3, 0, 0);
 
-	glBindBuffer(GL_ARRAY_BUFFER, m_model->GetVBO(Model::UV_BLEND_VB));
-	glBufferData(GL_ARRAY_BUFFER, sizeof(m_uv_blend[0]) * m_uv_blend.size(), &m_uv_blend[0], GL_STATIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, m_model->GetVBO(Model::UV_BLEND_VB));
-	m_shader->SendAttribute(ShaderStrings::UV_BLEND_ATTRIBUTE, 3, 0, 0);
+	//glBindBuffer(GL_ARRAY_BUFFER, m_model->GetVBO(Model::UV_BLEND_VB));
+	//glBufferData(GL_ARRAY_BUFFER, sizeof(m_uv_blend[0]) * m_uv_blend.size(), &m_uv_blend[0], GL_STATIC_DRAW);
+	//glBindBuffer(GL_ARRAY_BUFFER, m_model->GetVBO(Model::UV_BLEND_VB));
+	//m_shader->SendAttribute(ShaderStrings::UV_BLEND_ATTRIBUTE, 3, 0, 0);
 
 	glBindVertexArray(0);
+
+	m_init = true;
 }
 
-void Terrain::Update()
+void Terrain::Update(float dt)
 {
-	//Camera *cam = SceneManager::GetInstance()->GetActiveCamera();
-	//glm::vec3 camera_pos = cam->GetPosition();
-	//
-	//float d_X = camera_pos.x - (m_position.x + m_half_size);
-	//float d_Z = camera_pos.z - (m_position.z + m_half_size);
-	//float d_Value_X = 0, d_Value_Y = 0;
-	//
-	//if (d_X >= m_cell_size) {
-	//	m_position.x += m_cell_size;
-	//	d_Value_Y = 1.f / m_block_size;
-	//}
-	//else if (-d_X >= m_cell_size) {
-	//	m_position.x -= m_cell_size;
-	//	d_Value_Y = -1.f / m_block_size;
-	//	// move uvs
-	//}
-	//if (d_Z >= m_cell_size) {
-	//	m_position.z += m_cell_size;
-	//	d_Value_X = 1.f / m_block_size;
-	//	// move uvs
-	//}
-	//else if (-d_Z >= m_cell_size) {
-	//	m_position.z -= m_cell_size;
-	//	d_Value_X = -1.f / m_block_size;
-	//	// move uvs
-	//}
-	//
-	//for (Vertex & v : m_vertices) {
-	//	v.uv_blend.x += d_Value_X;
-	//	v.uv_blend.y += d_Value_Y;
-	//}
-	//
-	//m_model->RebindBuffer(m_vertices);
-
 	GeneralUpdate();
 }
 
@@ -135,14 +135,63 @@ void Terrain::Draw(DrawType type)
 	glUseProgram(0);
 }
 
+float Terrain::GetTerrainHeight(float x, float z)
+{
+	float t_x = x - m_transform.position.x;
+	float t_z = z - m_transform.position.z;
+
+	if (t_x >= m_block_size || t_z >= m_block_size || t_x < 0 || t_z < 0)
+	{
+		std::cerr << "Outside of terrain\n";
+		return 0.f;
+	}
+
+	int cells_per_line = m_block_size / m_cell_size;
+
+	int grid_x = t_x / m_cell_size;
+	int grid_z = t_z / m_cell_size;
+
+	// between [0, 1]
+	float inner_grid_x = std::fmodf(t_x, m_cell_size) / m_cell_size;
+	float inner_grid_z = std::fmodf(t_z, m_cell_size) / m_cell_size;
+
+	float value;
+	if (inner_grid_x <= 1.f - inner_grid_z)
+	{ // left triangle
+		value = BarryCentric(glm::vec3(0, m_height_map[grid_x][grid_z], 0),
+			glm::vec3(1, m_height_map[grid_x + 1][grid_z], 0),
+			glm::vec3(0, m_height_map[grid_x][grid_z + 1], 1),
+			glm::vec2(inner_grid_x, inner_grid_z));
+	}
+	else
+	{ // right triangle
+		value = BarryCentric(glm::vec3(1, m_height_map[grid_x + 1][grid_z], 0),
+			glm::vec3(1, m_height_map[grid_x + 1][grid_z + 1], 1),
+			glm::vec3(0, m_height_map[grid_x][grid_z + 1], 1),
+			glm::vec2(inner_grid_x, inner_grid_z));
+	}
+	
+	return value;
+}
+
 std::vector<glm::vec3> Terrain::GenerateGridSquare(int col, int row, uint32_t cell_size, float offset_y)
 {
 	std::vector<glm::vec3> verts(4);
 
-	verts[0] = glm::vec3(col, offset_y + m_hg.GenerateHeight(col, row), row);
-	verts[1] = glm::vec3(col, offset_y + m_hg.GenerateHeight(col, row + 1), row + 1);
-	verts[2] = glm::vec3(col + 1, offset_y + m_hg.GenerateHeight(col + 1, row), row);
-	verts[3] = glm::vec3(col + 1, offset_y + m_hg.GenerateHeight(col + 1, row + 1), row + 1);
+	int crt_col = col * cell_size;
+	int crt_row = row * cell_size;
+	int next_col = crt_col + cell_size;
+	int next_row = crt_row + cell_size;
+
+	m_height_map[col][row] = offset_y + m_hg.GenerateHeight(crt_col, crt_row);
+	m_height_map[col][row + 1] = offset_y + m_hg.GenerateHeight(crt_col, next_row);
+	m_height_map[col + 1][row] = offset_y + m_hg.GenerateHeight(next_col, crt_row);
+	m_height_map[col + 1][row + 1] = offset_y + m_hg.GenerateHeight(next_col, next_row);
+
+	verts[0] = glm::vec3(crt_col, m_height_map[col][row], crt_row);
+	verts[1] = glm::vec3(crt_col, m_height_map[col][row + 1], next_row);
+	verts[2] = glm::vec3(next_col, m_height_map[col + 1][row], crt_row);
+	verts[3] = glm::vec3(next_col, m_height_map[col + 1][row + 1], next_row);
 
 	return verts;
 }
@@ -150,14 +199,15 @@ std::vector<glm::vec3> Terrain::GenerateGridSquare(int col, int row, uint32_t ce
 void Terrain::GenerateFlatModel(uint32_t blockSize, uint32_t cellSize, float offsetY)
 {
 	size_t idx = 0;
+	size_t cells_per_line = blockSize / cellSize;
 	size_t verts_per_line = blockSize + 1;
 	size_t vertices_count = blockSize * blockSize * 2 * 3;
-
+	
 	IndexedModel im;
 	
-	for (size_t row = 0; row < blockSize - 1; ++row)
+	for (size_t row = 0; row < cells_per_line - 1; ++row)
 	{
-		for (size_t col = 0; col < blockSize - 1; ++col)
+		for (size_t col = 0; col < cells_per_line - 1; ++col)
 		{
 			std::vector<glm::vec3> square_verts = GenerateGridSquare(row, col, cellSize, offsetY);
 
@@ -179,6 +229,10 @@ void Terrain::GenerateFlatModel(uint32_t blockSize, uint32_t cellSize, float off
 
 	im.CalcNormals();
 
+	im.SaveModel();
+
+	InitHeightMap(im);
+
 	m_model->InitMesh(im);
 }
 
@@ -189,6 +243,35 @@ void Terrain::StoreDefaultVertex(IndexedModel & im, glm::vec3 pos, glm::vec3 nor
 	im.texCoords.push_back(uv);
 	im.indices.push_back(index);
 
-	m_uv_blend.push_back(glm::vec2(static_cast<float>(uv.x) / verts_per_line, static_cast<float>(uv.y) / verts_per_line));
+	//m_uv_blend.push_back(glm::vec2(static_cast<float>(uv.x) / verts_per_line, static_cast<float>(uv.y) / verts_per_line));
 
+}
+
+void Terrain::InitHeightMap(const IndexedModel & im)
+{
+	uint32_t verts = m_block_size / m_cell_size + 1;
+	m_height_map = new float*[verts];
+
+	for (uint32_t i = 0; i < verts; ++i)
+	{
+		m_height_map[i] = new float[verts];
+	}
+
+	for (size_t i = 0; i < im.positions.size(); ++i)
+	{
+		int x = im.positions[i].x / m_cell_size;
+		int z = im.positions[i].z / m_cell_size;
+
+		m_height_map[x][z] = im.positions[i].y;
+	}
+}
+
+float Terrain::BarryCentric(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec2 pos)
+{
+	float det = (p2.z - p3.z) * (p1.x - p3.x) + (p3.x - p2.x) * (p1.z - p3.z);
+	float l1 = ((p2.z - p3.z) * (pos.x - p3.x) + (p3.x - p2.x) * (pos.y - p3.z)) / det;
+	float l2 = ((p3.z - p1.z) * (pos.x - p3.x) + (p1.x - p3.x) * (pos.y - p3.z)) / det;
+	float l3 = 1.0f - l1 - l2;
+
+	return l1 * p1.y + l2 * p2.y + l3 * p3.y;
 }

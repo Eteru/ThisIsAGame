@@ -108,6 +108,8 @@ static void End(const char *error)
 void AppMain()
 {
 	GLFWwindow* window = nullptr;
+	static const float MAX_FPS = 60.0;
+	static const float MAX_PERIOD = 1.0 / MAX_FPS;
 
 	// initialise GLFW
 	glfwSetErrorCallback(CallbackError);
@@ -165,17 +167,28 @@ void AppMain()
 
 	// ------------------------------------
 
+	float last_time = 0.0;
 	// run while the window is open
 	while (!glfwWindowShouldClose(window)) {
-		// process pending events
-		glfwPollEvents();
+		float crt_time = glfwGetTime();
+		float dt = crt_time - last_time;
 
-		SceneManager::GetInstance()->Update();
+		if (dt >= MAX_PERIOD)
+		{
+			last_time = crt_time;
 
-		SceneManager::GetInstance()->Draw();
+			// process pending events
+			glfwPollEvents();
 
-		// swap the display buffers (displays what was just drawn)
-		glfwSwapBuffers(window);
+			SceneManager::GetInstance()->Update(dt);
+
+			SceneManager::GetInstance()->Draw();
+
+			// swap the display buffers (displays what was just drawn)
+			glfwSwapBuffers(window);
+		}
+
+		
 	}
 
 	// clean up and exit

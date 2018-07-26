@@ -7,6 +7,7 @@
 #include "Terrain.h"
 #include "SkyBox.h"
 #include "Player.h"
+#include "SceneObjectBatch.h"
 //#include "AnimatedObject.h"
 //#include "TTLSceneObject.h"
 #include "Primitives.h"
@@ -36,7 +37,7 @@ void SceneManager::AddObject(SceneObject * so)
 		return;
 	}
 
-	so->Update();
+	so->Update(0);
 	m_objects[so->GetName()] = so;
 }
 
@@ -343,6 +344,8 @@ SceneManager * SceneManager::GetInstance()
 
 bool SceneManager::Init(std::string filepath)
 {
+	std::srand(time(0));
+
 	FILE *f = fopen(filepath.c_str(), "r");
 
 	if (NULL == f)
@@ -432,25 +435,19 @@ bool SceneManager::Init(std::string filepath)
 	{
 		rapidxml::xml_node<> *pFogColor = pFog->first_node("color");
 
-		float fr, fg, fb;
+		glm::vec3 fog_color(0.f);
 		if (nullptr != pFogColor) 
 		{
 			rapidxml::xml_node<> *pFogColorR = pFogColor->first_node("r");
 			rapidxml::xml_node<> *pFogColorG = pFogColor->first_node("g");
 			rapidxml::xml_node<> *pFogColorB = pFogColor->first_node("b");
 
-			fr = (nullptr == pFogColorR) ? 1.f : std::stof(pFogColorR->value());
-			fg = (nullptr == pFogColorG) ? 1.f : std::stof(pFogColorG->value());
-			fb = (nullptr == pFogColorB) ? 1.f : std::stof(pFogColorB->value());
+			fog_color.x = (nullptr == pFogColorR) ? 1.f : std::stof(pFogColorR->value());
+			fog_color.y = (nullptr == pFogColorG) ? 1.f : std::stof(pFogColorG->value());
+			fog_color.z = (nullptr == pFogColorB) ? 1.f : std::stof(pFogColorB->value());
 		}
 
-		rapidxml::xml_node<> *pFogr = pFog->first_node("start");
-		rapidxml::xml_node<> *pFogR = pFog->first_node("end");
-
-		float r = (nullptr == pFogr) ? 100.f : std::stof(pFogr->value());
-		float R = (nullptr == pFogR) ? 300.f : std::stof(pFogR->value());
-
-		//m_fog.SetValues(r, R, glm::vec3(fr, fg, fb));
+		m_fog.SetColor(fog_color);
 	}
 
 	// lights
@@ -636,6 +633,10 @@ bool SceneManager::Init(std::string filepath)
 		else if ("player" == type)
 		{
 			ot = OT_PLAYER;
+		}
+		else if ("batch" == type)
+		{
+			ot = OT_BATCH;
 		}
 
 		bool depthTest = true;
@@ -857,6 +858,18 @@ bool SceneManager::Init(std::string filepath)
 			object = new Player(pos, rot, scale, depthTest, name);
 			break;
 		}
+		case OT_BATCH:
+		{
+			int count = 0; // default
+			rapidxml::xml_node<> *pBatchCount = pObject->first_node("count");
+			if (nullptr != pBatchCount)
+			{
+				count = std::stoi(pBatchCount->value());
+			}
+
+			object = new SceneObjectBatch(rot, scale, count, depthTest, name);
+			break;
+		}
 		default:
 			break;
 		}
@@ -1016,6 +1029,7 @@ bool SceneManager::Init(std::string filepath)
 	m_combine_tex_shader = ResourceManager::GetInstance()->LoadShader("11");
 
 	// Init objects
+	m_objects["terrain"]->Init(); // force terrain to be initialized first
 	for (auto model : m_objects) 
 	{
 		model.second->Init();
@@ -1028,22 +1042,22 @@ bool SceneManager::Init(std::string filepath)
 
 	glClearColor(m_background_color.x, m_background_color.y, m_background_color.z, 1.f);
 	glEnable(GL_DEPTH_TEST);
-
-	std::srand(time(0));
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
 
 	//m_target_spawner = new TargetSpawner("1", "4", "3");
 
 	return true;
 }
 
-void SceneManager::Update()
+void SceneManager::Update(float dt)
 {
 	for (auto & obj : m_objects) 
 	{
-		obj.second->Update();
+		obj.second->Update(dt);
 	}
 
-	m_cameras[m_active_camera]->Update();
+	m_cameras[m_active_camera]->Update(dt);
 
 	// Collision detection
 	for (auto obj = m_objects.begin(); obj != m_objects.end(); ++obj)

@@ -28,7 +28,7 @@ namespace ShaderStrings
 	const std::string MVP_UNIFORM = "u_matrix";
 	const std::string LIGHT_SPACE_UNIFORM = "u_light_space_matrix";
 
-	const std::string CAMERA_POSITION_UNIFORM = "u_cameru_pos";
+	const std::string CAMERA_POSITION_UNIFORM = "u_camera_pos";
 
 	const std::string COLOR_UNIFORM = "u_color";
 	const std::string TEXTURE_0_UNIFORM = "u_texture_0";
