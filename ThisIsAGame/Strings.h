@@ -20,6 +20,7 @@ namespace ShaderStrings
 
 	const std::string COLOR_ATTRIBUTE = "in_color";
 	const std::string UV_BLEND_ATTRIBUTE = "in_uvBlend";
+	const std::string INDICATORS_ATTRIBUTE = "in_indicators";
 
 	// Uniforms
 	const std::string MODEL_UNIFORM = "u_m";
@@ -42,9 +43,7 @@ namespace ShaderStrings
 
 	const std::string HEIGHT_MAP_UNIFORM = "u_heights";
 	const std::string DISPLACEMENT_MAP_UNIFORM = "u_disp_max";
-
-	const std::string TIME_UNIFORM = "u_time";
-
+	
 	// FragmentOffset
 	const std::string FRAGMENT_OFFSET_X_UNIFORM = "u_fragment_offset.x";
 	const std::string FRAGMENT_OFFSET_Y_UNIFORM = "u_fragment_offset.y";
@@ -70,4 +69,7 @@ namespace ShaderStrings
 	const std::string LIGHT_STRUCT_SPECULAR_RATIO_UNIFORM = "specular_ratio";
 	const std::string LIGHT_STRUCT_SHININESS_UNIFORM = "shininess";
 	const std::string LIGHT_STRUCT_CONE_ANGLE_UNIFORM = "cone_angle";
+
+	// Others
+	const std::string TIME_UNIFORM = "u_time";
 }

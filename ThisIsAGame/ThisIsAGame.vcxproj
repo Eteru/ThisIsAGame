@@ -151,6 +151,7 @@
     <ClCompile Include="Terrain.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="TGA.cpp" />
+    <ClCompile Include="Water.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AmbientalLight.h" />
@@ -178,6 +179,7 @@
     <ClInclude Include="Terrain.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="TGA.h" />
+    <ClInclude Include="Water.h" />
   </ItemGroup>
   <ItemGroup>
     <Object Include="res\models\cube.obj">
@@ -202,6 +204,8 @@
     </Xml>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\..\ThisIsAGame\ThisIsAGame\res\shaders\water.frag" />
+    <None Include="..\..\..\ThisIsAGame\ThisIsAGame\res\shaders\water.vert" />
     <None Include="res\shaders\default.frag" />
     <None Include="res\shaders\default.vert" />
     <None Include="res\shaders\skybox.frag" />

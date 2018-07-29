@@ -17,10 +17,28 @@ public:
 	SceneObject(glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, bool depth_test, std::string id);
 	virtual ~SceneObject();
 
-	void SetWired(bool is_wired);
+	inline void SetWired(bool is_wired)
+	{
+		m_is_wired = is_wired;
+	}
+
+	inline void SetModel(Model *model)
+	{
+		m_model = model;
+	}
+
+	inline void SetShader(Shader *shader)
+	{
+		m_shader = shader;
+	}
+
+	inline void SetPosition(const glm::vec3 & pos)
+	{
+		m_transform.position = pos;
+	}
+
 	void SetBlend(bool use_blend);
-	void SetModel(Model *model);
-	void SetShader(Shader *shader);
+
 	//void SetTrajectory(Trajectory *trajectory);
 	void AddTexture(Texture *texture);
 	void AddLightID(std::string id);

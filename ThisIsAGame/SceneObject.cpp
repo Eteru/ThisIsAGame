@@ -35,11 +35,6 @@ SceneObject::~SceneObject()
 	//}
 }
 
-void SceneObject::SetWired(bool is_wired)
-{
-	m_is_wired = is_wired;
-}
-
 void SceneObject::SetBlend(bool use_blend)
 {
 	if (true == use_blend) {
@@ -49,16 +44,6 @@ void SceneObject::SetBlend(bool use_blend)
 	else {
 		glDisable(GL_BLEND);
 	}
-}
-
-void SceneObject::SetModel(Model * model)
-{
-	m_model = model;
-}
-
-void SceneObject::SetShader(Shader * shader)
-{
-	m_shader = shader;
 }
 
 //void SceneObject::SetTrajectory(Trajectory * trajectory)

@@ -20,3 +20,6 @@ namespace Physics
 {
 	const float GRAVITY = -5.f;
 }
+
+// IDs
+const std::string WATER_SHADER_ID = "14";

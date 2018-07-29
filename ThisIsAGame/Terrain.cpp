@@ -2,13 +2,12 @@
 #include "Terrain.h"
 #include "Vertex.h"
 #include "SceneManager.h"
-#include "ObjLoader.h"
 #include "Strings.h"
 
 Terrain::Terrain(glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec3 heights,
 	bool depth_test, std::string id)
 	: SceneObject(pos, rot, scale, depth_test, id), m_heights(heights),
-	m_height_map(nullptr)
+	m_height_map(nullptr), m_water(nullptr)
 {
 }
 
@@ -28,6 +27,11 @@ Terrain::~Terrain()
 		}
 
 		delete[] m_height_map;
+	}
+
+	if (nullptr != m_water)
+	{
+		delete m_water;
 	}
 }
 
@@ -59,10 +63,10 @@ void Terrain::Init()
 
 	try 
 	{
-		IndexedModel im = IndexedModel::LoadModel();
-		InitHeightMap(im);
+		m_im = IndexedModel::LoadModel();
+		InitHeightMap(m_im);
 
-		m_model->InitMesh(im);
+		m_model->InitMesh(m_im);
 	}
 	catch (const std::exception& e) {
 		std::cerr << "ERROR: " << e.what() << std::endl;
@@ -96,12 +100,18 @@ void Terrain::Init()
 
 	glBindVertexArray(0);
 
+	m_water = new Water(glm::vec3(m_transform.position.x, 0.f, m_transform.position.z),
+		m_transform.rotation, m_transform.scale, m_im);
+	m_water->Init();
+
 	m_init = true;
 }
 
 void Terrain::Update(float dt)
 {
 	GeneralUpdate();
+
+	m_water->Update(dt);
 }
 
 void Terrain::Draw(DrawType type)
@@ -133,6 +143,8 @@ void Terrain::Draw(DrawType type)
 
 	// unbind the program
 	glUseProgram(0);
+
+	m_water->Draw();
 }
 
 float Terrain::GetTerrainHeight(float x, float z)
@@ -202,9 +214,7 @@ void Terrain::GenerateFlatModel(uint32_t blockSize, uint32_t cellSize, float off
 	size_t cells_per_line = blockSize / cellSize;
 	size_t verts_per_line = blockSize + 1;
 	size_t vertices_count = blockSize * blockSize * 2 * 3;
-	
-	IndexedModel im;
-	
+		
 	for (size_t row = 0; row < cells_per_line - 1; ++row)
 	{
 		for (size_t col = 0; col < cells_per_line - 1; ++col)
@@ -215,25 +225,25 @@ void Terrain::GenerateFlatModel(uint32_t blockSize, uint32_t cellSize, float off
 			glm::vec3 NBR = glm::normalize(glm::cross(square_verts[2], square_verts[1]));
 
 			// Top Left
-			StoreDefaultVertex(im, square_verts[0], NTL, glm::vec2(col, row), idx++, verts_per_line);
-			StoreDefaultVertex(im, square_verts[1], NTL, glm::vec2(col, row + 1), idx++, verts_per_line);
-			StoreDefaultVertex(im, square_verts[2], NTL, glm::vec2(col + 1, row), idx++, verts_per_line);
+			StoreDefaultVertex(m_im, square_verts[0], NTL, glm::vec2(col, row), idx++, verts_per_line);
+			StoreDefaultVertex(m_im, square_verts[1], NTL, glm::vec2(col, row + 1), idx++, verts_per_line);
+			StoreDefaultVertex(m_im, square_verts[2], NTL, glm::vec2(col + 1, row), idx++, verts_per_line);
 
 			// Bottom Right
-			StoreDefaultVertex(im, square_verts[2], NBR, glm::vec2(col + 1, row), idx++, verts_per_line);
-			StoreDefaultVertex(im, square_verts[1], NBR, glm::vec2(col, row + 1), idx++, verts_per_line);
-			StoreDefaultVertex(im, square_verts[3], NBR, glm::vec2(col + 1, row + 1), idx++, verts_per_line);
+			StoreDefaultVertex(m_im, square_verts[2], NBR, glm::vec2(col + 1, row), idx++, verts_per_line);
+			StoreDefaultVertex(m_im, square_verts[1], NBR, glm::vec2(col, row + 1), idx++, verts_per_line);
+			StoreDefaultVertex(m_im, square_verts[3], NBR, glm::vec2(col + 1, row + 1), idx++, verts_per_line);
 
 		}
 	}
 
-	im.CalcNormals();
+	m_im.CalcNormals();
 
-	im.SaveModel();
+	m_im.SaveModel();
 
-	InitHeightMap(im);
+	InitHeightMap(m_im);
 
-	m_model->InitMesh(im);
+	m_model->InitMesh(m_im);
 }
 
 void Terrain::StoreDefaultVertex(IndexedModel & im, glm::vec3 pos, glm::vec3 normal, glm::vec2 uv, size_t index, uint32_t verts_per_line)

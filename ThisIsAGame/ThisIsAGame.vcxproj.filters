@@ -87,6 +87,9 @@
     <ClCompile Include="SceneObjectBatch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Water.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Strings.h">
@@ -164,6 +167,9 @@
     <ClInclude Include="SceneObjectBatch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Water.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Object Include="res\models\sphere.obj">
@@ -201,6 +207,12 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="res\shaders\skybox.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\ThisIsAGame\ThisIsAGame\res\shaders\water.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\ThisIsAGame\ThisIsAGame\res\shaders\water.vert">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

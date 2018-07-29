@@ -66,6 +66,10 @@
       <vs>./res/shaders/default.vert</vs>
       <fs>./res/shaders/default.frag</fs>
     </shader>
+    <shader id="14">
+      <vs>D:\\workspace\\ThisIsAGame\\ThisIsAGame\\res\\shaders\\water.vert</vs>
+      <fs>D:\\workspace\\ThisIsAGame\\ThisIsAGame\\res\\shaders\\water.frag</fs>
+    </shader>
 	</shaders>
   
 	<textures>

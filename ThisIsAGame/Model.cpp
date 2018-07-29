@@ -82,3 +82,37 @@ void Model::InitMesh(const IndexedModel & model)
 
 	m_loaded = true;
 }
+
+void Model::CreateMesh(const std::vector<glm::vec3>& vertices, const std::vector<unsigned int> & indices)
+{
+	m_indices_count = indices.size();
+
+	glGenVertexArrays(1, &m_vao);
+	glBindVertexArray(m_vao);
+
+	glGenBuffers(NUM_BUFFERS, m_vbo);
+
+	glBindBuffer(GL_ARRAY_BUFFER, m_vbo[POSITION_VB]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices[0]) * vertices.size(), &vertices[0], GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_vbo[INDEX_VB]);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices[0]) * indices.size(), &indices[0], GL_STATIC_DRAW);
+
+	glBindVertexArray(0);
+
+	// Compute bounding box
+	m_bb.bb_min = glm::vec3(FLT_MAX);
+	m_bb.bb_max = glm::vec3(FLT_MIN);
+	for (glm::vec3 vertex : vertices)
+	{
+		m_bb.bb_min.x = std::min(m_bb.bb_min.x, vertex.x);
+		m_bb.bb_min.y = std::min(m_bb.bb_min.y, vertex.y);
+		m_bb.bb_min.z = std::min(m_bb.bb_min.z, vertex.z);
+
+		m_bb.bb_max.x = std::max(m_bb.bb_max.x, vertex.x);
+		m_bb.bb_max.y = std::max(m_bb.bb_max.y, vertex.y);
+		m_bb.bb_max.z = std::max(m_bb.bb_max.z, vertex.z);
+	}
+
+	m_loaded = true;
+}

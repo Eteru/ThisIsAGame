@@ -25,7 +25,8 @@ void SceneManager::SetGLFWWindow(GLFWwindow * window)
 
 void SceneManager::PlaySound(std::string id)
 {
-	//if (m_sounds.find(id) != m_sounds.end()) {
+	//if (m_sounds.find(id) != m_sounds.end()) 
+	//{
 	//	m_sounds[id]->Play();
 	//}
 }
@@ -1044,6 +1045,9 @@ bool SceneManager::Init(std::string filepath)
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	//m_target_spawner = new TargetSpawner("1", "4", "3");
 

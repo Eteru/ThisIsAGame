@@ -143,6 +143,7 @@ int Shader::Init(const std::string & fileVS, const std::string & fileFS)
 		m_map[ShaderStrings::BINORM_ATTRIBUTE] = glGetAttribLocation(m_program, ShaderStrings::BINORM_ATTRIBUTE.c_str());
 		m_map[ShaderStrings::TANGENT_ATTRIBUTE] = glGetAttribLocation(m_program, ShaderStrings::TANGENT_ATTRIBUTE.c_str());
 		m_map[ShaderStrings::UV_ATTRIBUTE] = glGetAttribLocation(m_program, ShaderStrings::UV_ATTRIBUTE.c_str());
+		m_map[ShaderStrings::INDICATORS_ATTRIBUTE] = glGetAttribLocation(m_program, ShaderStrings::INDICATORS_ATTRIBUTE.c_str());
 
 		m_map[ShaderStrings::UV_BLEND_ATTRIBUTE] = glGetAttribLocation(m_program, ShaderStrings::UV_BLEND_ATTRIBUTE.c_str());
 		m_map[ShaderStrings::HEIGHT_MAP_UNIFORM] = glGetUniformLocation(m_program, ShaderStrings::HEIGHT_MAP_UNIFORM.c_str());

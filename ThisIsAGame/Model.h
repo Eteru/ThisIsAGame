@@ -20,6 +20,7 @@ public:
 
 	void Load();
 	void InitMesh(const IndexedModel & model);
+	void CreateMesh(const std::vector<glm::vec3> & vertices, const std::vector<unsigned int> & indices);
 
 	inline bool IsLoaded()
 	{

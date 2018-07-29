@@ -3,6 +3,8 @@
 #include "Vertex.h"
 #include "SceneObject.h"
 #include "HeightsGenerator.h"
+#include "ObjLoader.h"
+#include "Water.h"
 
 class IndexedModel;
 
@@ -48,8 +50,11 @@ protected:
 	glm::vec3 m_heights;
 	std::vector<glm::vec2> m_uv_blend;
 
+	IndexedModel m_im;
 	float **m_height_map;
 	HeightsGenerator m_hg;
+
+	Water *m_water;
 
 	std::vector<glm::vec3> GenerateGridSquare(int col, int row, uint32_t cell_size, float offset_y);
 	void GenerateFlatModel(uint32_t blockSize, uint32_t cellSize, float offsetY);
