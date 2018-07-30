@@ -16,7 +16,7 @@ Texture::~Texture()
 {
 	glDeleteTextures(1, &m_id);
 }
-/// TODO: skybox & fire. trebuie inversate
+
 void Texture::Load()
 {
 	if (true == m_loaded)
@@ -33,6 +33,11 @@ void Texture::Load()
 
 	int w, h, bpp;
 	char *textureBuffer = LoadTGA(m_tr->texture_path.c_str(), &w, &h, &bpp);
+
+	if (nullptr == textureBuffer)
+	{
+		throw std::runtime_error(std::string("Texture data not available: ") + std::to_string(m_id));
+	}
 
 	glGenTextures(1, &m_id);
 	glBindTexture(m_tr->type, m_id);

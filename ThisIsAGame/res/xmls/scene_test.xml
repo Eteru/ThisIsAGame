@@ -68,6 +68,7 @@
 			<name>SkyBox</name>
 			<textures>
 				<texture id="15"/>
+				<texture id="16"/>
 			</textures>
 			<position>
 				<x>0</x>
@@ -170,7 +171,7 @@
 				<b>1.0</b>
 			</specularColor>
 			<type>directional</type>
-			<specCoef>0.3</specCoef>
+			<specCoef>0.0</specCoef>
 			<diffCoef>0.3</diffCoef>
 			<shininess>0.3</shininess>
       <position>

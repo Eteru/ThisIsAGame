@@ -1,7 +1,6 @@
 #version 150
 
 in vec3 in_posL;
-in vec3 in_color;
 in vec3 in_normal;
 in vec2 in_uv;
 in vec2 in_uvBlend;
@@ -19,7 +18,6 @@ out vec2 v_uv;
 out vec2 v_uvBlend;
 out vec3 v_normal;
 out vec3 v_pos;
-out vec4 v_color;
 out vec4 v_pos_light_space;
 
 const float DENSITY = 0.0035;
@@ -32,8 +30,7 @@ void main()
 	vec4 pos_cs = u_vm * vec4(in_posL, 1.0);
 	
 	v_pos = pos_ms.xyz;
-	v_normal = normalize(u_nm * vec4(in_normal, 1.0)).rgb;	
-	v_color = vec4(in_color.rgb, 1.0);
+	v_normal = (u_nm * vec4(in_normal, 1.0)).rgb;
 	v_uv = in_uv;
 	v_uvBlend = in_uvBlend;
 

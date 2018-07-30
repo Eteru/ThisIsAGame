@@ -173,7 +173,8 @@ void SceneObject::SharedDrawElements(DrawType type)
 
 	Camera *cam = SceneManager::GetInstance()->GetActiveCamera();
 
-	for (size_t i = 0; i < m_textures.size(); ++i) {
+	for (size_t i = 0; i < m_textures.size(); ++i)
+	{
 		glActiveTexture(static_cast<GLenum>(GL_TEXTURE0 + i));
 		glBindTexture(m_textures[i]->GetTextureType(), m_textures[i]->GetID());
 	
@@ -220,8 +221,10 @@ void SceneObject::SharedDrawElements(DrawType type)
 		s->SendUniform(ShaderStrings::LIGHT_COUNT_UNIFORM, static_cast<int>(lights.size()));
 	
 		uint16_t count = 0;
-		for (auto & ls : lights) {
-			if (nullptr != ls.second) {
+		for (auto & ls : lights)
+		{
+			if (nullptr != ls.second)
+			{
 				LightSource::LightType type = ls.second->GetType();
 				glm::vec3 vec_l_type;
 	

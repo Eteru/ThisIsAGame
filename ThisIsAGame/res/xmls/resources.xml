@@ -67,8 +67,8 @@
       <fs>./res/shaders/default.frag</fs>
     </shader>
     <shader id="14">
-      <vs>D:\\workspace\\ThisIsAGame\\ThisIsAGame\\res\\shaders\\water.vert</vs>
-      <fs>D:\\workspace\\ThisIsAGame\\ThisIsAGame\\res\\shaders\\water.frag</fs>
+      <vs>./res/shaders/water.vert</vs>
+      <fs>./res/shaders/water.frag</fs>
     </shader>
 	</shaders>
   
@@ -151,12 +151,19 @@
 			<wrap_t>CLAMP_TO_EDGE</wrap_t>
 		</texture>
 		<texture id="15" type="cube">
-			<path>./res/textures/envMap.tga</path>			
+			<path>./res/textures/skybox_day.tga</path>			
 			<min_filter>LINEAR</min_filter>
 			<mag_filter>LINEAR</mag_filter>
 			<wrap_s>CLAMP_TO_EDGE</wrap_s>
 			<wrap_t>CLAMP_TO_EDGE</wrap_t>
 		</texture>
+    <texture id="16" type="cube">
+      <path>./res/textures/skybox_night.tga</path>
+      <min_filter>LINEAR</min_filter>
+      <mag_filter>LINEAR</mag_filter>
+      <wrap_s>CLAMP_TO_EDGE</wrap_s>
+      <wrap_t>CLAMP_TO_EDGE</wrap_t>
+    </texture>
 	</textures>
   
   <sounds>

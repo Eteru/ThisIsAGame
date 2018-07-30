@@ -146,7 +146,6 @@
     <ClCompile Include="SceneObject.cpp" />
     <ClCompile Include="SceneObjectBatch.cpp" />
     <ClCompile Include="Shader.cpp" />
-    <ClCompile Include="Shaders.cpp" />
     <ClCompile Include="SkyBox.cpp" />
     <ClCompile Include="Terrain.cpp" />
     <ClCompile Include="Texture.cpp" />
@@ -172,7 +171,6 @@
     <ClInclude Include="SceneObject.h" />
     <ClInclude Include="SceneObjectBatch.h" />
     <ClInclude Include="Shader.h" />
-    <ClInclude Include="Shaders.h" />
     <ClInclude Include="SkyBox.h" />
     <ClInclude Include="Strings.h" />
     <ClInclude Include="Structs.h" />
@@ -204,14 +202,14 @@
     </Xml>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\ThisIsAGame\ThisIsAGame\res\shaders\water.frag" />
-    <None Include="..\..\..\ThisIsAGame\ThisIsAGame\res\shaders\water.vert" />
     <None Include="res\shaders\default.frag" />
     <None Include="res\shaders\default.vert" />
     <None Include="res\shaders\skybox.frag" />
     <None Include="res\shaders\skybox.vert" />
     <None Include="res\shaders\terrain.frag" />
     <None Include="res\shaders\terrain.vert" />
+    <None Include="res\shaders\water.frag" />
+    <None Include="res\shaders\water.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

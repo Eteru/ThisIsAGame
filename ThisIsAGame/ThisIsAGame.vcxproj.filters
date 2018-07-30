@@ -24,9 +24,6 @@
     <ClCompile Include="Shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Shaders.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="EventManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -99,9 +96,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Shader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Shaders.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Structs.h">
@@ -209,10 +203,10 @@
     <None Include="res\shaders\skybox.vert">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="..\..\..\ThisIsAGame\ThisIsAGame\res\shaders\water.frag">
+    <None Include="res\shaders\water.frag">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="..\..\..\ThisIsAGame\ThisIsAGame\res\shaders\water.vert">
+    <None Include="res\shaders\water.vert">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

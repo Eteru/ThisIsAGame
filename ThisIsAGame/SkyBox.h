@@ -15,8 +15,12 @@ public:
 	virtual bool Contains(const glm::vec3 & point) override;
 
 private:
+	const float ROTATION_SPEED = 1.f;
+	const float TIME_INCRESEASE = 0.000694f * 24;
+
 	float m_offsetY;
 	float m_size;
 	float m_half_size;
+	float m_time;
 };
 

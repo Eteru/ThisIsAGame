@@ -36,7 +36,8 @@ namespace ShaderStrings
 	const std::string TEXTURE_1_UNIFORM = "u_texture_1";
 	const std::string TEXTURE_2_UNIFORM = "u_texture_2";
 	const std::string TEXTURE_3_UNIFORM = "u_texture_3";
-	const std::string TEXTURE_CUBE_UNIFORM = "u_cubeTexture";
+	const std::string TEXTURE_CUBE_UNIFORM_0 = "u_cube_texture_0";
+	const std::string TEXTURE_CUBE_UNIFORM_1 = "u_cube_texture_1";
 	const std::string TEXTURE_SHADOW_MAP_UNIFORM = "u_texture_shadow_map";
 
 	const std::string TEXTURE_UNIFORMS[] = { TEXTURE_0_UNIFORM, TEXTURE_1_UNIFORM, TEXTURE_2_UNIFORM, TEXTURE_3_UNIFORM };

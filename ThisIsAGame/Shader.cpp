@@ -156,7 +156,8 @@ int Shader::Init(const std::string & fileVS, const std::string & fileFS)
 		m_map[ShaderStrings::TEXTURE_1_UNIFORM] = glGetUniformLocation(m_program, ShaderStrings::TEXTURE_1_UNIFORM.c_str());
 		m_map[ShaderStrings::TEXTURE_2_UNIFORM] = glGetUniformLocation(m_program, ShaderStrings::TEXTURE_2_UNIFORM.c_str());
 		m_map[ShaderStrings::TEXTURE_3_UNIFORM] = glGetUniformLocation(m_program, ShaderStrings::TEXTURE_3_UNIFORM.c_str());
-		m_map[ShaderStrings::TEXTURE_CUBE_UNIFORM] = glGetUniformLocation(m_program, ShaderStrings::TEXTURE_CUBE_UNIFORM.c_str());
+		m_map[ShaderStrings::TEXTURE_CUBE_UNIFORM_0] = glGetUniformLocation(m_program, ShaderStrings::TEXTURE_CUBE_UNIFORM_0.c_str());
+		m_map[ShaderStrings::TEXTURE_CUBE_UNIFORM_1] = glGetUniformLocation(m_program, ShaderStrings::TEXTURE_CUBE_UNIFORM_1.c_str());
 		m_map[ShaderStrings::TIME_UNIFORM] = glGetUniformLocation(m_program, ShaderStrings::TIME_UNIFORM.c_str());
 		m_map[ShaderStrings::DISPLACEMENT_MAP_UNIFORM] = glGetUniformLocation(m_program, ShaderStrings::DISPLACEMENT_MAP_UNIFORM.c_str());
 		m_map[ShaderStrings::FOG_ALPHA_UNIFORM] = glGetUniformLocation(m_program, ShaderStrings::FOG_ALPHA_UNIFORM.c_str());

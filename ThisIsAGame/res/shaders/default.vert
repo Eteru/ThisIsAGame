@@ -35,7 +35,7 @@ void main()
 	//v_tangent = normalize(nm3 * in_tangent);
 	
 	v_color = vec4(in_color.rgb, 1.0);
-	v_normal = in_normal;
+	v_normal = normalize(u_m * vec4(in_normal, 1.0)).rgb;
 	v_uv = in_uv;
 	v_pos = pos_ms.xyz;
 

@@ -5,7 +5,8 @@
 
 SkyBox::SkyBox(glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, std::string id,
 	float offset, float size)
-	: SceneObject(pos, rot, scale, false, id), m_offsetY(offset), m_size(size), m_half_size(size * 0.5f)
+	: SceneObject(pos, rot, scale, false, id), m_offsetY(offset), m_size(size),
+	m_half_size(size * 0.5f), m_time(0.f)
 {
 }
 
@@ -66,6 +67,8 @@ void SkyBox::Init()
 void SkyBox::Update(float dt)
 {
 	m_transform.position = SceneManager::GetInstance()->GetActiveCamera()->GetPosition();
+	m_transform.rotation.y += ROTATION_SPEED * dt;
+	m_time = fmod(m_time + TIME_INCRESEASE, 24.f);
 
 	GeneralUpdate();
 }
@@ -79,11 +82,18 @@ void SkyBox::Draw(DrawType type)
 	// bind the VAO
 	glBindVertexArray(m_model->GetVAO());
 
-	int tex_loc = m_textures.size();
-	glActiveTexture(GL_TEXTURE0 + tex_loc);
+	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(m_textures[0]->GetTextureType(), m_textures[0]->GetID());
+	m_shader->SendUniform(ShaderStrings::TEXTURE_CUBE_UNIFORM_0, 0);
 
-	m_shader->SendUniform(ShaderStrings::TEXTURE_CUBE_UNIFORM, tex_loc);
+	if (m_textures.size() > 1)
+	{
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(m_textures[1]->GetTextureType(), m_textures[1]->GetID());
+		m_shader->SendUniform(ShaderStrings::TEXTURE_CUBE_UNIFORM_1, 1);
+	}
+
+	m_shader->SendUniform(ShaderStrings::TIME_UNIFORM, m_time);
 	
 	SharedDrawElements(type);
 

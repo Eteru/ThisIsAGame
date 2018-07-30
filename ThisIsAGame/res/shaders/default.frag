@@ -70,18 +70,18 @@ const float M_PI = 3.14159;
 vec3 ComputeLight(Light light, vec3 l, vec3 surface, vec3 normal, vec3 eye, float attenuation)
 {
 	// ambient
-	vec3 IA = u_ambiental.ratio * surface * u_ambiental.color;
+	vec3 IA = u_ambiental.ratio * u_ambiental.color * surface;
 
 	// diffuse
 	float diff_coef = light.diffusal_ratio * max(0.0, dot(normal, l));
-	vec3 ID = diff_coef * surface * light.diffusal;
+	vec3 ID = diff_coef * light.diffusal * surface;
 
 	// specular
 	vec3 R = reflect(l, normal);
 	float int_spec = max(dot(R, eye), 0.0);
 	float spec_coef = light.specular_ratio * pow(int_spec, light.shininess);
 
-	vec3 IS = spec_coef * surface * light.specular;
+	vec3 IS = spec_coef * light.specular * surface;
 
 	return IA + attenuation * (ID + IS);
 }

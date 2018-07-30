@@ -39,7 +39,6 @@ in float v_visibility;
 in vec3 v_normal;
 in vec3 v_pos;
 in vec4 v_pos_light_space;
-in vec4 v_color;
 in vec2 v_uv;
 in vec2 v_uvBlend;
 
@@ -81,11 +80,11 @@ float ShadowPercentage()
 vec3 ComputeLight(Light light, vec3 l, vec3 surface, vec3 normal, vec3 eye, float attenuation)
 {
 	// ambient
-	vec3 IA = u_ambiental.ratio * surface * u_ambiental.color;
+	vec3 IA = u_ambiental.ratio * u_ambiental.color * surface;
 
 	// diffuse
 	float diff_coef = light.diffusal_ratio * max(0.0, dot(normal, l));
-	vec3 ID = diff_coef * surface * light.diffusal;
+	vec3 ID = diff_coef * light.diffusal * surface;
 
 	// specular
 	vec3 R = reflect(l, normal);
@@ -93,7 +92,7 @@ vec3 ComputeLight(Light light, vec3 l, vec3 surface, vec3 normal, vec3 eye, floa
 	float spec_coef = light.specular_ratio * pow(int_spec, light.shininess);
 
 	float shadow = 0.0;//ShadowPercentage();
-	vec3 IS = spec_coef * surface * light.specular;
+	vec3 IS = spec_coef * light.specular * surface;
 
 	return IA + (1.0 - shadow) * attenuation * (ID + IS);
 }

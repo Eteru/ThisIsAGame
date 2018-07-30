@@ -181,14 +181,11 @@ void AppMain()
 			glfwPollEvents();
 
 			SceneManager::GetInstance()->Update(dt);
-
-			SceneManager::GetInstance()->Draw();
-
-			// swap the display buffers (displays what was just drawn)
-			glfwSwapBuffers(window);
 		}
 
-		
+		SceneManager::GetInstance()->Draw();
+		// swap the display buffers (displays what was just drawn)
+		glfwSwapBuffers(window);		
 	}
 
 	// clean up and exit
