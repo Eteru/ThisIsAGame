@@ -10,6 +10,7 @@
 #include "Fog.h"
 #include "AmbientalLight.h"
 #include "LightSource.h"
+#include "Terrain.h"
 //#include "ShadowMap.h"
 //#include "TargetSpawner.h"
 
@@ -86,9 +87,14 @@ public:
 	void RegisterKeyboardListener(InputKeyboardInterface *listener);
 
 	// Interfaces
-	void KeyPress(int key, int mods);
-	void MouseMove(float x_offset, float y_offset);
-	void MouseScroll(float y_offset);
+	virtual void KeyPress(int key, int mods);
+	virtual void MouseMove(float x_offset, float y_offset);
+	virtual void MouseScroll(float y_offset);
+
+	virtual void MouseLeftClick(double x, double y) override;
+	virtual void MouseRightClick(double x, double y) override;
+
+	virtual void Raycast(glm::vec3 ray) override;
 
 private:
 	static SceneManager *m_instance;
@@ -122,6 +128,10 @@ private:
 	GLFWwindow *m_window;
 
 	SceneManager();
+
+	glm::vec3 ComputeRaycast(double x, double y);
+	bool CheckTerrainRayIntersection(glm::vec3 ray);
+	glm::vec3 FindTerrainRayIntersection(Terrain *t, glm::vec3 ray, float start, float end, uint32_t iter_left);
 
 	void InitScreenQuad();
 	void InitFBO();

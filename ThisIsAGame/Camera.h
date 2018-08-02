@@ -49,6 +49,11 @@ public:
 	virtual void MouseScroll(float y_offset) override;
 	virtual void MouseMove(float x_offset, float y_offset) override;
 
+	virtual void MouseLeftClick(double x, double y) override;
+	virtual void MouseRightClick(double x, double y) override;
+
+	virtual void Raycast(glm::vec3 ray) override;
+
 private:
 	const GLfloat ZOOM = 45.0f;
 	const GLfloat SENSITIVITY = 0.1f;

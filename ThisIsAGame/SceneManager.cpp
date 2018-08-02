@@ -4,7 +4,6 @@
 
 #include "SceneManager.h"
 #include "ResourceManager.h"
-#include "Terrain.h"
 #include "SkyBox.h"
 #include "Player.h"
 #include "SceneObjectBatch.h"
@@ -86,10 +85,112 @@ void SceneManager::MouseScroll(float y_offset)
 	}
 }
 
+void SceneManager::Raycast(glm::vec3 ray)
+{
+}
+
+void SceneManager::MouseLeftClick(double x, double y)
+{
+	glm::vec3 ray = ComputeRaycast(x, y);
+	CheckTerrainRayIntersection(ray);
+
+	for (InputMouseInterface *listener : m_mouse_listeners)
+	{
+		listener->MouseLeftClick(x, y);
+		listener->Raycast(ray);
+	}
+}
+
+void SceneManager::MouseRightClick(double x, double y)
+{
+	glm::vec3 ray = ComputeRaycast(x, y);
+
+	for (InputMouseInterface *listener : m_mouse_listeners)
+	{
+		listener->MouseRightClick(x, y);
+		listener->Raycast(ray);
+	}
+}
+
 SceneManager::SceneManager()
 	: m_blur_shader(nullptr), m_grayscale_shader(nullptr), m_combine_tex_shader(nullptr),
 	m_sharpen_shader(nullptr), m_threshold_shader(nullptr), m_window(nullptr)//, m_shadow_map(nullptr), m_target_spawner(nullptr)
 {
+}
+
+glm::vec3 SceneManager::ComputeRaycast(double x, double y)
+{
+	glm::mat4 view = GetActiveCamera()->GetView();
+	glm::mat4 proj = GetActiveCamera()->GetProjection();
+
+	// Normalzied device coords
+	x = (2 * x) / Window::WIDTH - 1.f;
+	y = 1.f - (2 * y) / Window::HEIGHT;
+
+	// Clip space
+	glm::vec4 ray_aux = glm::vec4(x, y, -1.f, 1.f);
+
+	// Eye space
+	ray_aux = glm::inverse(proj) * ray_aux;
+	ray_aux.z = -1.f; // set direction
+	ray_aux.w = 0.f; // set as direction, not point
+
+	// World space
+	ray_aux = glm::inverse(view) * ray_aux;
+
+	glm::vec3 ray = ray_aux;
+	ray = glm::normalize(ray);
+
+	return ray;
+}
+
+bool SceneManager::CheckTerrainRayIntersection(glm::vec3 ray)
+{
+	const float RAY_SIZE = 600.f;
+	const uint32_t MAX_ITERS = 200;
+
+	if (m_objects.find("terrain") == m_objects.end())
+	{
+		return false;
+	}
+
+	Terrain *t = dynamic_cast<Terrain *>(m_objects["terrain"]);
+
+	glm::vec3 pos = FindTerrainRayIntersection(t, ray, 0.f, RAY_SIZE, MAX_ITERS);
+
+	// test code
+	SceneObjectBatch *batch = dynamic_cast<SceneObjectBatch *>(m_objects["batch_1"]);
+	batch->AddObject(pos, glm::vec3(0.f, -90.f, 0.f), glm::vec3(1.f));
+
+	// ---
+
+	return true;
+}
+
+glm::vec3 SceneManager::FindTerrainRayIntersection(Terrain * t, glm::vec3 ray, float start, float end, uint32_t iter_left)
+{
+	float t_height = 0.f;
+	glm::vec3 scaled_ray = glm::vec3(0.f);
+
+	float half = start + (end - start) * 0.5f;
+	scaled_ray = GetActiveCamera()->GetPosition() + ray * half;
+	t_height = t->GetTerrainHeight(scaled_ray.x, scaled_ray.z);
+
+	if (iter_left == 0)
+	{
+		return glm::vec3(scaled_ray.x, t_height, scaled_ray.z);
+	}
+
+	if (scaled_ray.y >= t_height)
+	{
+		return FindTerrainRayIntersection(t, ray, half, end, iter_left - 1);
+	}
+	else
+	{
+		return FindTerrainRayIntersection(t, ray, start, half, iter_left - 1);
+	}
+
+	
 }
 
 void SceneManager::DrawDebug()
@@ -1056,6 +1157,11 @@ bool SceneManager::Init(std::string filepath)
 
 void SceneManager::Update(float dt)
 {
+	if (true == m_lbutton_pressed)
+	{
+
+	}
+
 	for (auto & obj : m_objects) 
 	{
 		obj.second->Update(dt);

@@ -105,16 +105,13 @@ void Camera::MouseScroll(float y_offset)
 
 void Camera::MouseMove(float x_offset, float y_offset)
 {
-	if (true == m_lbutton_pressed)
+	if (true == m_rbutton_pressed)
 	{
+		// horizontal movement
 		x_offset *= m_sensitivity;
 		m_angle_around_target -= x_offset;
 
-		UpdateWorldView();
-	}
-
-	if (true == m_rbutton_pressed)
-	{
+		// vertical movement
 		y_offset *= m_sensitivity;
 		m_pitch -= y_offset;
 		
@@ -129,4 +126,16 @@ void Camera::MouseMove(float x_offset, float y_offset)
 
 		UpdateWorldView();
 	}
+}
+
+void Camera::MouseLeftClick(double x, double y)
+{
+}
+
+void Camera::MouseRightClick(double x, double y)
+{
+}
+
+void Camera::Raycast(glm::vec3 ray)
+{
 }

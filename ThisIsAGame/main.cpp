@@ -42,11 +42,16 @@ static void WindowResizeCallback(GLFWwindow* window, int width, int height)
 
 static void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
 {
+	double x, y;
+	glfwGetCursorPos(window, &x, &y);
+
 	if (GLFW_MOUSE_BUTTON_LEFT == button)
 	{
 		if (GLFW_PRESS == action)
 		{
 			SceneManager::GetInstance()->LeftButtonPressed(true);
+
+			SceneManager::GetInstance()->MouseLeftClick(x, y);
 		}
 		else if (GLFW_RELEASE == action)
 		{
@@ -58,6 +63,8 @@ static void MouseButtonCallback(GLFWwindow* window, int button, int action, int 
 		if (GLFW_PRESS == action)
 		{
 			SceneManager::GetInstance()->RightButtonPressed(true);
+
+			SceneManager::GetInstance()->MouseRightClick(x, y);
 		}
 		else if (GLFW_RELEASE == action)
 		{

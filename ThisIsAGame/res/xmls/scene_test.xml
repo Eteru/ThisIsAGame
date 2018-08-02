@@ -155,7 +155,7 @@
 			<g>0.7215</g>
 			<b>0.0745</b>
 		</color>
-		<ratio>0.1</ratio>
+		<ratio>0.05</ratio>
 	</ambientalLight>
 	
 	<lights>
@@ -172,8 +172,8 @@
 			</specularColor>
 			<type>directional</type>
 			<specCoef>0.0</specCoef>
-			<diffCoef>0.3</diffCoef>
-			<shininess>0.3</shininess>
+			<diffCoef>0.5</diffCoef>
+			<shininess>0.1</shininess>
       <position>
         <x>0.0</x>
         <y>100000.0</y>

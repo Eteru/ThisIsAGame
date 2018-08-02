@@ -227,3 +227,19 @@ void SceneObjectBatch::Draw(DrawType type)
 	// unbind the program
 	glUseProgram(0);
 }
+
+void SceneObjectBatch::AddObject(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale)
+{
+	++m_object_count;
+
+	Transform t;
+
+	t.position = position;
+	t.rotation = rotation;
+	t.scale = scale;
+
+	t.up = glm::vec3(0.f, 1.f, 0.f);
+	t.front = glm::vec3(0.f, 0.f, -1.f);
+
+	m_transforms.push_back(t);
+}

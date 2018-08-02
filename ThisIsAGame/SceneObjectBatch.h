@@ -13,6 +13,8 @@ public:
 	virtual void Update(float dt) override;
 	virtual void Draw(DrawType type = NORMAL) override;
 
+	void AddObject(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale);
+
 protected:
 	uint32_t m_object_count;
 
