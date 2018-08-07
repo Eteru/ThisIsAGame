@@ -373,7 +373,7 @@ void SceneManager::RenderPost(Shader * s, uint32_t idx, uint32_t tex_idx, float 
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glUseProgram(s->GetProgramID());
-		glBindBuffer(GL_ARRAY_BUFFER, m_screen_vbo);
+		glBindVertexArray(m_screen_vao);
 
 		// Last texture
 		glActiveTexture(GL_TEXTURE0);
@@ -385,13 +385,16 @@ void SceneManager::RenderPost(Shader * s, uint32_t idx, uint32_t tex_idx, float 
 		glBindTexture(GL_TEXTURE_2D, m_screen_textures[0]);
 		s->SendUniform(ShaderStrings::TEXTURE_UNIFORMS[1], 1);
 
-		s->SendAttribute(ShaderStrings::POSITION_ATTRIBUTE, 3, 0, 0);
 		s->SendUniform(ShaderStrings::FRAGMENT_OFFSET_X_UNIFORM, 1.f / Window::WIDTH);
 		s->SendUniform(ShaderStrings::FRAGMENT_OFFSET_Y_UNIFORM, 1.f / Window::HEIGHT);
 
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		// unbind the VAO
+		glBindVertexArray(m_screen_vao);
+
+		// unbind the program
+		glUseProgram(0);
 	}
 }
 
@@ -419,11 +422,12 @@ SceneManager::~SceneManager()
 		it = m_lights.erase(it);
 	}
 
-	//if (nullptr != m_shadow_map) {
-	//	delete m_shadow_map;
-	//	m_shadow_map = nullptr;
-	//}
-	//
+	if (nullptr != m_shadow_map)
+	{
+		delete m_shadow_map;
+		m_shadow_map = nullptr;
+	}
+	
 	//if (nullptr != m_target_spawner) {
 	//	delete m_target_spawner;
 	//	m_target_spawner = nullptr;
@@ -432,6 +436,9 @@ SceneManager::~SceneManager()
 	glDeleteRenderbuffers(1, &m_depth_render_bos);
 	glDeleteFramebuffers(MAX_FBOS, m_fbos);
 	glDeleteTextures(MAX_FBOS, m_screen_textures);
+
+	glDeleteBuffers(1, &m_screen_vbo);
+	glDeleteVertexArrays(1, &m_screen_vao);
 }
 
 SceneManager * SceneManager::GetInstance()
@@ -673,7 +680,7 @@ bool SceneManager::Init(std::string filepath)
 
 		m_lights[light_id] = ls;
 	}
-	//m_shadow_map = new ShadowMap(m_lights["1"]);
+	m_shadow_map = new ShadowMap(m_lights["1"]);
 
 	//objects
 	rapidxml::xml_node<> *pObjects = pRoot->first_node("objects");
@@ -1122,13 +1129,15 @@ bool SceneManager::Init(std::string filepath)
 
 	delete string;
 
-	InitScreenQuad();
-	InitFBO();
+
 	m_blur_shader = ResourceManager::GetInstance()->LoadShader("7");
 	m_sharpen_shader = ResourceManager::GetInstance()->LoadShader("8");
 	m_grayscale_shader = ResourceManager::GetInstance()->LoadShader("9");
 	m_threshold_shader = ResourceManager::GetInstance()->LoadShader("10");
 	m_combine_tex_shader = ResourceManager::GetInstance()->LoadShader("11");
+
+	InitScreenQuad();
+	InitFBO();
 
 	// Init objects
 	m_objects["terrain"]->Init(); // force terrain to be initialized first
@@ -1191,7 +1200,7 @@ void SceneManager::Update(float dt)
 		}
 	}
 
-	//m_shadow_map->Update();
+	m_shadow_map->Update();
 	//m_target_spawner->Update();
 
 	while (EventManager::Poll()) {}
@@ -1199,55 +1208,51 @@ void SceneManager::Update(float dt)
 
 void SceneManager::Draw(bool debug)
 {
-	/*
-	if (false == debug) {
-		glBindFramebuffer(GL_FRAMEBUFFER, m_shadow_map->GetFBO());
+	//if (false == debug)
+	//{
+	//	glBindFramebuffer(GL_FRAMEBUFFER, m_shadow_map->GetFBO());
+	//
+	//	glClear(GL_DEPTH_BUFFER_BIT);
+	//
+	//	for (auto & obj : m_objects)
+	//	{
+	//		if (obj.second->GetName() == "SkyBox" ||
+	//			obj.second->GetName() == "teren")
+	//		{
+	//			continue;
+	//		}
+	//
+	//		obj.second->Draw(SceneObject::SHADOW_MAP);
+	//	}
+	//}
+	//
+	//// shadowmap on screen
+	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	//
+	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	//glUseProgram(m_grayscale_shader->GetProgramID());
+	//glBindBuffer(GL_ARRAY_BUFFER, m_screen_vbo);
+	//
+	//// Last texture
+	//glActiveTexture(GL_TEXTURE0);
+	//glBindTexture(GL_TEXTURE_2D, m_shadow_map->GetTexture());
+	//m_grayscale_shader->SendUniform(ShaderStrings::TEXTURE_UNIFORMS[0], 0);
+	//
+	//// Scene texture
+	//glActiveTexture(GL_TEXTURE1);
+	//glBindTexture(GL_TEXTURE_2D, m_screen_textures[0]);
+	//m_grayscale_shader->SendUniform(ShaderStrings::TEXTURE_UNIFORMS[1], 1);
+	//
+	//m_grayscale_shader->SendAttribute(ShaderStrings::POSITION_ATTRIBUTE, 3, 0, 0);
+	//m_grayscale_shader->SendUniform(ShaderStrings::FRAGMENT_OFFSET_X_UNIFORM, 1.f / Window::WIDTH);
+	//m_grayscale_shader->SendUniform(ShaderStrings::FRAGMENT_OFFSET_Y_UNIFORM, 1.f / Window::HEIGHT);
+	//
+	//glDrawArrays(GL_TRIANGLES, 0, 6);
+	//
+	//glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-		// check for framebuffer complete
-		GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-		if (status == GL_FRAMEBUFFER_COMPLETE) {
-			glClear(GL_DEPTH_BUFFER_BIT);
-
-			for (auto & obj : m_objects) {
-				if (obj.second->GetName() == "SkyBox" || obj.second->GetName() == "teren")
-					continue;
-
-				obj.second->Draw(SceneObject::SHADOW_MAP);
-			}
-		}
-	}
-
-	// shadowmap on screen
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-	if (status == GL_FRAMEBUFFER_COMPLETE) {
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glUseProgram(m_grayscale_shader->GetProgramID());
-		glBindBuffer(GL_ARRAY_BUFFER, m_screen_vbo);
-
-		// Last texture
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, m_shadow_map->GetTexture());
-		m_grayscale_shader->SendUniform(ShaderStrings::TEXTURE_UNIFORMS[0], 0);
-
-		// Scene texture
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, m_screen_textures[0]);
-		m_grayscale_shader->SendUniform(ShaderStrings::TEXTURE_UNIFORMS[1], 1);
-
-		m_grayscale_shader->SendAttribute(ShaderStrings::POSITION_ATTRIBUTE, 3, 0, 0);
-		m_grayscale_shader->SendUniform(ShaderStrings::FRAGMENT_OFFSET_X_UNIFORM, 1.f / Window::WIDTH);
-		m_grayscale_shader->SendUniform(ShaderStrings::FRAGMENT_OFFSET_Y_UNIFORM, 1.f / Window::HEIGHT);
-
-		glDrawArrays(GL_TRIANGLES, 0, 6);
-
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-	}
-
-	*/
 	///*
-	//glBindFramebuffer(GL_FRAMEBUFFER, m_fbos[0]);
+	glBindFramebuffer(GL_FRAMEBUFFER, m_fbos[0]);
 
 	// check for framebuffer complete
 	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
@@ -1269,11 +1274,14 @@ void SceneManager::Draw(bool debug)
 			}
 		}
 	}
+
+	ApplyGrayscale();
 }
 
 void SceneManager::CleanUp()
 {
-	if (nullptr != m_instance) {
+	if (nullptr != m_instance)
+	{
 		delete m_instance;
 		m_instance = nullptr;
 	}
@@ -1291,10 +1299,16 @@ void SceneManager::InitScreenQuad()
 		1.0f,  1.0f, 0.0f,
 	};
 
+	glGenVertexArrays(1, &m_screen_vao);
+	glBindVertexArray(m_screen_vao);
+
 	glGenBuffers(1, &m_screen_vbo);
+
 	glBindBuffer(GL_ARRAY_BUFFER, m_screen_vbo);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(quad_vbo_data), quad_vbo_data, GL_STATIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	m_grayscale_shader->SendAttribute(ShaderStrings::POSITION_ATTRIBUTE, 3, 0, 0);
+
+	glBindVertexArray(0);
 }
 
 void SceneManager::InitFBO()
@@ -1318,6 +1332,7 @@ void SceneManager::InitFBO()
 	glBindRenderbuffer(GL_RENDERBUFFER, m_depth_render_bos);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16,
 		Window::WIDTH, Window::HEIGHT);
+	glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
 	// Init screen texture
 	glGenTextures(MAX_FBOS, m_screen_textures);
@@ -1325,7 +1340,7 @@ void SceneManager::InitFBO()
 	{
 		glBindTexture(GL_TEXTURE_2D, m_screen_textures[i]);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, Window::WIDTH, Window::HEIGHT,
-			0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, NULL);
+			0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -1343,8 +1358,12 @@ void SceneManager::InitFBO()
 		// specify depth_renderbufer as depth attachment
 		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
 			GL_RENDERBUFFER, m_depth_render_bos);
+
+		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		{
+			std::cerr << "ERROR::FRAMEBUFFER:: Framebuffer is not complete! " << i << std::endl;
+		}
 	}
 
-	//glBindRenderbuffer(GL_RENDERBUFFER, 0);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }

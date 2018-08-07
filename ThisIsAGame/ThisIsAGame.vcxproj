@@ -146,6 +146,8 @@
     <ClCompile Include="SceneObject.cpp" />
     <ClCompile Include="SceneObjectBatch.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="ShadowBox.cpp" />
+    <ClCompile Include="ShadowMap.cpp" />
     <ClCompile Include="SkyBox.cpp" />
     <ClCompile Include="Terrain.cpp" />
     <ClCompile Include="Texture.cpp" />
@@ -171,6 +173,8 @@
     <ClInclude Include="SceneObject.h" />
     <ClInclude Include="SceneObjectBatch.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="ShadowBox.h" />
+    <ClInclude Include="ShadowMap.h" />
     <ClInclude Include="SkyBox.h" />
     <ClInclude Include="Strings.h" />
     <ClInclude Include="Structs.h" />
@@ -204,6 +208,9 @@
   <ItemGroup>
     <None Include="res\shaders\default.frag" />
     <None Include="res\shaders\default.vert" />
+    <None Include="res\shaders\DefaultPostShader.frag" />
+    <None Include="res\shaders\DefaultPostShader.vert" />
+    <None Include="res\shaders\GrayscaleShader.frag" />
     <None Include="res\shaders\skybox.frag" />
     <None Include="res\shaders\skybox.vert" />
     <None Include="res\shaders\terrain.frag" />

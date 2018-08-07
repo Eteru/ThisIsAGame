@@ -87,6 +87,12 @@
     <ClCompile Include="Water.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ShadowBox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ShadowMap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Strings.h">
@@ -164,6 +170,12 @@
     <ClInclude Include="Water.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ShadowBox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ShadowMap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Object Include="res\models\sphere.obj">
@@ -207,6 +219,15 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="res\shaders\water.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="res\shaders\DefaultPostShader.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="res\shaders\GrayscaleShader.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="res\shaders\DefaultPostShader.frag">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

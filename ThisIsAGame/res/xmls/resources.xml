@@ -48,7 +48,7 @@
     </shader>
     <shader id="9">
       <vs>./res/shaders/DefaultPostShader.vert</vs>
-      <fs>./res/shaders/GrayscaleShader.frag</fs>
+      <fs>./res/shaders/DefaultPostShader.frag</fs>
     </shader>
     <shader id="10">
       <vs>./res/shaders/DefaultPostShader.vert</vs>

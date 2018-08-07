@@ -1,8 +1,11 @@
-precision mediump float;
+#version 150
 
-varying vec2 v_uv;
+in vec2 v_uv;
 
 uniform sampler2D u_texture_0;
+
+// out value
+out vec4 out_frag_color;
 
 vec4 Grayscale()
 {
@@ -15,5 +18,5 @@ vec4 Grayscale()
 
 void main()
 {
-	gl_FragColor = Grayscale();
+	out_frag_color = Grayscale();
 }

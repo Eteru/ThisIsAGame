@@ -11,7 +11,7 @@
 #include "AmbientalLight.h"
 #include "LightSource.h"
 #include "Terrain.h"
-//#include "ShadowMap.h"
+#include "ShadowMap.h"
 //#include "TargetSpawner.h"
 
 #define MAX_FBOS 10
@@ -103,7 +103,7 @@ private:
 	GLuint m_depth_render_bos;
 	GLint m_max_render_buffer_size;
 
-	GLuint m_screen_vbo;
+	GLuint m_screen_vao, m_screen_vbo;
 	GLuint m_screen_textures[MAX_FBOS];
 	Shader *m_blur_shader, *m_grayscale_shader, *m_sharpen_shader, *m_threshold_shader, *m_combine_tex_shader;
 
@@ -117,7 +117,7 @@ private:
 	Fog m_fog;
 	AmbientalLight m_ambiental_light;
 	//DebugSettings m_debug_settings;
-	//ShadowMap *m_shadow_map;
+	ShadowMap *m_shadow_map;
 	//TargetSpawner *m_target_spawner;
 
 	// Listeners
