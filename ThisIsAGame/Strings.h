@@ -74,3 +74,17 @@ namespace ShaderStrings
 	// Others
 	const std::string TIME_UNIFORM = "u_time";
 }
+
+namespace ID
+{
+	// Shaders
+	const std::string SHADER_WATER = "water";
+	const std::string SHADER_POST_TO_SCREEN = "empty";
+	const std::string SHADER_POST_BLUR = "blur";
+	const std::string SHADER_POST_SHARPEN = "sharpen";
+	const std::string SHADER_POST_GRAYSCALE = "grayscale";
+	const std::string SHADER_POST_THRESHOLD = "threshold";
+	const std::string SHADER_POST_COMBINE_TEXTURES = "combine";
+
+
+}

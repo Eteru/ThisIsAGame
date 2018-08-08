@@ -52,13 +52,13 @@ ShadowMap::~ShadowMap()
 
 void ShadowMap::Update()
 {
-	m_shadow_box->Update(m_light_view);
+	//m_shadow_box->Update(m_light_view);
 	//m_light_view = m_light->GetViewMatrix(m_light->GetPosition(),
 	//	m_shadow_box->GetCenter());
 	//
 	//m_light_projection = Matrix().SetOrtho(m_shadow_box->GetWidth(),
 	//	m_shadow_box->GetHeight(), m_shadow_box->GetLength());
-	m_light_space_matrix = m_light_view * m_light_projection;
+	//m_light_space_matrix = m_light_view * m_light_projection;
 }
 
 void ShadowMap::Draw(GLuint vbo)

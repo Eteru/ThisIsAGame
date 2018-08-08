@@ -15,7 +15,7 @@ Shader::Shader() : m_sr(nullptr), m_loaded(false)
 
 Shader::Shader(ShaderResource * sr) : m_sr(sr), m_loaded(false)
 {
-	m_id = std::stoi(sr->id);
+	m_id = sr->id;
 }
 
 Shader::~Shader()
@@ -34,12 +34,12 @@ void Shader::Load()
 
 	if (nullptr == m_sr)
 	{
-		throw std::runtime_error(std::string("ShaderResource not available: ") + std::to_string(m_id));
+		throw std::runtime_error(std::string("ShaderResource not available: ") + m_id);
 	}
 
 	if (Init(&m_sr->vs_path[0], &m_sr->fs_path[0]) < 0)
 	{
-		throw std::runtime_error(std::string("Could not load shader files: ") + std::to_string(m_id));
+		throw std::runtime_error(std::string("Could not load shader files: ") + m_id);
 	}
 
 	m_loaded = true;

@@ -21,6 +21,5 @@ protected:
 
 private:
 	const GLfloat WAVE_SPEED = 0.002f;
-	const std::string NAME = "water";
 };
 

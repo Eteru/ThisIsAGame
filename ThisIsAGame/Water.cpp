@@ -6,7 +6,7 @@
 #include "Strings.h"
 
 Water::Water(glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, const IndexedModel & im)
-	: SceneObject(pos, rot, scale, true, NAME), m_time(0.f)
+	: SceneObject(pos, rot, scale, true, ID::SHADER_WATER), m_time(0.f)
 {
 	//m_vertices.resize(verts.size());
 	//
@@ -18,7 +18,7 @@ Water::Water(glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, const IndexedModel &
 	m_model = new Model();
 	m_model->CreateMesh(im.positions, im.indices);
 
-	m_shader = ResourceManager::GetInstance()->LoadShader(WATER_SHADER_ID);
+	m_shader = ResourceManager::GetInstance()->LoadShader(ID::SHADER_WATER);
 
 	m_indicators.resize(im.positions.size());
 	for (size_t i = 0; i < m_indicators.size(); i += 3)

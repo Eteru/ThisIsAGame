@@ -38,23 +38,27 @@
       <vs>./res/shaders/DebugShaderAxis.vert</vs>
       <fs>./res/shaders/DebugShaderAxis.frag</fs>
     </shader>
-    <shader id="7">
+    <shader id="blur">
       <vs>./res/shaders/DefaultPostShader.vert</vs>
       <fs>./res/shaders/BlurShader.frag</fs>
     </shader>
-    <shader id="8">
+    <shader id="sharpen">
       <vs>./res/shaders/DefaultPostShader.vert</vs>
       <fs>./res/shaders/SharpenShader.frag</fs>
     </shader>
-    <shader id="9">
+    <shader id="empty">
       <vs>./res/shaders/DefaultPostShader.vert</vs>
       <fs>./res/shaders/DefaultPostShader.frag</fs>
     </shader>
-    <shader id="10">
+    <shader id="grayscale">
+      <vs>./res/shaders/DefaultPostShader.vert</vs>
+      <fs>./res/shaders/GrayscaleShader.frag</fs>
+    </shader>
+    <shader id="treshold">
       <vs>./res/shaders/DefaultPostShader.vert</vs>
       <fs>./res/shaders/ThresholdShader.frag</fs>
     </shader>
-    <shader id="11">
+    <shader id="combine">
       <vs>./res/shaders/DefaultPostShader.vert</vs>
       <fs>./res/shaders/CombinetexturesShader.frag</fs>
     </shader>
@@ -66,7 +70,7 @@
       <vs>./res/shaders/default.vert</vs>
       <fs>./res/shaders/default.frag</fs>
     </shader>
-    <shader id="14">
+    <shader id="water">
       <vs>./res/shaders/water.vert</vs>
       <fs>./res/shaders/water.frag</fs>
     </shader>

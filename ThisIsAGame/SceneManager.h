@@ -3,7 +3,7 @@
 #include <map>
 #include <string>
 #include <iostream>
-#include <rapidxml\rapidxml.hpp>
+#include <rapidxml/rapidxml.hpp>
 #include <glm/glm.hpp>
 #include "SceneObject.h"
 #include "Camera.h"
@@ -11,7 +11,7 @@
 #include "AmbientalLight.h"
 #include "LightSource.h"
 #include "Terrain.h"
-#include "ShadowMap.h"
+#include "Renderer.h"
 //#include "TargetSpawner.h"
 
 #define MAX_FBOS 10
@@ -25,7 +25,7 @@ public:
 
 	bool Init(std::string filepath);
 	void Update(float dt);
-	void Draw(bool debug = false);
+	void Render(bool debug = false);
 	void CleanUp();
 	
 	void SetGLFWWindow(GLFWwindow *window);
@@ -72,12 +72,10 @@ public:
 		return m_objects[id];
 	}
 
-
-
-	//inline ShadowMap *GetShadowMap() const
-	//{
-	//	return m_shadow_map;
-	//}
+	inline const std::map<std::string, SceneObject *> & GetAllSceneObjects()
+	{
+		return m_objects;
+	}
 
 	void PlaySound(std::string id);
 	void AddObject(SceneObject *so);
@@ -98,16 +96,7 @@ public:
 
 private:
 	static SceneManager *m_instance;
-
-	GLuint m_fbos[MAX_FBOS];
-	GLuint m_depth_render_bos;
-	GLint m_max_render_buffer_size;
-
-	GLuint m_screen_vao, m_screen_vbo;
-	GLuint m_screen_textures[MAX_FBOS];
-	Shader *m_blur_shader, *m_grayscale_shader, *m_sharpen_shader, *m_threshold_shader, *m_combine_tex_shader;
-
-	glm::vec3 m_background_color;
+	
 	std::map<std::string, Camera *> m_cameras;
 	std::map<std::string, SceneObject *> m_objects;
 	std::map<std::string, LightSource *> m_lights;
@@ -117,7 +106,6 @@ private:
 	Fog m_fog;
 	AmbientalLight m_ambiental_light;
 	//DebugSettings m_debug_settings;
-	ShadowMap *m_shadow_map;
 	//TargetSpawner *m_target_spawner;
 
 	// Listeners
@@ -127,19 +115,17 @@ private:
 	// GLFW window
 	GLFWwindow *m_window;
 
+	// Renderer
+	Renderer m_renderer;
+
 	SceneManager();
+
+	void InitGLProperties();
 
 	glm::vec3 ComputeRaycast(double x, double y);
 	bool CheckTerrainRayIntersection(glm::vec3 ray);
 	glm::vec3 FindTerrainRayIntersection(Terrain *t, glm::vec3 ray, float start, float end, uint32_t iter_left);
 
-	void InitScreenQuad();
-	void InitFBO();
 	void DrawDebug();
-	void ApplyGrayscale();
-	void ApplyBlur();
-	void ApplySharpen();
-	void ApplyBloom();
-	void RenderPost(Shader *s, uint32_t idx, uint32_t tex_idx, float x_offset, float y_offset);
 };
 

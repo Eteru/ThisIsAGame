@@ -40,9 +40,9 @@ public:
 
 private:
 	bool m_loaded;
-	GLuint m_id;
 	GLuint m_program, m_vs, m_fs;
 	
+	std::string m_id;
 	ShaderResource *m_sr;
 	std::map<std::string, GLint> m_map;
 

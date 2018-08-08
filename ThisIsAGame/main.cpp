@@ -190,7 +190,7 @@ void AppMain()
 			SceneManager::GetInstance()->Update(dt);
 		}
 
-		SceneManager::GetInstance()->Draw();
+		SceneManager::GetInstance()->Render();
 		// swap the display buffers (displays what was just drawn)
 		glfwSwapBuffers(window);		
 	}

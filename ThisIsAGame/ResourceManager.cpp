@@ -8,43 +8,6 @@ ResourceManager *ResourceManager::m_instance = nullptr;
 ResourceManager::ResourceManager()
 //	: m_sound_system(nullptr)
 {
-	//std::vector<glm::vec3> verts =
-	//{
-	//	glm::vec3(0,0,0),
-	//	glm::vec3(1,0,0),
-	//	glm::vec3(0,0,0),
-	//	glm::vec3(0,1,0),
-	//	glm::vec3(0,0,0),
-	//	glm::vec3(0,0,1)
-	//};
-	//
-	//std::vector<glm::vec3> colors =
-	//{
-	//	glm::vec3(1,0,0),
-	//	glm::vec3(1,0,0),
-	//	glm::vec3(0,1,0),
-	//	glm::vec3(0,1,0),
-	//	glm::vec3(0,0,1),
-	//	glm::vec3(0,0,1)
-	//};
-	//
-	//Model *axis = new Model(verts, colors);
-	//
-	//m_model_map["axis"] = axis;
-	//
-	//std::vector<glm::vec3> verts_line =
-	//{
-	//	glm::vec3(0,0,0),
-	//	glm::vec3(0,1,0)
-	//};
-	//std::vector<glm::vec3> colors_line =
-	//{
-	//	glm::vec3(0,0,0),
-	//	glm::vec3(0,0,0)
-	//};
-	//
-	//Model *line = new Model(verts_line, colors_line);
-	//m_model_map["line"] = line;
 }
 
 ResourceManager::~ResourceManager()
