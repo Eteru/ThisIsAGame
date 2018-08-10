@@ -2,6 +2,7 @@
 #include "Terrain.h"
 #include "Vertex.h"
 #include "SceneManager.h"
+#include "ResourceManager.h"
 #include "Strings.h"
 
 Terrain::Terrain(glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec3 heights,
@@ -116,16 +117,11 @@ void Terrain::Update(float dt)
 
 void Terrain::Draw(DrawType type)
 {
-	Shader *s = m_shader;
-	//if (SceneObject::SHADOW_MAP == type) {
-	//	s = ResourceManager::GetInstance()->LoadShader("12");
-	//}
-	//else {
-	//	s = m_shader;
-	//}
+	Shader *s = SceneObject::SHADOW_MAP != type ? m_shader
+		: ResourceManager::GetInstance()->LoadShader(ID::SHADER_SHADOW);
 
 	// bind the program
-	glUseProgram(m_shader->GetProgramID());
+	glUseProgram(s->GetProgramID());
 	// bind the VAO
 	glBindVertexArray(m_model->GetVAO());
 
@@ -144,7 +140,7 @@ void Terrain::Draw(DrawType type)
 	// unbind the program
 	glUseProgram(0);
 
-	m_water->Draw();
+	//m_water->Draw(type);
 }
 
 float Terrain::GetTerrainHeight(float x, float z)

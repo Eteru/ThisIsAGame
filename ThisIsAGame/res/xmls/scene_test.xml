@@ -175,9 +175,9 @@
 			<diffCoef>0.5</diffCoef>
 			<shininess>0.1</shininess>
       <position>
-        <x>0.0</x>
-        <y>100000.0</y>
-        <z>0.0</z>
+        <x>10000.0</x>
+        <y>15000.0</y>
+        <z>-1000.0</z>
       </position>
       <direction>
         <x>0.0</x>

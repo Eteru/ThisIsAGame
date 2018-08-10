@@ -30,8 +30,8 @@ Renderer::~Renderer()
 
 void Renderer::Init()
 {
-
 	m_shadow_map = new ShadowMap(SceneManager::GetInstance()->GetLightSource("1"));
+	m_shadow_map->Init();
 
 	InitShaders();
 	InitScreenQuad();
@@ -40,73 +40,45 @@ void Renderer::Init()
 
 void Renderer::Update()
 {
-	//m_shadow_map->Update();
+	m_shadow_map->Update();
 }
 
 void Renderer::Render()
 {
-	//if (false == debug)
-	//{
-	//	glBindFramebuffer(GL_FRAMEBUFFER, m_shadow_map->GetFBO());
-	//
-	//	glClear(GL_DEPTH_BUFFER_BIT);
-	//
-	//	for (auto & obj : m_objects)
-	//	{
-	//		if (obj.second->GetName() == "SkyBox" ||
-	//			obj.second->GetName() == "teren")
-	//		{
-	//			continue;
-	//		}
-	//
-	//		obj.second->Draw(SceneObject::SHADOW_MAP);
-	//	}
-	//}
-	//
-	//// shadowmap on screen
+	const std::map<std::string, SceneObject *> scene_objs =
+		SceneManager::GetInstance()->GetAllSceneObjects();
+
+	glCullFace(GL_FRONT);
+	glBindFramebuffer(GL_FRAMEBUFFER, m_shadow_map->GetFBO());
+	
+	glClear(GL_DEPTH_BUFFER_BIT);
+	
+	for (auto & obj : scene_objs)
+	{	
+		obj.second->Draw(SceneObject::SHADOW_MAP);
+	}
+	glCullFace(GL_BACK);
+
+	// render shadow depth to screen
 	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	//
-	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	//glUseProgram(m_grayscale_shader->GetProgramID());
-	//glBindBuffer(GL_ARRAY_BUFFER, m_screen_vbo);
-	//
-	//// Last texture
-	//glActiveTexture(GL_TEXTURE0);
-	//glBindTexture(GL_TEXTURE_2D, m_shadow_map->GetTexture());
-	//m_grayscale_shader->SendUniform(ShaderStrings::TEXTURE_UNIFORMS[0], 0);
-	//
-	//// Scene texture
-	//glActiveTexture(GL_TEXTURE1);
-	//glBindTexture(GL_TEXTURE_2D, m_screen_textures[0]);
-	//m_grayscale_shader->SendUniform(ShaderStrings::TEXTURE_UNIFORMS[1], 1);
-	//
-	//m_grayscale_shader->SendAttribute(ShaderStrings::POSITION_ATTRIBUTE, 3, 0, 0);
-	//m_grayscale_shader->SendUniform(ShaderStrings::FRAGMENT_OFFSET_X_UNIFORM, 1.f / Window::WIDTH);
-	//m_grayscale_shader->SendUniform(ShaderStrings::FRAGMENT_OFFSET_Y_UNIFORM, 1.f / Window::HEIGHT);
-	//
-	//glDrawArrays(GL_TRIANGLES, 0, 6);
-	//
-	//glBindBuffer(GL_ARRAY_BUFFER, 0);
+	//PostRender(m_post_shaders[ID::SHADER_POST_TO_SCREEN], 0,
+	//	m_shadow_map->GetTexture(), 1.f / Window::WIDTH, 1.f / Window::HEIGHT);
 
-	///*
 	glBindFramebuffer(GL_FRAMEBUFFER, m_fbos[0]);
-
+	
 	// check for framebuffer complete
 	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 	if (status == GL_FRAMEBUFFER_COMPLETE)
 	{
 		glClearColor(m_background_color.x, m_background_color.y, m_background_color.z, 1.f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		const std::map<std::string, SceneObject *> scene_objs =
-			SceneManager::GetInstance()->GetAllSceneObjects();
-
+	
 		for (auto & obj : scene_objs)
 		{
 			obj.second->Draw(m_draw_type);
 		}
 	}
-
+	
 	PostToScreen();
 }
 
@@ -210,51 +182,46 @@ void Renderer::InitBuffers()
 
 void Renderer::PostToScreen()
 {
-	PostRender(m_post_shaders[ID::SHADER_POST_TO_SCREEN], 0, 0,
-		1.f / Window::WIDTH, 1.f / Window::HEIGHT);
+	PostRender(m_post_shaders[ID::SHADER_POST_TO_SCREEN], 0,
+		m_screen_textures[0], 1.f / Window::WIDTH, 1.f / Window::HEIGHT);
 }
 
 void Renderer::PostGrayscale()
 {
-	PostRender(m_post_shaders[ID::SHADER_POST_GRAYSCALE], 0, 0,
-		1.f / Window::WIDTH, 1.f / Window::HEIGHT);
+	PostRender(m_post_shaders[ID::SHADER_POST_GRAYSCALE], 0,
+		m_screen_textures[0], 1.f / Window::WIDTH, 1.f / Window::HEIGHT);
 }
 
 void Renderer::PostBlur()
 {
-	PostRender(m_post_shaders[ID::SHADER_POST_BLUR], 0, 0,
-		1.f / Window::WIDTH, 1.f / Window::HEIGHT);
+	PostRender(m_post_shaders[ID::SHADER_POST_BLUR], 0, 
+		m_screen_textures[0], 1.f / Window::WIDTH, 1.f / Window::HEIGHT);
 }
 
 void Renderer::PostSharpen()
 {
-	PostRender(m_post_shaders[ID::SHADER_POST_SHARPEN], 0, 0,
-		1.f / Window::WIDTH, 1.f / Window::HEIGHT);
+	PostRender(m_post_shaders[ID::SHADER_POST_SHARPEN], 0, 
+		m_screen_textures[0], 1.f / Window::WIDTH, 1.f / Window::HEIGHT);
 }
 
 void Renderer::PostBloom()
 {
 
-	PostRender(m_post_shaders[ID::SHADER_POST_THRESHOLD], 1, 0,
-		1.f / Window::WIDTH, 1.f / Window::HEIGHT);
-	PostRender(m_post_shaders[ID::SHADER_POST_BLUR], 2, 1,
-		2.f / Window::WIDTH, 2.f / Window::HEIGHT);
-	PostRender(m_post_shaders[ID::SHADER_POST_BLUR], 3, 2,
-		4.f / Window::WIDTH, 4.f / Window::HEIGHT);
+	PostRender(m_post_shaders[ID::SHADER_POST_THRESHOLD], m_fbos[1],
+		m_screen_textures[0], 1.f / Window::WIDTH, 1.f / Window::HEIGHT);
+	PostRender(m_post_shaders[ID::SHADER_POST_BLUR], m_fbos[2],
+		m_screen_textures[1], 2.f / Window::WIDTH, 2.f / Window::HEIGHT);
+	PostRender(m_post_shaders[ID::SHADER_POST_BLUR], m_fbos[3], 
+		m_screen_textures[2], 4.f / Window::WIDTH, 4.f / Window::HEIGHT);
 
 	// LAST CALL MUST BE WITH FBO INDEX 0 AND LAST USED TEXTURE
-	PostRender(m_post_shaders[ID::SHADER_POST_COMBINE_TEXTURES], 0, 3,
-		1.f / Window::WIDTH, 1.f / Window::HEIGHT);
+	PostRender(m_post_shaders[ID::SHADER_POST_COMBINE_TEXTURES], 0, 
+		m_screen_textures[3], 1.f / Window::WIDTH, 1.f / Window::HEIGHT);
 }
 
-void Renderer::PostRender(Shader * s, uint32_t to, uint32_t from, float x_offset, float y_offset)
+void Renderer::PostRender(Shader * s, GLuint fbo, GLuint texID, float x_offset, float y_offset)
 {
-	if (to >= MAX_FBOS || from >= MAX_FBOS)
-	{
-		return;
-	}
-
-	glBindFramebuffer(GL_FRAMEBUFFER, to == 0 ? 0 : m_fbos[to]);
+	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
 	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 	if (status == GL_FRAMEBUFFER_COMPLETE)
@@ -265,14 +232,15 @@ void Renderer::PostRender(Shader * s, uint32_t to, uint32_t from, float x_offset
 
 		// Last texture
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, m_screen_textures[from]);
+		glBindTexture(GL_TEXTURE_2D, texID);
 		s->SendUniform(ShaderStrings::TEXTURE_UNIFORMS[0], 0);
 
-		// Scene texture
+		// Scene texture -- required for bloom
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, m_screen_textures[0]);
 		s->SendUniform(ShaderStrings::TEXTURE_UNIFORMS[1], 1);
 
+		// Distance between pxiels -- required for convolution
 		s->SendUniform(ShaderStrings::FRAGMENT_OFFSET_X_UNIFORM, 1.f / Window::WIDTH);
 		s->SendUniform(ShaderStrings::FRAGMENT_OFFSET_Y_UNIFORM, 1.f / Window::HEIGHT);
 

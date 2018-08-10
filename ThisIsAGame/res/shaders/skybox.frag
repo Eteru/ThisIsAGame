@@ -1,4 +1,4 @@
-#version 150
+#version 330
 #extension GL_NV_shadow_samplers_cube : enable
 
 struct Fog

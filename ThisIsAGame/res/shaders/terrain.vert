@@ -1,6 +1,6 @@
-#version 150
+#version 330
 
-in vec3 in_posL;
+layout(location = 0) in vec3 in_posL;
 in vec3 in_normal;
 in vec2 in_uv;
 in vec2 in_uvBlend;
@@ -30,6 +30,7 @@ void main()
 	vec4 pos_cs = u_vm * vec4(in_posL, 1.0);
 	
 	v_pos = pos_ms.xyz;
+	v_pos_light_space = u_light_space_matrix * pos_ms;
 	v_normal = (u_nm * vec4(in_normal, 1.0)).rgb;
 	v_uv = in_uv;
 	v_uvBlend = in_uvBlend;
@@ -38,8 +39,7 @@ void main()
 	float dist = abs(length(pos_cs.xyz));
 	v_visibility = exp(-pow((dist * DENSITY), GRADIENT));
 	v_visibility = clamp(v_visibility, 0.0, 1.0);
-	
-	//v_pos_light_space = u_light_space_matrix * u_m * posL;
+
 	gl_Position = pos_ws;
 }
    

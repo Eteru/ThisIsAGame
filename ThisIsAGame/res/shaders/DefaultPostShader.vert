@@ -1,6 +1,6 @@
-#version 150
+#version 330
 
-in vec3 in_posL;
+layout(location = 0) in vec3 in_posL;
 
 out vec2 v_uv;
 

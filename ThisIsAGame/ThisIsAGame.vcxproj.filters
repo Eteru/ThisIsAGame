@@ -236,5 +236,11 @@
     <None Include="res\shaders\DefaultPostShader.frag">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="res\shaders\ShadowDepthShader.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="res\shaders\ShadowDepthShader.vert">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

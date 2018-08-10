@@ -75,6 +75,11 @@ void SkyBox::Update(float dt)
 
 void SkyBox::Draw(DrawType type)
 {
+	if (SceneObject::SHADOW_MAP == type)
+	{
+		return;
+	}
+
 	glDisable(GL_CULL_FACE);
 
 	// bind the program

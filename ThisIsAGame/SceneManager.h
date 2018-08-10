@@ -77,6 +77,16 @@ public:
 		return m_objects;
 	}
 
+	inline GLuint GetShadowMapTex()
+	{
+		return m_renderer.GetShadowMapTex();
+	}
+
+	inline glm::mat4 & GetLightSpaceMatrix()
+	{
+		return m_renderer.GetLightSpaceMatrix();
+	}
+
 	void PlaySound(std::string id);
 	void AddObject(SceneObject *so);
 	void DestroyObject(std::string id);

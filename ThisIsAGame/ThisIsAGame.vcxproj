@@ -213,6 +213,8 @@
     <None Include="res\shaders\DefaultPostShader.frag" />
     <None Include="res\shaders\DefaultPostShader.vert" />
     <None Include="res\shaders\GrayscaleShader.frag" />
+    <None Include="res\shaders\ShadowDepthShader.frag" />
+    <None Include="res\shaders\ShadowDepthShader.vert" />
     <None Include="res\shaders\skybox.frag" />
     <None Include="res\shaders\skybox.vert" />
     <None Include="res\shaders\terrain.frag" />

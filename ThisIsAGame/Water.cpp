@@ -99,7 +99,11 @@ void Water::Update(float dt)
 
 void Water::Draw(DrawType type)
 {
-	Shader *s = m_shader;
+	if (SceneObject::SHADOW_MAP == type)
+	{
+		return;
+	}
+
 	//if (SceneObject::SHADOW_MAP == type) {
 	//	s = ResourceManager::GetInstance()->LoadShader("12");
 	//}
@@ -119,7 +123,7 @@ void Water::Draw(DrawType type)
 
 	//s->SendUniform(ShaderStrings::HEIGHT_MAP_UNIFORM, m_heights);
 
-	s->SendUniform(ShaderStrings::TIME_UNIFORM, m_time);
+	m_shader->SendUniform(ShaderStrings::TIME_UNIFORM, m_time);
 
 	SharedDrawElements(type);
 

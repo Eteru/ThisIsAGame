@@ -62,7 +62,7 @@
       <vs>./res/shaders/DefaultPostShader.vert</vs>
       <fs>./res/shaders/CombinetexturesShader.frag</fs>
     </shader>
-    <shader id="12">
+    <shader id="shadow">
       <vs>./res/shaders/ShadowDepthShader.vert</vs>
       <fs>./res/shaders/ShadowDepthShader.frag</fs>
     </shader>

@@ -1,4 +1,4 @@
-#version 150
+#version 330
 #extension GL_NV_shadow_samplers_cube : enable
 
 // declare structs
@@ -69,12 +69,24 @@ const float M_PI = 3.14159;
 
 float ShadowPercentage()
 {
+	float bias = 0.005;
+	float visibility = 1.0;
+
 	vec3 proj_coords = v_pos_light_space.xyz / v_pos_light_space.w;
 	proj_coords = proj_coords * 0.5 + 0.5;
 
-	float closest_depth = texture2D(u_texture_shadow_map, proj_coords.xy).r; 
+	float closest_depth = texture2D(u_texture_shadow_map, proj_coords.xy).r;
+	//
+    //return step(closest_depth, proj_coords.z);
+	
+	//if (texture2D(u_texture_shadow_map, proj_coords.xy).z < proj_coords.z - bias)
+	//{
+	//	visibility = 0.5;
+	//}
 
-    return step(closest_depth, proj_coords.z);
+	float shadow = proj_coords.z - bias > closest_depth  ? 1.0 : 0.0;
+
+	return shadow;
 }
 
 vec3 ComputeLight(Light light, vec3 l, vec3 surface, vec3 normal, vec3 eye, float attenuation)
@@ -91,7 +103,7 @@ vec3 ComputeLight(Light light, vec3 l, vec3 surface, vec3 normal, vec3 eye, floa
 	float int_spec = max(dot(R, eye), 0.0);
 	float spec_coef = light.specular_ratio * pow(int_spec, light.shininess);
 
-	float shadow = 0.0;//ShadowPercentage();
+	float shadow = ShadowPercentage();
 	vec3 IS = spec_coef * light.specular * surface;
 
 	return IA + (1.0 - shadow) * attenuation * (ID + IS);

@@ -20,6 +20,16 @@ public:
 		m_draw_type = type;
 	}
 
+	inline GLuint GetShadowMapTex()
+	{
+		return m_shadow_map->GetTexture();
+	}
+
+	inline glm::mat4 & GetLightSpaceMatrix()
+	{
+		return m_shadow_map->GetLightSpaceMatrix();
+	}
+
 	virtual void Init();
 	virtual void Update();
 	virtual void Render();
@@ -50,6 +60,6 @@ protected:
 	void PostBlur();
 	void PostSharpen();
 	void PostBloom();
-	void PostRender(Shader *s, uint32_t to, uint32_t from, float x_offset, float y_offset);
+	void PostRender(Shader *s, GLuint fbo, GLuint texID, float x_offset, float y_offset);
 };
 

@@ -25,14 +25,16 @@ public:
 	float GetSpotAngle() const;
 	LightType GetType() const;
 
-	glm::mat4 GetViewMatrix(glm::vec3 & dir, glm::vec3 & center);
+	glm::mat4 GetViewMatrix(glm::vec3 target);
 
 private:
 	LightType m_type;
+
 	float m_shininess;
 	float m_spot_angle;
 	float m_diffuse_coef;
 	float m_specular_coef;
+
 	glm::vec3 m_diffuse_color;
 	glm::vec3 m_specular_color;
 	glm::vec3 m_position;

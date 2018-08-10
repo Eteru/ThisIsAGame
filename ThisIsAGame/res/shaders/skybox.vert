@@ -1,6 +1,6 @@
-#version 150
+#version 330
 
-in vec3 in_posL;
+layout(location = 0) in vec3 in_posL;
 
 uniform float u_time;
 uniform mat4 u_matrix;

@@ -9,7 +9,7 @@ public:
 	ShadowMap(LightSource *light);
 	virtual ~ShadowMap();
 
-	inline glm::mat4 GetLightSpaceMatrix() const
+	inline glm::mat4 & GetLightSpaceMatrix()
 	{
 		return m_light_space_matrix;
 	}
@@ -39,8 +39,8 @@ public:
 		return m_light_projection;
 	}
 
+	void Init();
 	void Update();
-	void Draw(GLuint vbo);
 
 protected:
 	const uint32_t SHADOW_WIDTH = 1024;

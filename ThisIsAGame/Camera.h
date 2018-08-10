@@ -36,6 +36,31 @@ public:
 		return m_front;
 	}
 
+	inline glm::vec3 GetUp() const
+	{
+		return m_up;
+	}
+
+	inline glm::vec3 GetRight() const
+	{
+		return m_right;
+	}
+
+	inline float GetNear() const
+	{
+		return m_near;
+	}
+
+	inline float GetFar() const
+	{
+		return m_far;
+	}
+
+	inline float GetFOV() const
+	{
+		return m_fov;
+	}
+
 	void SetTarget(SceneObject *player);
 	
 	void RotateOX(int dir);

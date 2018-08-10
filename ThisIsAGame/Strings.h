@@ -79,6 +79,7 @@ namespace ID
 {
 	// Shaders
 	const std::string SHADER_WATER = "water";
+	const std::string SHADER_SHADOW = "shadow";
 	const std::string SHADER_POST_TO_SCREEN = "empty";
 	const std::string SHADER_POST_BLUR = "blur";
 	const std::string SHADER_POST_SHARPEN = "sharpen";
